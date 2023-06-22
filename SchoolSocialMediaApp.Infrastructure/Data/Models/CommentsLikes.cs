@@ -4,21 +4,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 {
-    [Comment("Comments which are disliked by users")]
-    public class DislikedComments
+    [Comment("Comments liked by user")]
+    public class CommentsLikes
     {
-        [Comment("The unique identifier for the user who disliked the comment.")]
+        [Comment("The unique identifier for the user who liked the comment.")]
         public Guid UserId { get; set; }
 
-        [Comment("User who disliked the comment")]
+        [Comment("User who liked the comment")]
         [ForeignKey(nameof(UserId))]
         [Required]
         public ApplicationUser User { get; set; } = null!;
 
-        [Comment("The unique identifier for the comment which is disliked.")]
+        [Comment("The unique identifier for the comment which is liked.")]
         public Guid CommentId { get; set; }
 
-        [Comment("Comment which is disliked")]
+        [Comment("Comment which is liked")]
         [ForeignKey(nameof(CommentId))]
         [Required]
         public Comment Comment { get; set; } = null!;

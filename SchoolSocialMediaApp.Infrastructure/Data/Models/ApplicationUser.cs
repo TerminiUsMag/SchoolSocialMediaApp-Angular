@@ -25,16 +25,16 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         public DateTime CreatedOn{ get; set; }
 
         [Comment("The posts the user has liked.")]
-        public IEnumerable<Post> LikedPosts { get; set; } = new List<Post>();
+        public IEnumerable<PostsLikes> LikedPosts { get; set; } = new List<PostsLikes>();
 
         [Comment("The posts the user has disliked.")]
-        public IEnumerable<Post> DislikedPosts { get; set; } = new List<Post>();
+        public IEnumerable<PostsDislikes> DislikedPosts { get; set; } = new List<PostsDislikes>();
 
         [Comment("The comments the user has liked.")]
-        public IEnumerable<Comment> LikedComments { get; set; } = new List<Comment>();
+        public IEnumerable<CommentsLikes> LikedComments { get; set; } = new List<CommentsLikes>();
 
         [Comment("The comments the user has disliked.")]
-        public IEnumerable<Comment> DislikedComments { get; set; } = new List<Comment>();
+        public IEnumerable<CommentsDislikes> DislikedComments { get; set; } = new List<CommentsDislikes>();
 
         [Comment("The posts made by the user.")]
         public IEnumerable<Post> Posts { get; set; } = new List<Post>();

@@ -15,47 +15,53 @@ namespace SchoolSocialMediaApp.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<ApplicationUser>()
-                .HasMany(user => user.Posts)
-                .WithOne(post => post.Owner)
-                .HasForeignKey(post => post.OwnerId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<CommentsDislikes>()
+                .HasKey(cd => new { cd.UserId, cd.CommentId });
 
-            builder.Entity<ApplicationUser>()
-                .HasMany(user => user.Comments)
-                .WithOne(comment => comment.Creator)
-                .HasForeignKey(comment => comment.CreatorId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<CommentsLikes>()
+                .HasKey(cl => new { cl.UserId, cl.CommentId });
 
-            //builder.Entity<ApplicationUser>()
-            //    .HasMany(user => user.LikedComments)
-            //    .WithMany(comment => comment.Likes);
+            //builder.Entity<UsersComments>()
+            //    .HasKey(uc => new { uc.UserId, uc.CommentId });
 
-            //builder.Entity<ApplicationUser>()
-            //    .HasMany(user => user.DislikedComments)
-            //    .WithMany(comment => comment.Dislikes);
+            //builder.Entity<UsersPosts>()
+            //    .HasKey(up => new { up.UserId, up.PostId });
 
-            //builder.Entity<ApplicationUser>()
-            //    .HasMany(user => user.LikedPosts)
-            //    .WithMany(post => post.Likes);
+            builder.Entity<PostsComments>()
+                .HasKey(pc => new { pc.PostId, pc.CommentId });
 
-            //builder.Entity<ApplicationUser>()
-            //    .HasMany(user => user.DislikedPosts)
-            //    .WithMany(post => post.Dislikes);
+            builder.Entity<PostsDislikes>()
+                .HasKey(pd => new { pd.PostId, pd.UserId });
 
-            //builder.Entity<Post>()
-            //    .HasMany(post => post.Comments)
-            //    .WithOne(comment => comment.Post)
-            //    .HasForeignKey(comment => comment.PostId)
-            //    .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<PostsLikes>()
+                .HasKey(pl => new { pl.PostId, pl.UserId });
 
-            builder.Entity<Post>()
-                .HasMany(post => post.Likes)
-                .WithMany(user => user.LikedPosts);
 
-            builder.Entity<Post>()
-                .HasMany(post => post.Dislikes)
-                .WithMany(user => user.DislikedPosts);
+            builder.Entity<Comment>()
+                .HasOne(Comment => Comment.Creator)
+                .WithMany(User => User.Comments)
+                .HasForeignKey(Comment => Comment.CreatorId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Comment>()
+                .HasOne(Comment => Comment.Post)
+                .WithMany(Post => Post.Comments)
+                .HasForeignKey(Comment => Comment.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<PostsDislikes>()
+                .HasOne(pd => pd.Post)
+                .WithMany(p => p.Dislikes)
+                .HasForeignKey(pd => pd.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<PostsLikes>()
+                .HasOne(pl => pl.Post)
+                .WithMany(p => p.Likes)
+                .HasForeignKey(pl => pl.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
 
             base.OnModelCreating(builder);
         }
