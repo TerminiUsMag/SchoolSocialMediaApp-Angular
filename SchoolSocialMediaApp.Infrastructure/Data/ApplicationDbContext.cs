@@ -27,8 +27,8 @@ namespace SchoolSocialMediaApp.Data
             //builder.Entity<UsersPosts>()
             //    .HasKey(up => new { up.UserId, up.PostId });
 
-            builder.Entity<PostsComments>()
-                .HasKey(pc => new { pc.PostId, pc.CommentId });
+            //builder.Entity<PostsComments>()
+            //    .HasKey(pc => new { pc.PostId, pc.CommentId });
 
             builder.Entity<PostsDislikes>()
                 .HasKey(pd => new { pd.PostId, pd.UserId });
