@@ -34,15 +34,15 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("The post owner")]
         [Required]
         [ForeignKey(nameof(OwnerId))]
-        public IdentityUser Owner { get; set; } = null!;
+        public ApplicationUser Owner { get; set; } = null!;
 
         [Comment("The comments on the post.")]
         public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
 
         [Comment("The likes on the post.")]
-        public IEnumerable<IdentityUser> Liked { get; set; } = new List<IdentityUser>();
+        public IEnumerable<ApplicationUser> Likes { get; set; } = new List<ApplicationUser>();
 
         [Comment("The dislikes on the post.")]
-        public IEnumerable<IdentityUser> Disliked { get; set; } = new List<IdentityUser>();
+        public IEnumerable<ApplicationUser> Dislikes { get; set; } = new List<ApplicationUser>();
     }
 }

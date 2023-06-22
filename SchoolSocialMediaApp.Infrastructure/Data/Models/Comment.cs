@@ -39,12 +39,12 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("The creator of the comment.")]
         [Required]
         [ForeignKey(nameof(CreatorId))]
-        public IdentityUser Creator { get; set; } = null!;
+        public ApplicationUser Creator { get; set; } = null!;
 
         [Comment("Likes of the comment.")]
-        public IEnumerable<IdentityUser> Likes { get; set; } = new List<IdentityUser>();
+        public IEnumerable<ApplicationUser> Likes { get; set; } = new List<ApplicationUser>();
 
         [Comment("Dislikes of the comment.")]
-        public IEnumerable<IdentityUser> Dislikes { get; set; } = new List<IdentityUser>();
+        public IEnumerable<ApplicationUser> Dislikes { get; set; } = new List<ApplicationUser>();
     }
 }
