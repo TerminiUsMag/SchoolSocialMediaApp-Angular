@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Constants = SchoolSocialMediaApp.Infrastructure.Common.Constants;
+using ValidationConstants = SchoolSocialMediaApp.Infrastructure.Common.ValidationConstants;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 {
@@ -16,7 +16,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The content of the comment.")]
         [Required]
-        [MaxLength(Constants.MaxCommentLength)]
+        [MaxLength(ValidationConstants.MaxCommentLength)]
         public string Content { get; set; } = null!;
 
         [Comment("The date and time the comment was created.")]

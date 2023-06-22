@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SchoolSocialMediaApp.Infrastructure.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,10 +14,12 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
     public class ApplicationUser : IdentityUser<Guid>
     {
         [Comment("The first name of the user.")]
+        [MaxLength(ValidationConstants.MaxFirstNameLength)]
         [Required]
         public string FirstName { get; set; } = null!;
 
         [Comment("The last name of the user.")]
+        [MaxLength(ValidationConstants.MaxLastNameLength)]
         [Required]
         public string LastName { get; set; } = null!;
 

@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SchoolSocialMediaApp.Core.Contracts;
+using SchoolSocialMediaApp.Core.Services;
 using SchoolSocialMediaApp.Data;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 
@@ -13,9 +14,14 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
 
