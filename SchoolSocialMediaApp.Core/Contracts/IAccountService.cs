@@ -17,5 +17,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         bool PhoneNumberIsValid(string phoneNumber);
         Task<bool> EmailIsFree(string email);
         Task<bool> PhoneNumberIsFree(string phoneNumber);
+        Task<bool> UsernameIsFree(string username);
     }
 }

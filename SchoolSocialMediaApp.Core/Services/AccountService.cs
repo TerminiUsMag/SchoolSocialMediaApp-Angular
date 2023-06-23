@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolSocialMediaApp.Core.Contracts;
+using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -12,17 +14,20 @@ namespace SchoolSocialMediaApp.Core.Services
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IRepository repo;
         public AccountService(
             UserManager<ApplicationUser> _userManager,
-            SignInManager<ApplicationUser> _signInManager)
+            SignInManager<ApplicationUser> _signInManager,
+            IRepository _repo)
         {
             this.userManager = _userManager;
             this.signInManager = _signInManager;
+            this.repo = _repo;
         }
 
         public async Task<bool> EmailIsFree(string email)
         {
-            var result = await userManager.FindByEmailAsync(email);
+            var result = await userManager.FindByEmailAsync(email.ToUpper());
 
             if (result is null)
             {
@@ -33,14 +38,6 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public bool EmailIsValid(string email)
         {
-            //var emailRegex = new Regex(validation.EmailRegEx);
-
-            //if (!emailRegex.IsMatch(email))
-            //{
-            //    return false;
-            //}
-            //return true;
-
             try
             {
                 MailAddress m = new MailAddress(email);
@@ -55,17 +52,17 @@ namespace SchoolSocialMediaApp.Core.Services
         public async Task<bool> LoginAsync(string email, string password, bool rememberMe)
         {
             var user = await userManager.FindByEmailAsync(email);
-            if(user is null)
+            if (user is null)
             {
                 return false;
             }
             var result = await signInManager.PasswordSignInAsync(user, password, rememberMe, true);
-          if (result.Succeeded)
+            if (result.Succeeded)
             {
                 signInManager.Logger.LogInformation("User logged in.");
                 return true;
             }
-          return false;
+            return false;
         }
 
         public async Task LogoutAsync()
@@ -75,7 +72,13 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<bool> PhoneNumberIsFree(string phoneNumber)
         {
-            return true;
+            var result = await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
+
+            if (result is null)
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool PhoneNumberIsValid(string phoneNumber)
@@ -94,6 +97,17 @@ namespace SchoolSocialMediaApp.Core.Services
             if (result.Succeeded)
             {
                 await signInManager.SignInAsync(user, isPersistent: false);
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> UsernameIsFree(string username)
+        {
+            var result = await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.NormalizedUserName == username.ToUpper());
+
+            if (result is null)
+            {
                 return true;
             }
             return false;

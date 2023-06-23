@@ -13,6 +13,15 @@ namespace SchoolSocialMediaApp.Data
 
         }
 
+        public DbSet<Comment> Comments { get; set; } = null!;
+        public DbSet<CommentsLikes> CommentsLikes { get; set; } = null!;
+        public DbSet<CommentsDislikes> CommentsDislikes { get; set; } = null!;
+
+        public DbSet<Post> Posts { get; set; } = null!;
+        public DbSet<PostsLikes> PostsLikes { get; set; } = null!;
+        public DbSet<PostsDislikes> PostsDislikes { get; set; } = null!;
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<CommentsDislikes>()

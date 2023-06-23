@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Core.Services;
 using SchoolSocialMediaApp.Data;
+using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +45,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IRepository, Repository>();
 
 var app = builder.Build();
 

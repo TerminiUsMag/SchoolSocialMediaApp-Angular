@@ -33,6 +33,7 @@ namespace SchoolSocialMediaApp.Controllers
         public IActionResult Register()
         {
             var model = new RegisterViewModel();
+            //ModelState.AddModelError("", "The Password must contain: ");
 
             return View(model);
         }
@@ -41,20 +42,17 @@ namespace SchoolSocialMediaApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            //Email Validation and Verification
-            if(!accountService.EmailIsValid(model.Email))
+            //Username Validation and Verification
+            var username = $"{model.FirstName}.{model.LastName}".ToLower();
+
+            if (!await accountService.UsernameIsFree(username))
             {
-                ModelState.AddModelError("", "Invalid Email");
+                ModelState.AddModelError("", $"Username '{username}' is already taken");
                 return View(model);
             }
-            //if(!await accountService.EmailIsFree(model.Email))
-            //{
-            //    ModelState.AddModelError("", "Email is already taken");
-            //    return View(model);
-            //}
 
             //Phone Number Validation and Verification
-            if(!accountService.PhoneNumberIsValid(model.PhoneNumber))
+            if (!accountService.PhoneNumberIsValid(model.PhoneNumber))
             {
                 ModelState.AddModelError("", "Invalid Phone Number");
                 return View(model);
@@ -62,6 +60,18 @@ namespace SchoolSocialMediaApp.Controllers
             if(!await accountService.PhoneNumberIsFree(model.PhoneNumber))
             {
                 ModelState.AddModelError("", "Phone Number is already taken");
+                return View(model);
+            }
+
+            //Email Validation and Verification
+            if(!accountService.EmailIsValid(model.Email))
+            {
+                ModelState.AddModelError("", "Invalid Email");
+                return View(model);
+            }
+            if (!await accountService.EmailIsFree(model.Email))
+            {
+                ModelState.AddModelError("", "Email is already taken");
                 return View(model);
             }
 
@@ -78,7 +88,7 @@ namespace SchoolSocialMediaApp.Controllers
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email,
-                UserName = $"{model.FirstName}.{model.LastName}",
+                UserName = username,
                 PhoneNumber = model.PhoneNumber,
                 CreatedOn = DateTime.Now,
 
