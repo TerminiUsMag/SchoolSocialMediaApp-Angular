@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.Models;
+using System.Text.RegularExpressions;
+using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
 namespace SchoolSocialMediaApp.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly IAccountService accountService;
 
@@ -26,6 +29,7 @@ namespace SchoolSocialMediaApp.Controllers
         //}
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             var model = new RegisterViewModel();
@@ -33,14 +37,42 @@ namespace SchoolSocialMediaApp.Controllers
             return View(model);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid)
+            //Email Validation and Verification
+            if(!accountService.EmailIsValid(model.Email))
             {
+                ModelState.AddModelError("", "Invalid Email");
+                return View(model);
+            }
+            //if(!await accountService.EmailIsFree(model.Email))
+            //{
+            //    ModelState.AddModelError("", "Email is already taken");
+            //    return View(model);
+            //}
+
+            //Phone Number Validation and Verification
+            if(!accountService.PhoneNumberIsValid(model.PhoneNumber))
+            {
+                ModelState.AddModelError("", "Invalid Phone Number");
+                return View(model);
+            }
+            if(!await accountService.PhoneNumberIsFree(model.PhoneNumber))
+            {
+                ModelState.AddModelError("", "Phone Number is already taken");
                 return View(model);
             }
 
+            //Model Validation
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
+            }
+
+            //User Creation
             var user = new ApplicationUser()
             {
                 FirstName = model.FirstName,
@@ -51,14 +83,55 @@ namespace SchoolSocialMediaApp.Controllers
                 CreatedOn = DateTime.Now,
 
             };
+
+            //User Registration and Password Hashing
             if (!await accountService.RegisterAsync(user, model.Password))
             {
                 ModelState.AddModelError("", "Something went wrong");
                 return View(model);
             }
-            
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login(string returnUrl)
+        {
+            var model = new LoginViewModel();
+            model.ReturnUrl = returnUrl;
+
+            return View(model);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = "/")
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
+            }
+
+            var result = await accountService.LoginAsync(model.Email, model.Password, model.RememberMe = false);
+
+            if (!result)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
+            }
+
+            //return RedirectToAction(nameof(HomeController.Index), "Home");
+            return Redirect(returnUrl ?? "/");
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await accountService.LogoutAsync();
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
     }
 }

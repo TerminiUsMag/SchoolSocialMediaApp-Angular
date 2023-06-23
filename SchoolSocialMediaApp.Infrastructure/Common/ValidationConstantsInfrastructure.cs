@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SchoolSocialMediaApp.Infrastructure.Common
 {
-    public  class ValidationConstants
+    public  class ValidationConstantsInfrastructure
     {
         //Post Validation Constants
         public const int MaxPostLength = 2000;

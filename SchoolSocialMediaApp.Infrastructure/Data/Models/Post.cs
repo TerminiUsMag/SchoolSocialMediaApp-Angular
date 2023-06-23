@@ -20,7 +20,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The content of the post.")]
         [Required]
-        [MaxLength(ValidationConstants.MaxPostLength)]
+        [MaxLength(ValidationConstantsInfrastructure.MaxPostLength)]
         public string Content { get; set; } = null!;
 
         [Comment("The date and time the post was created.")]

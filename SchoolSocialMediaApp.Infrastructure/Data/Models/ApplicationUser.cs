@@ -14,12 +14,12 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
     public class ApplicationUser : IdentityUser<Guid>
     {
         [Comment("The first name of the user.")]
-        [MaxLength(ValidationConstants.MaxFirstNameLength)]
+        [MaxLength(ValidationConstantsInfrastructure.MaxFirstNameLength)]
         [Required]
         public string FirstName { get; set; } = null!;
 
         [Comment("The last name of the user.")]
-        [MaxLength(ValidationConstants.MaxLastNameLength)]
+        [MaxLength(ValidationConstantsInfrastructure.MaxLastNameLength)]
         [Required]
         public string LastName { get; set; } = null!;
 

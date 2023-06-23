@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Logging;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
+using validation = SchoolSocialMediaApp.Core.Common.ValidationConstantsCore;
 
 namespace SchoolSocialMediaApp.Core.Services
 {
@@ -17,20 +20,78 @@ namespace SchoolSocialMediaApp.Core.Services
             this.signInManager = _signInManager;
         }
 
-        public Task<bool> LoginAsync(string email, string password)
+        public async Task<bool> EmailIsFree(string email)
         {
-            throw new NotImplementedException();
+            var result = await userManager.FindByEmailAsync(email);
+
+            if (result is null)
+            {
+                return true;
+            }
+            return false;
         }
 
-        public Task<bool> LogoutAsync()
+        public bool EmailIsValid(string email)
         {
-            throw new NotImplementedException();
+            //var emailRegex = new Regex(validation.EmailRegEx);
+
+            //if (!emailRegex.IsMatch(email))
+            //{
+            //    return false;
+            //}
+            //return true;
+
+            try
+            {
+                MailAddress m = new MailAddress(email);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> LoginAsync(string email, string password, bool rememberMe)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if(user is null)
+            {
+                return false;
+            }
+            var result = await signInManager.PasswordSignInAsync(user, password, rememberMe, true);
+          if (result.Succeeded)
+            {
+                signInManager.Logger.LogInformation("User logged in.");
+                return true;
+            }
+          return false;
+        }
+
+        public async Task LogoutAsync()
+        {
+            await signInManager.SignOutAsync();
+        }
+
+        public async Task<bool> PhoneNumberIsFree(string phoneNumber)
+        {
+            return true;
+        }
+
+        public bool PhoneNumberIsValid(string phoneNumber)
+        {
+            var phoneRegex = new Regex(validation.PhoneNumberRegEx);
+            if (!phoneRegex.IsMatch(phoneNumber))
+            {
+                return false;
+            }
+            return true;
         }
 
         public async Task<bool> RegisterAsync(ApplicationUser user, string password)
         {
             var result = await userManager.CreateAsync(user, password);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 await signInManager.SignInAsync(user, isPersistent: false);
                 return true;

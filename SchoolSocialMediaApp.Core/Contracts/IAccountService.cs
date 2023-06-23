@@ -11,7 +11,11 @@ namespace SchoolSocialMediaApp.Core.Contracts
     public interface IAccountService
     {
         Task<bool> RegisterAsync(ApplicationUser user, string password);
-        Task<bool> LoginAsync(string email, string password);
-        Task<bool> LogoutAsync();
+        Task<bool> LoginAsync(string email, string password, bool rememberMe);
+        Task LogoutAsync();
+        bool EmailIsValid(string email);
+        bool PhoneNumberIsValid(string phoneNumber);
+        Task<bool> EmailIsFree(string email);
+        Task<bool> PhoneNumberIsFree(string phoneNumber);
     }
 }
