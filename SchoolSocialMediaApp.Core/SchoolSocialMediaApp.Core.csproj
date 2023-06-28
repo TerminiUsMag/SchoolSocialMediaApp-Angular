@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SchoolSocialMediaApp.Common\SchoolSocialMediaApp.Common.csproj" />
     <ProjectReference Include="..\SchoolSocialMediaApp.Infrastructure\SchoolSocialMediaApp.Infrastructure.csproj" />
   </ItemGroup>
 

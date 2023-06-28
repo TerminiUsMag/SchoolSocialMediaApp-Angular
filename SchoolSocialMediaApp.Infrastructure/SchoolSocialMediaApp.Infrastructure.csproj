@@ -28,4 +28,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SchoolSocialMediaApp.Common\SchoolSocialMediaApp.Common.csproj" />
+  </ItemGroup>
+
 </Project>
