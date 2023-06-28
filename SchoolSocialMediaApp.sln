@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Web", "SchoolSocialMediaApp\SchoolSocialMediaApp.Web.csproj", "{6D2C06B2-40AE-41F6-884F-DECF69D7D236}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp", "SchoolSocialMediaApp\SchoolSocialMediaApp.csproj", "{6D2C06B2-40AE-41F6-884F-DECF69D7D236}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Core", "SchoolSocialMediaApp.Core\SchoolSocialMediaApp.Core.csproj", "{47901F47-45D7-4AD0-B55B-AF20DBC27EA2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Infrastructure", "SchoolSocialMediaApp.Infrastructure\SchoolSocialMediaApp.Infrastructure.csproj", "{D601B93E-17D1-4C51-9C1B-B7ABA44ECE7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolSocialMediaApp.Common", "SchoolSocialMediaApp.Common\SchoolSocialMediaApp.Common.csproj", "{DCBEF9C0-C1CA-4640-9C52-920A700DBB13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Common", "SchoolSocialMediaApp.Common\SchoolSocialMediaApp.Common.csproj", "{DCBEF9C0-C1CA-4640-9C52-920A700DBB13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
