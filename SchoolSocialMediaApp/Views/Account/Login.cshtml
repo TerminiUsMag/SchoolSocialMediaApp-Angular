@@ -10,17 +10,23 @@
         <section>
             <form id="account" method="post">
                 <h2>Use a local account to log in.</h2>
-                <hr />
+                <hr size="5" style="background-color:black;" />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-floating">
+                <div class="form-group">
                     <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" />
                     <label asp-for="Email" class="form-label"></label>
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-                <div class="form-floating">
+                <div class="form-group">
                     <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" />
                     <label asp-for="Password" class="form-label"></label>
                     <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="submit-progress visually-hidden text-md-center">
+                    <div class="container-fluid">
+                        <i class="fa-solid fa-school fa-spin-pulse" style="font-size:xx-large"></i>
+                        <label>Please wait...</label>
+                    </div>
                 </div>
                 <div>
                     <div class="checkbox">
@@ -31,14 +37,58 @@
                     </div>
                 </div>
                 <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                    <button id="login-submit" onclick="return DisplayProgressMessage(this, 'Saving...');" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
             </form>
-            <i class="fa-solid fa-school fa-spin-pulse"></i>
+
         </section>
+    </div>
+    <div id="carouselExampleIndicators" class="carousel slide">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="..." class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="..." class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="..." class="d-block w-100" alt="...">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
 </div>
 
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        function DisplayProgressMessage(ctl, msg) {
+            event.preventDefault();
+            $(ctl).prop("disabled", true).text(msg)
+            $("body").addClass("submit-progress-bg");
+            $(".submit-progress").removeClass("visually-hidden")
+            setTimeout(function () {
+                $("form").submit();
+            }, 1000);
+            return true;
+        }
+    </script>
+    <style>
+        .submit-progress-bg {
+            background-color: #bfc5c7;
+        }
+    </style>
 }
