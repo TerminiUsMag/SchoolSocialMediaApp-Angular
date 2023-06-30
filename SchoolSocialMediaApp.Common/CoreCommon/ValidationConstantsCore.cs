@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SchoolSocialMediaApp.Core.Common
+﻿namespace SchoolSocialMediaApp.Common.CoreCommon
 {
     public class ValidationConstantsCore
     {

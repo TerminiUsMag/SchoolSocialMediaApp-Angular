@@ -11,7 +11,7 @@ using SchoolSocialMediaApp.Data;
 
 namespace SchoolSocialMediaApp.Infrastructure.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(SchoolSocialMediaDbContext))]
     [Migration("20230622170159_RemovedPostsCommentsUnnecessaryMappingTable")]
     partial class RemovedPostsCommentsUnnecessaryMappingTable
     {

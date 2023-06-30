@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using ValidationConstantsInfrastructure = SchoolSocialMediaApp.Infrastructure.Common.ValidationConstantsInfrastructure;
+using validation = SchoolSocialMediaApp.Common.InfrastructureCommon.ValidationConstantsInfrastructure;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 {
@@ -16,7 +14,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The content of the comment.")]
         [Required]
-        [MaxLength(ValidationConstantsInfrastructure.MaxCommentLength)]
+        [MaxLength(validation.MaxCommentLength)]
         public string Content { get; set; } = null!;
 
         [Comment("The date and time the comment was created.")]

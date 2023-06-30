@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SchoolSocialMediaApp.Common\SchoolSocialMediaApp.Common.csproj" />
     <ProjectReference Include="..\SchoolSocialMediaApp.Core\SchoolSocialMediaApp.Core.csproj" />
+    <ProjectReference Include="..\SchoolSocialMediaApp.ViewModels\SchoolSocialMediaApp.ViewModels.csproj" />
   </ItemGroup>
 
 </Project>

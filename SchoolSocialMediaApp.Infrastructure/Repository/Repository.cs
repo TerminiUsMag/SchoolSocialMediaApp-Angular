@@ -13,7 +13,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Common
     /// current reposity is attached</typeparam>
     public class Repository : IRepository
     {
-        public Repository(ApplicationDbContext context)
+        public Repository(SchoolSocialMediaDbContext context)
         {
             this.Context = context;
         }

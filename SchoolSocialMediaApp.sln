@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Infras
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Common", "SchoolSocialMediaApp.Common\SchoolSocialMediaApp.Common.csproj", "{DCBEF9C0-C1CA-4640-9C52-920A700DBB13}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolSocialMediaApp.ViewModels", "SchoolSocialMediaApp.ViewModels\SchoolSocialMediaApp.ViewModels.csproj", "{E1D3F167-D2B6-436B-A727-C16F11C3B748}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{DCBEF9C0-C1CA-4640-9C52-920A700DBB13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCBEF9C0-C1CA-4640-9C52-920A700DBB13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCBEF9C0-C1CA-4640-9C52-920A700DBB13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1D3F167-D2B6-436B-A727-C16F11C3B748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D3F167-D2B6-436B-A727-C16F11C3B748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1D3F167-D2B6-436B-A727-C16F11C3B748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1D3F167-D2B6-436B-A727-C16F11C3B748}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.Models;
-using System.Text.RegularExpressions;
-using validation = SchoolSocialMediaApp.Common.ValidationConstants;
+using SchoolSocialMediaApp.ViewModels.Models;
 
 namespace SchoolSocialMediaApp.Controllers
 {

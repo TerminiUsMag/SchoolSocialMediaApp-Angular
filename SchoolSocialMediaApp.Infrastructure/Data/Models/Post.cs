@@ -1,13 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SchoolSocialMediaApp.Infrastructure.Common;
 using System.ComponentModel.DataAnnotations.Schema;
+using validation = SchoolSocialMediaApp.Common.InfrastructureCommon.ValidationConstantsInfrastructure;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 {
@@ -20,7 +14,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The content of the post.")]
         [Required]
-        [MaxLength(ValidationConstantsInfrastructure.MaxPostLength)]
+        [MaxLength(validation.MaxPostLength)]
         public string Content { get; set; } = null!;
 
         [Comment("The date and time the post was created.")]

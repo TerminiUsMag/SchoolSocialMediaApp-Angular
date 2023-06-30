@@ -5,9 +5,9 @@ using SchoolSocialMediaApp.Infrastructure.Data.Models;
 
 namespace SchoolSocialMediaApp.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    public class SchoolSocialMediaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public SchoolSocialMediaDbContext(DbContextOptions<SchoolSocialMediaDbContext> options)
             : base(options)
         {
 
@@ -20,6 +20,13 @@ namespace SchoolSocialMediaApp.Data
         public DbSet<Post> Posts { get; set; } = null!;
         public DbSet<PostsLikes> PostsLikes { get; set; } = null!;
         public DbSet<PostsDislikes> PostsDislikes { get; set; } = null!;
+
+        public DbSet<School> Schools { get; set; } = null!;
+        public DbSet<Principal> Principals { get; set; } = null!;
+        public DbSet<Teacher> Teachers { get; set; } = null!;
+        public DbSet<Student> Students { get; set; } = null!;
+        public DbSet<Parent> Parents { get; set; } = null!;
+        public DbSet<Administrator> Administrators { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -70,7 +77,23 @@ namespace SchoolSocialMediaApp.Data
                 .HasForeignKey(pl => pl.PostId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<Principal>()
+                .HasOne(d => d.School)
+                .WithOne(s => s.Principal)
+                .HasForeignKey<School>(s => s.PrincipalId)
+                .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<Student>()
+                .HasOne(d => d.School)
+                .WithMany(s => s.Students)
+                .HasForeignKey(d => d.SchoolId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Student>()
+                .HasOne(d => d.Parent)
+                .WithMany(s => s.Students)
+                .HasForeignKey(d => d.ParentId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(builder);
         }

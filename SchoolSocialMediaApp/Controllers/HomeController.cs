@@ -13,6 +13,11 @@ namespace SchoolSocialMediaApp.Controllers
             _logger = logger;
         }
 
+        public IActionResult Feed()
+        {
+            return View();
+        }
+
         public IActionResult Index()
         {
             return View();

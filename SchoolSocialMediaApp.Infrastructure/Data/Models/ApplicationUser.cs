@@ -1,25 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SchoolSocialMediaApp.Infrastructure.Common;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using validation = SchoolSocialMediaApp.Common.InfrastructureCommon.ValidationConstantsInfrastructure;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 {
     public class ApplicationUser : IdentityUser<Guid>
     {
         [Comment("The first name of the user.")]
-        [MaxLength(ValidationConstantsInfrastructure.MaxFirstNameLength)]
+        [MaxLength(validation.MaxFirstNameLength)]
         [Required]
         public string FirstName { get; set; } = null!;
 
         [Comment("The last name of the user.")]
-        [MaxLength(ValidationConstantsInfrastructure.MaxLastNameLength)]
+        [MaxLength(validation.MaxLastNameLength)]
         [Required]
         public string LastName { get; set; } = null!;
 

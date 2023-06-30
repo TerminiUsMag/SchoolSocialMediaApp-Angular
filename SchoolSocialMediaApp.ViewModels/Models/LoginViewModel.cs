@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using validation = SchoolSocialMediaApp.Common.ValidationConstants;
+using validation = SchoolSocialMediaApp.Common.WebCommon.ValidationConstants;
 
-namespace SchoolSocialMediaApp.Models
+namespace SchoolSocialMediaApp.ViewModels.Models
 {
     public class LoginViewModel
     {

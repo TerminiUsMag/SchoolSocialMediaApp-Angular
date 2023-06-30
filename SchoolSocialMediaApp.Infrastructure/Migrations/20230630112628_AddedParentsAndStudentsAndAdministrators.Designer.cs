@@ -12,8 +12,8 @@ using SchoolSocialMediaApp.Data;
 namespace SchoolSocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(SchoolSocialMediaDbContext))]
-    [Migration("20230622165235_Initial")]
-    partial class Initial
+    [Migration("20230630112628_AddedParentsAndStudentsAndAdministrators")]
+    partial class AddedParentsAndStudentsAndAdministrators
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -127,6 +127,26 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Administrator", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the administrator.");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the user that is an administrator.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Administrators");
+
+                    b.HasComment("Represents an administrator of the application.");
+                });
+
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -181,12 +201,14 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasComment("The first name of the user.");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasComment("The last name of the user.");
 
                     b.Property<bool>("LockoutEnabled")
@@ -266,7 +288,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comments");
 
                     b.HasComment("A comment made by a user on a post.");
                 });
@@ -309,6 +331,36 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.HasComment("Comments liked by user");
                 });
 
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Parent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the parent.");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the school that the student is in.");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the student that the parent is a parent of.");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the user that is the parent.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Parents");
+
+                    b.HasComment("A parent that has a student in a school.");
+                });
+
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -330,32 +382,18 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Id of the post owner");
 
+                    b.Property<Guid?>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Post");
+                    b.HasIndex("SchoolId");
+
+                    b.ToTable("Posts");
 
                     b.HasComment("A post made by a user.");
-                });
-
-            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.PostsComments", b =>
-                {
-                    b.Property<Guid>("PostId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("The unique identifier for the post which is commented on.");
-
-                    b.Property<Guid>("CommentId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("The unique identifier for the comment.");
-
-                    b.HasKey("PostId", "CommentId");
-
-                    b.HasIndex("CommentId");
-
-                    b.ToTable("PostsComments");
-
-                    b.HasComment("Comments on a post");
                 });
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.PostsDislikes", b =>
@@ -394,6 +432,124 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.ToTable("PostsLikes");
 
                     b.HasComment("Users who have liked a post");
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Principal", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the director.");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the school the director is in charge of.");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the user that is a director.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Principals");
+
+                    b.HasComment("A director of a school.");
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.School", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the school.");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasComment("The name of the school.");
+
+                    b.Property<Guid>("PrincipalId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the director of the school.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrincipalId")
+                        .IsUnique();
+
+                    b.ToTable("Schools");
+
+                    b.HasComment("A school that has a director and students.");
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Student", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the student.");
+
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the parent of the student.");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the school the student is in.");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the user that is the student.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("SchoolId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Students");
+
+                    b.HasComment("A student that has a parent and is in a school.");
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Teacher", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the teacher.");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the school the teacher is in.");
+
+                    b.Property<string>("SubjectOfTeaching")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("The subject the teacher teaches.");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The id of the user that is a teacher.");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Teachers");
+
+                    b.HasComment("A teacher of a school.");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -445,6 +601,17 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Administrator", b =>
+                {
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Comment", b =>
@@ -504,6 +671,25 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Parent", b =>
+                {
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.School", "School")
+                        .WithMany("Parents")
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("School");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Post", b =>
                 {
                     b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "Creator")
@@ -512,26 +698,11 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.School", null)
+                        .WithMany("Posts")
+                        .HasForeignKey("SchoolId");
+
                     b.Navigation("Creator");
-                });
-
-            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.PostsComments", b =>
-                {
-                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.Comment", "Comment")
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.Post", "Post")
-                        .WithMany()
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.PostsDislikes", b =>
@@ -572,6 +743,74 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Principal", b =>
+                {
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.School", b =>
+                {
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.Principal", "Principal")
+                        .WithOne("School")
+                        .HasForeignKey("SchoolSocialMediaApp.Infrastructure.Data.Models.School", "PrincipalId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Principal");
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Student", b =>
+                {
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.Parent", "Parent")
+                        .WithMany("Students")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.School", "School")
+                        .WithMany("Students")
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("School");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Teacher", b =>
+                {
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.School", "School")
+                        .WithMany()
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("School");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Comments");
@@ -594,6 +833,11 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.Navigation("Likes");
                 });
 
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Parent", b =>
+                {
+                    b.Navigation("Students");
+                });
+
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Post", b =>
                 {
                     b.Navigation("Comments");
@@ -601,6 +845,21 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.Navigation("Dislikes");
 
                     b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Principal", b =>
+                {
+                    b.Navigation("School")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.School", b =>
+                {
+                    b.Navigation("Parents");
+
+                    b.Navigation("Posts");
+
+                    b.Navigation("Students");
                 });
 #pragma warning restore 612, 618
         }

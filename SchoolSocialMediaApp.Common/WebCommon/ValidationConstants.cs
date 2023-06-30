@@ -1,4 +1,4 @@
-﻿namespace SchoolSocialMediaApp.Common
+﻿namespace SchoolSocialMediaApp.Common.WebCommon
 {
     public class ValidationConstants
     {
