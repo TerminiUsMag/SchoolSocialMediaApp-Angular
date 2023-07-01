@@ -87,7 +87,8 @@ namespace SchoolSocialMediaApp.Data
             builder.Entity<School>()
                 .HasOne(s => s.Principal)
                 .WithOne(p => p.School)
-                .HasForeignKey<Principal>(p => p.SchoolId);
+                .HasForeignKey<Principal>(p => p.SchoolId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Student>()
                 .HasOne(d => d.School)

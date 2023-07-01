@@ -14,13 +14,17 @@ namespace SchoolSocialMediaApp.Controllers
         /// Returns the user id of the current user
         /// </summary>
         /// <returns></returns>
-        protected string GetUserId()
+        protected Guid GetUserId()
         {
-            string id = string.Empty;
+            var id = Guid.Empty;
 
             if (User != null)
             {
-                id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid result))
+                {
+                    id = result;
+                }
+
             }
 
             return id;

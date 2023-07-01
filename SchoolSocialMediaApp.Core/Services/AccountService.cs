@@ -25,6 +25,40 @@ namespace SchoolSocialMediaApp.Core.Services
             this.repo = _repo;
         }
 
+        public Task<bool> CreateParentAsync(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> CreatePrincipalAsync(Guid userId)
+        {
+            if(await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId) is null)
+            {
+                throw new ArgumentException("User does not exist");
+            }
+            if(await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId) is not null)
+            {
+                throw new ArgumentException("User is already a principal");
+            }
+            var principal = new Principal
+            {
+                UserId = userId
+            };
+            await repo.AddAsync(principal);
+            await repo.SaveChangesAsync();
+            return true;
+        }
+
+        public Task<bool> CreateStudentAsync(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> CreateTeacherAsync(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<bool> EmailIsFree(string email)
         {
             var result = await userManager.FindByEmailAsync(email.ToUpper());

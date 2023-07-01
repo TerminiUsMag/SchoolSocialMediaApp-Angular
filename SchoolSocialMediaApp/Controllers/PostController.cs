@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
+using SchoolSocialMediaApp.ViewModels.Models;
 
 namespace SchoolSocialMediaApp.Controllers
 {
@@ -15,13 +16,21 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var userId = this.GetUserId();
-            var schoolId = this.GetSchoolId();
-            var posts = postService.GetAllPostsAsync();
-
-            return View();
+            IEnumerable<PostViewModel>? posts = null;
+            try
+            {
+                var schoolId = await schoolService.GetSchoolIdByUserIdAsync(userId);
+                posts = await postService.GetAllPostsAsync(schoolId);
+            }
+            catch (ArgumentException ae)
+            {
+                ModelState.AddModelError("", ae.Message);
+                throw;
+            }
+            return View(posts);
         }
     }
 }

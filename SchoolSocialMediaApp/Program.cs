@@ -47,6 +47,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<ISchoolService, SchoolService>();
 
 var app = builder.Build();
 

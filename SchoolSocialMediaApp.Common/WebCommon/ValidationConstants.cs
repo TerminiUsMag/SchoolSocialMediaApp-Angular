@@ -38,5 +38,16 @@
         public const string RequiredEmailLoginViewModel = "Email is required for login.";
         public const string RequiredPasswordLoginViewModel = "Password is required for login.";
 
+        //SchoolViewModel Validation Constants
+        public const int MaxSchoolNameLength = 50;
+        public const int MinSchoolNameLength = 2;
+        public const int MaxSchoolDescriptionLength = 500;
+        public const int MinSchoolDescriptionLength = 5;
+        public const int MaxImageUrlLength = 500;
+        public const int MinImageUrlLength = 8;
+        public const int MaxSchoolLocationLength = 500;
+        public const int MinSchoolLocationLength = 3;
+
+
     }
 }

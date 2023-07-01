@@ -18,5 +18,10 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task<bool> EmailIsFree(string email);
         Task<bool> PhoneNumberIsFree(string phoneNumber);
         Task<bool> UsernameIsFree(string username);
+        Task<bool> CreatePrincipalAsync(Guid userId);
+        Task<bool> CreateTeacherAsync(Guid userId);
+        Task<bool> CreateStudentAsync(Guid userId);
+        Task<bool> CreateParentAsync(Guid userId);
+
     }
 }

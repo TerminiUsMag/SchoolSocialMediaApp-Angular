@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Infras
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Common", "SchoolSocialMediaApp.Common\SchoolSocialMediaApp.Common.csproj", "{DCBEF9C0-C1CA-4640-9C52-920A700DBB13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolSocialMediaApp.ViewModels", "SchoolSocialMediaApp.ViewModels\SchoolSocialMediaApp.ViewModels.csproj", "{E1D3F167-D2B6-436B-A727-C16F11C3B748}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.ViewModels", "SchoolSocialMediaApp.ViewModels\SchoolSocialMediaApp.ViewModels.csproj", "{E1D3F167-D2B6-436B-A727-C16F11C3B748}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,50 @@
+﻿@model SchoolViewModel
+@{
+    ViewData["Title"] = "Register a new School";
+}
+<div style="margin-bottom:30px">
+    <h1 style="text-align:center">@ViewData["Title"]</h1>
+</div>
+<div class="row">
+    <div class="col-md-4">
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-5 col-md-3" @*style="background-color:blue;color: white;*@">
+    </div>
+    <div class="col-sm-5 col-md-6 col-md-offset-0" @*style="background-color:orange;color: white;*@">
+        <form id="registerForm" method="post">
+
+            <div class="col-md-10 offset-1">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating">
+                    <input asp-for="Name" class="form-control" autocomplete="Name" aria-required="true" />
+                    <label asp-for="Name"></label>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-floating">
+                    <input asp-for="Description" class="form-control" autocomplete="Description" aria-required="true" />
+                    <label asp-for="Description"></label>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-floating">
+                    <input asp-for="Location" class="form-control" autocomplete="Location" aria-required="true" />
+                    <label asp-for="Location"></label>
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
+                <div>
+                    <p></p>
+                    <p>By clicking Register, you will be registered as the new school's principle.</p>
+                </div>
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register Your School</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+@*asp-route-returnUrl="@Model.ReturnUrl"*@

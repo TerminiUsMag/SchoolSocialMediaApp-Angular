@@ -31,7 +31,6 @@ namespace SchoolSocialMediaApp.Controllers
         public IActionResult Register()
         {
             var model = new RegisterViewModel();
-            //ModelState.AddModelError("", "The Password must contain: ");
 
             return View(model);
         }
@@ -55,14 +54,14 @@ namespace SchoolSocialMediaApp.Controllers
                 ModelState.AddModelError("", "Invalid Phone Number");
                 return View(model);
             }
-            if(!await accountService.PhoneNumberIsFree(model.PhoneNumber))
+            if (!await accountService.PhoneNumberIsFree(model.PhoneNumber))
             {
                 ModelState.AddModelError("", "Phone Number is already taken");
                 return View(model);
             }
 
             //Email Validation and Verification
-            if(!accountService.EmailIsValid(model.Email))
+            if (!accountService.EmailIsValid(model.Email))
             {
                 ModelState.AddModelError("", "Invalid Email");
                 return View(model);
@@ -89,6 +88,7 @@ namespace SchoolSocialMediaApp.Controllers
                 UserName = username,
                 PhoneNumber = model.PhoneNumber,
                 CreatedOn = DateTime.Now,
+                ImageUrl = "~/Default/defaultProfile.png",
 
             };
 
@@ -141,5 +141,41 @@ namespace SchoolSocialMediaApp.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> Profile()
+        //{
+        //    var user = await accountService.GetUserAsync();
+
+        //    var model = new ProfileViewModel()
+        //    {
+        //        FirstName = user.FirstName,
+        //        LastName = user.LastName,
+        //        Email = user.Email,
+        //        PhoneNumber = user.PhoneNumber,
+        //        ImageUrl = user.ImageUrl,
+        //        CreatedOn = user.CreatedOn
+        //    };
+
+        //    return View(model);
+        //}
+
+        [HttpGet]
+        public IActionResult BecomePrincipal(string errorMsg)
+        {
+            ViewBag.ErrorMsg = errorMsg;
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult PrincipalCreate()
+        {
+            var userId = this.GetUserId();
+            if(userId != Guid.Empty)
+            {
+                    return RedirectToAction(nameof(SchoolController.Register), "School");
+            }
+
+            return RedirectToAction(nameof(BecomePrincipal), new { errorMsg = "Something went wrong" });
+        }
     }
 }
