@@ -12,7 +12,5 @@ namespace SchoolSocialMediaApp.ViewModels.Models
         public string ImageUrl { get; set; } = null!;
         public string Location { get; set; } = null!;
         public Guid PrincipalId { get; set; }
-
-
     }
 }
