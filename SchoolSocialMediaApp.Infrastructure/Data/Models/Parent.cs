@@ -20,14 +20,9 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; } = null!;
 
-        [Comment("The id of the student that the parent is a parent of.")]
+        [Comment("Students of the parent.")]
         [Required]
-        public Guid StudentId { get; set; }
-
-        [Comment("The student that the parent is a parent of.")]
-        [Required]
-        [ForeignKey(nameof(StudentId))]
-        public IEnumerable<Student> Students { get; set; } = null!;
+        public IEnumerable<StudentsParents> Students { get; set; } = null!;
 
         [Comment("The id of the school that the student is in.")]
         [Required]

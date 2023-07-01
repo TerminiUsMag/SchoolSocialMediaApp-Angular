@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSocialMediaApp.Data;
 
@@ -11,9 +12,10 @@ using SchoolSocialMediaApp.Data;
 namespace SchoolSocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(SchoolSocialMediaDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230701103122_FixedOneToOneRelationBetweenSchoolAndPrincipal")]
+    partial class FixedOneToOneRelationBetweenSchoolAndPrincipal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -340,6 +342,9 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("The id of the school that the student is in.");
 
+                    b.Property<Guid?>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
                         .HasComment("The id of the user that is the parent.");
@@ -347,6 +352,8 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("SchoolId");
+
+                    b.HasIndex("StudentId");
 
                     b.HasIndex("UserId");
 
@@ -683,6 +690,10 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.Student", null)
+                        .WithMany("Parents")
+                        .HasForeignKey("StudentId");
+
                     b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -794,7 +805,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.Student", "Student")
-                        .WithMany("Parents")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

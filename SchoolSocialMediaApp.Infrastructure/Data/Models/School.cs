@@ -22,7 +22,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The director of the school.")]
         [Required]
-        [ForeignKey(nameof(PrincipalId))]
         public Principal Principal { get; set; } = null!;
 
         [Comment("The parents of the school.")]

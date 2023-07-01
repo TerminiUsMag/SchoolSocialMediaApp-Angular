@@ -26,6 +26,7 @@ namespace SchoolSocialMediaApp.Data
         public DbSet<Teacher> Teachers { get; set; } = null!;
         public DbSet<Student> Students { get; set; } = null!;
         public DbSet<Parent> Parents { get; set; } = null!;
+        public DbSet<StudentsParents> StudentsParents { get; set; } = null!;
         public DbSet<Administrator> Administrators { get; set; } = null!;
 
 
@@ -83,16 +84,24 @@ namespace SchoolSocialMediaApp.Data
                 .HasForeignKey<School>(s => s.PrincipalId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<School>()
+                .HasOne(s => s.Principal)
+                .WithOne(p => p.School)
+                .HasForeignKey<Principal>(p => p.SchoolId);
+
             builder.Entity<Student>()
                 .HasOne(d => d.School)
                 .WithMany(s => s.Students)
                 .HasForeignKey(d => d.SchoolId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<Student>()
-                .HasOne(d => d.Parent)
-                .WithMany(s => s.Students)
-                .HasForeignKey(d => d.ParentId)
+            builder.Entity<StudentsParents>()
+                .HasKey(sp => new { sp.StudentId, sp.ParentId });
+
+            builder.Entity<StudentsParents>()
+                .HasOne(sp => sp.Parent)
+                .WithMany(p => p.Students)
+                .HasForeignKey(sp => sp.ParentId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(builder);
