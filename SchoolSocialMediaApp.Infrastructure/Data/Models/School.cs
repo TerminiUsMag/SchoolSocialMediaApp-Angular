@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using validation = SchoolSocialMediaApp.Common.InfrastructureCommon.ValidationConstantsInfrastructure;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 {
@@ -12,9 +13,24 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         public Guid Id { get; set; }
 
         [Comment("The name of the school.")]
+        [MaxLength(validation.MaxSchoolNameLength)]
         [Required]
-        [MaxLength(SchoolSocialMediaApp.Common.InfrastructureCommon.ValidationConstantsInfrastructure.MaxSchoolNameLength)]
         public string Name { get; set; } = null!;
+
+        [Comment("The description of the school.")]
+        [MaxLength(validation.MaxSchoolDescriptionLength)]
+        [Required]
+        public string Description { get; set; } = null!;
+
+        [Comment("The image url of the school.")]
+        [MaxLength(validation.MaxImageUrlLength)]
+        [Required]
+        public string ImageUrl { get; set; } = null!;
+
+        [Comment("The location of the school.")]
+        [MaxLength(validation.MaxSchoolLocationLength)]
+        [Required]
+        public string Location { get; set; } = null!;
 
         [Comment("The id of the director of the school.")]
         [Required]

@@ -30,6 +30,15 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [ForeignKey(nameof(CreatorId))]
         public ApplicationUser Creator { get; set; } = null!;
 
+        [Comment("The id of the school the post is for.")]
+        [Required]
+        public Guid SchoolId { get; set; }
+
+        [Comment("The school the post is for.")]
+        [Required]
+        [ForeignKey(nameof(SchoolId))]
+        public School School { get; set; } = null!;
+
         [Comment("The comments on the post.")]
         public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
 

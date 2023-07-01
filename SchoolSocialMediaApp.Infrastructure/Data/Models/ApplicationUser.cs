@@ -17,6 +17,11 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Required]
         public string LastName { get; set; } = null!;
 
+        [Comment("The image url of the user.")]
+        [MaxLength(validation.MaxImageUrlLength)]
+        [Required]
+        public string ImageUrl { get; set; } = null!;
+
         [Comment("The date and time the user was created.")]
         [Required]
         public DateTime CreatedOn{ get; set; }

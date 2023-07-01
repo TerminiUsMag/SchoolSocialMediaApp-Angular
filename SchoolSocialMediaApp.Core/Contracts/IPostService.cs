@@ -4,6 +4,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
 {
     public interface IPostService
     {
-        Task<IEnumerable<PostViewModel>> GetAllPostsAsync();
+        Task<IEnumerable<PostViewModel>> GetAllPostsAsync(Guid schoolId);
     }
 }

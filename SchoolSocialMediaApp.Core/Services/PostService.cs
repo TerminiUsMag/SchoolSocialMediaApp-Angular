@@ -16,7 +16,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<IEnumerable<PostViewModel>> GetAllPostsAsync()
         {
-            return new List<PostViewModel>();
+            var posts = await repo.All<Post>().Where(p=>p.);
         }
     }
 }
