@@ -51,10 +51,10 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            model.ImageUrl = "~/Default/defaultSchool.png";
+            model.ImageUrl = "~/images/default/defaultSchool.png";
             try
             {
-                await schoolService.CreateSchoolAsync(model, userId);
+                model = await schoolService.CreateSchoolAsync(model, userId);
             }
             catch (Exception e)
             {
@@ -62,13 +62,13 @@ namespace SchoolSocialMediaApp.Controllers
                 return View(model);
             }
 
-            return RedirectToAction("Success");
+            return RedirectToAction("Success", model);
         }
 
         [HttpGet]
-        public IActionResult Success()
+        public IActionResult Success(SchoolViewModel model)
         {
-            return View();
+            return View(model);
         }
     }
 }

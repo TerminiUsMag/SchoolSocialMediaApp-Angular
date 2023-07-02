@@ -38,7 +38,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// </summary>
         /// <param name="school"></param>
         /// <returns></returns>
-        Task CreateSchoolAsync(SchoolViewModel school, Guid userId);
+        Task<SchoolViewModel> CreateSchoolAsync(SchoolViewModel school, Guid userId);
 
         /// <summary>
         /// Updates a school and saves the changes to the database

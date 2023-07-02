@@ -1,6 +1,19 @@
-﻿@{
+﻿@model SchoolViewModel
+@{
     ViewBag.Title = "Success";
 }
 
 <h1>@ViewBag.Title</h1>
+
 <h2>You have successfully registered your school :)</h2>
+
+<div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+    <div class="card-header">@Model.Name</div>
+    <img class="card-img-top img" src="" alt="Card image cap">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Location</h5>
+        <p class="card-text">@Model.Description</p>
+    </div>
+</div>
+
+<a class="btn btn-info btn-group-lg" href="@Url.Action("Index", "Home")">Back to Home</a>

@@ -88,7 +88,7 @@ namespace SchoolSocialMediaApp.Controllers
                 UserName = username,
                 PhoneNumber = model.PhoneNumber,
                 CreatedOn = DateTime.Now,
-                ImageUrl = "~/Default/defaultProfile.png",
+                ImageUrl = "~/images/default/defaultProfile.png",
 
             };
 

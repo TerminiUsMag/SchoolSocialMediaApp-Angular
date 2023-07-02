@@ -30,24 +30,26 @@ namespace SchoolSocialMediaApp.Core.Services
             throw new NotImplementedException();
         }
 
-        public async Task<bool> CreatePrincipalAsync(Guid userId)
-        {
-            if(await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId) is null)
-            {
-                throw new ArgumentException("User does not exist");
-            }
-            if(await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId) is not null)
-            {
-                throw new ArgumentException("User is already a principal");
-            }
-            var principal = new Principal
-            {
-                UserId = userId
-            };
-            await repo.AddAsync(principal);
-            await repo.SaveChangesAsync();
-            return true;
-        }
+        //public async Task<bool> CreatePrincipalAsync(Guid userId)
+        //{
+        //    if(!await UserExists(userId))
+        //    {
+        //        throw new ArgumentException("User does not exist");
+        //    }
+
+        //    if(await IsPrincipalAsync(userId))
+        //    {
+        //        throw new ArgumentException("User is already a principal of another school.");
+        //    }
+
+        //    var principal = new Principal
+        //    {
+        //        UserId = userId
+        //    };
+        //    await repo.AddAsync(principal);
+        //    await repo.SaveChangesAsync();
+        //    return true;
+        //}
 
         public Task<bool> CreateStudentAsync(Guid userId)
         {
@@ -81,6 +83,30 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 return false;
             }
+        }
+
+        public Task<bool> IsParentAsync(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> IsPrincipalAsync(Guid userId)
+        {
+            if (await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId) is not null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public Task<bool> IsStudentAsync(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsTeacherAsync(Guid userId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> LoginAsync(string email, string password, bool rememberMe)
@@ -134,6 +160,15 @@ namespace SchoolSocialMediaApp.Core.Services
                 return true;
             }
             return false;
+        }
+
+        public async Task<bool> UserExists(Guid userId)
+        {
+            if (await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId) is null)
+            {
+                return false;
+            }
+            return true;
         }
 
         public async Task<bool> UsernameIsFree(string username)
