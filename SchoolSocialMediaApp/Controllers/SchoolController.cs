@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.ViewModels.Models;
@@ -51,7 +52,7 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            model.ImageUrl = "~/images/default/defaultSchool.png";
+            model.ImageUrl = @"/images/defaultSchool.png";
             try
             {
                 model = await schoolService.CreateSchoolAsync(model, userId);

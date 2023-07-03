@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.Common
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolSocialMediaApp.ViewModels", "SchoolSocialMediaApp.ViewModels\SchoolSocialMediaApp.ViewModels.csproj", "{E1D3F167-D2B6-436B-A727-C16F11C3B748}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{FC266D2F-7F45-453C-AD99-1BF5DF550463}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6D2C06B2-40AE-41F6-884F-DECF69D7D236} = {FC266D2F-7F45-453C-AD99-1BF5DF550463}
+		{E1D3F167-D2B6-436B-A727-C16F11C3B748} = {FC266D2F-7F45-453C-AD99-1BF5DF550463}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA7E2D40-54E7-4F14-9F6E-7180045F42C9}

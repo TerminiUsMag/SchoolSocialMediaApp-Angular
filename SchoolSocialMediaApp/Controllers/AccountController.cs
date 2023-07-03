@@ -88,7 +88,7 @@ namespace SchoolSocialMediaApp.Controllers
                 UserName = username,
                 PhoneNumber = model.PhoneNumber,
                 CreatedOn = DateTime.Now,
-                ImageUrl = "~/images/default/defaultProfile.png",
+                ImageUrl = "/images/defaultProfile.png",
 
             };
 
@@ -104,17 +104,19 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl)
+        public IActionResult Login(string returnUrl = "/")
         {
-            var model = new LoginViewModel();
-            model.ReturnUrl = returnUrl;
+            var model = new LoginViewModel()
+            {
+                ReturnUrl = returnUrl
+            };
 
             return View(model);
         }
 
-        [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = "/")
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -131,7 +133,7 @@ namespace SchoolSocialMediaApp.Controllers
             }
 
             //return RedirectToAction(nameof(HomeController.Index), "Home");
-            return Redirect(returnUrl ?? "/");
+            return Redirect(model.ReturnUrl ?? "/");
         }
 
         public async Task<IActionResult> Logout()
@@ -170,9 +172,9 @@ namespace SchoolSocialMediaApp.Controllers
         public IActionResult PrincipalCreate()
         {
             var userId = this.GetUserId();
-            if(userId != Guid.Empty)
+            if (userId != Guid.Empty)
             {
-                    return RedirectToAction(nameof(SchoolController.Register), "School");
+                return RedirectToAction(nameof(SchoolController.Register), "School");
             }
 
             return RedirectToAction(nameof(BecomePrincipal), new { errorMsg = "Something went wrong" });
