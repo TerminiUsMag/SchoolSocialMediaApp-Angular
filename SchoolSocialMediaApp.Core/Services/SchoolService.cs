@@ -3,11 +3,6 @@ using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolSocialMediaApp.Core.Services
 {
@@ -32,7 +27,7 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 UserId = userId,
                 Id = Guid.NewGuid()
-                
+
             };
 
             var school = new School
@@ -40,7 +35,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 Id = Guid.NewGuid(),
                 Name = model.Name,
                 Description = model.Description,
-                ImageUrl = model.ImageUrl,
+                ImageUrl = model.ImageUrl!,
                 Location = model.Location,
                 Principal = principal,
                 PrincipalId = principal.Id,
@@ -175,7 +170,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
             schoolToUpdate.Name = school.Name;
             schoolToUpdate.Description = school.Description;
-            schoolToUpdate.ImageUrl = school.ImageUrl;
+            schoolToUpdate.ImageUrl = school.ImageUrl!;
             schoolToUpdate.Location = school.Location;
             schoolToUpdate.PrincipalId = school.PrincipalId;
 

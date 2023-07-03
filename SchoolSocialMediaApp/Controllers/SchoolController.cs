@@ -44,15 +44,16 @@ namespace SchoolSocialMediaApp.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError("", "Invalid school data.");
                 return View(model);
             }
 
             var userId = this.GetUserId();
-            if(userId == Guid.Empty)
+            if (userId == Guid.Empty)
             {
                 return RedirectToAction("Login", "Account");
             }
-            model.ImageUrl = @"/images/defaultSchool.png";
+            model.ImageUrl = "/images/defaultSchool.png";
             try
             {
                 model = await schoolService.CreateSchoolAsync(model, userId);

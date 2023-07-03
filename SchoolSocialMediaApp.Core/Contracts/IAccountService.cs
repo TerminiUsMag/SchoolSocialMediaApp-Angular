@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SchoolSocialMediaApp.Infrastructure.Data.Models;
 
 namespace SchoolSocialMediaApp.Core.Contracts
 {
