@@ -85,7 +85,8 @@ namespace SchoolSocialMediaApp.Core.Services
                 Description = s.Description,
                 ImageUrl = s.ImageUrl,
                 Location = s.Location,
-                PrincipalId = s.PrincipalId
+                PrincipalId = s.PrincipalId,
+                PrincipalName = s.Principal.User.FirstName + " " + s.Principal.User.LastName
             }).ToListAsync();
 
             return schools;

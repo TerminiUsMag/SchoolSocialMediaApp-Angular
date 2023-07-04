@@ -32,5 +32,8 @@ namespace SchoolSocialMediaApp.ViewModels.Models
 
         [Comment("The id of the director of the school.")]
         public Guid PrincipalId { get; set; }
+
+        [Comment("The name of the director of the school.")]
+        public string? PrincipalName { get; set; }
     }
 }
