@@ -72,5 +72,20 @@ namespace SchoolSocialMediaApp.Controllers
         {
             return View(model);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var model = await schoolService.GetSchoolByIdAsync(id);
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Manage(Guid id)
+        {
+
+            return View();
+        }
     }
 }
