@@ -9,26 +9,40 @@ namespace SchoolSocialMediaApp.Core.Services
     public class SchoolService : ISchoolService
     {
         private readonly IRepository repo;
+        private readonly IRoleService roleService;
 
-        public SchoolService(IRepository _repo)
+        public SchoolService(IRepository _repo,IRoleService _roleService)
         {
             this.repo = _repo;
+            this.roleService = _roleService;
         }
 
         public async Task<SchoolViewModel> CreateSchoolAsync(SchoolViewModel model, Guid userId)
         {
-            var principal = await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId);
-
-            if (principal is not null)
+            //var principal = await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId);
+            //if (principal is not null)
+            //{
+            //    throw new ArgumentException("User is already a principal of another school.");
+            //}
+            //principal = new Principal
+            //{
+            //    UserId = userId,
+            //    Id = Guid.NewGuid()
+            //};
+            var userIsPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+            if (userIsPrincipal)
             {
-                throw new ArgumentException("User is already a principal of another school.");
+                               throw new ArgumentException("User is already a principal of another school.");
             }
-            principal = new Principal
-            {
-                UserId = userId,
-                Id = Guid.NewGuid()
 
-            };
+            var userAddedToRole = await roleService.AddUserToRoleAsync(userId.ToString(), "Principal");
+            if(!userAddedToRole)
+            {
+                throw new ArgumentException("User could not be added to role.");
+            }
+
+            var user = repo.All<ApplicationUser>().Where(x => x.Id == userId).FirstOrDefault();
+
 
             var school = new School
             {
@@ -37,13 +51,14 @@ namespace SchoolSocialMediaApp.Core.Services
                 Description = model.Description,
                 ImageUrl = model.ImageUrl!,
                 Location = model.Location,
-                Principal = principal,
-                PrincipalId = principal.Id,
+                Principal = user!,
+                PrincipalId = userId,
             };
-            principal.School = school;
-            principal.SchoolId = school.Id;
 
-            await repo.AddAsync<Principal>(principal);
+            //principal.School = school;
+            //principal.SchoolId = school.Id;
+
+            //await repo.AddAsync<Principal>(principal);
             await repo.AddAsync<School>(school);
 
             await repo.SaveChangesAsync();
@@ -55,7 +70,8 @@ namespace SchoolSocialMediaApp.Core.Services
                 Description = school.Description,
                 ImageUrl = school.ImageUrl,
                 Location = school.Location,
-                PrincipalId = school.PrincipalId
+                PrincipalId = school.PrincipalId,
+                PrincipalName = user!.FirstName + " " + user.LastName
             };
         }
 
@@ -86,7 +102,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 ImageUrl = s.ImageUrl,
                 Location = s.Location,
                 PrincipalId = s.PrincipalId,
-                PrincipalName = s.Principal.User.FirstName + " " + s.Principal.User.LastName
+                PrincipalName = s.Principal.FirstName + " " + s.Principal./*User.*/LastName
             }).ToListAsync();
 
             return schools;
@@ -103,6 +119,26 @@ namespace SchoolSocialMediaApp.Core.Services
                 ImageUrl = school.ImageUrl,
                 Location = school.Location,
                 PrincipalId = school.PrincipalId
+            };
+        }
+
+        public async Task<SchoolViewModel> GetSchoolByUserIdAsync(Guid userId)
+        {
+            var school = await repo.AllReadonly<School>().Where(s => s.PrincipalId == userId).FirstOrDefaultAsync();
+            if(school is null)
+            {
+                throw new ArgumentException("School does not exist.");
+            }
+
+            return new SchoolViewModel
+            {
+                Id = school.Id,
+                Description = school.Description,
+                ImageUrl = school.ImageUrl,
+                Location = school.Location,
+                Name = school.Name,
+                PrincipalId = school.PrincipalId,
+                PrincipalName = school.Principal.FirstName + " " + school.Principal.LastName
             };
         }
 
@@ -144,9 +180,10 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 school = await repo.AllReadonly<Teacher>().Where(t => t.UserId == userId).Select(t => t.School.Id).FirstOrDefaultAsync();
             }
-            else if (await repo.AllReadonly<Principal>().AnyAsync(p => p.UserId == userId))//User is principal
+            else if (await roleService.UserIsInRoleAsync(userId.ToString(),"Principal")/*await repo.AllReadonly<Principal>().AnyAsync(p => p.UserId == userId)*/)//User is principal
             {
-                school = await repo.AllReadonly<Principal>().Where(p => p.UserId == userId).Select(p => p.School.Id).FirstOrDefaultAsync();
+                //school = await repo.AllReadonly<Principal>().Where(p => p.UserId == userId).Select(p => p.School.Id).FirstOrDefaultAsync();
+                school = await repo.AllReadonly<School>().Where(s => s.PrincipalId == userId).Select(s => s.Id).FirstOrDefaultAsync();
             }
             else
             {

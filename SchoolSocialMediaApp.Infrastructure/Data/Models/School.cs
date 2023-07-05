@@ -39,7 +39,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("The director of the school.")]
         [Required]
         [ForeignKey(nameof(PrincipalId))]
-        public Principal Principal { get; set; } = null!;
+        public ApplicationUser Principal { get; set; } = null!;
 
         [Comment("The parents of the school.")]
         public IEnumerable<Parent> Parents { get; set; } = new List<Parent>();

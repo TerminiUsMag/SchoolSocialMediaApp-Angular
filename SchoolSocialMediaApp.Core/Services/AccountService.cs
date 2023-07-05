@@ -14,15 +14,18 @@ namespace SchoolSocialMediaApp.Core.Services
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IRoleService roleService;
         private readonly IRepository repo;
         public AccountService(
             UserManager<ApplicationUser> _userManager,
             SignInManager<ApplicationUser> _signInManager,
-            IRepository _repo)
+            IRepository _repo,
+            IRoleService _roleService)
         {
             this.userManager = _userManager;
             this.signInManager = _signInManager;
             this.repo = _repo;
+            this.roleService = _roleService;
         }
 
         public Task<bool> CreateParentAsync(Guid userId)
@@ -92,7 +95,9 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<bool> IsPrincipalAsync(Guid userId)
         {
-            if (await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId) is not null)
+            var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+
+            if (isPrincipal/*await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId) is not null*/)
             {
                 return true;
             }

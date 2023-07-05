@@ -16,6 +16,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             IEnumerable<SchoolViewModel>? schools = null;
@@ -32,6 +33,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
+        //[Authorize(Roles = "User")]
         public IActionResult Register()
         {
             var model = new SchoolViewModel();
@@ -40,6 +42,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles = "User")]
         public async Task<IActionResult> Register(SchoolViewModel model)
         {
             if (!ModelState.IsValid)
@@ -68,12 +71,14 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Principal")]
         public IActionResult Success(SchoolViewModel model)
         {
             return View(model);
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Details(Guid id)
         {
             var model = await schoolService.GetSchoolByIdAsync(id);
@@ -82,10 +87,26 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Manage(Guid id)
+        [Authorize(Policy = "Principal")]
+        public async Task<IActionResult> Manage()
         {
+            var userId = this.GetUserId();
+            if (userId == Guid.Empty)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            return View();
+            SchoolViewModel? school = null;
+
+            try
+            {
+                school = await schoolService.GetSchoolByUserIdAsync(userId);
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", e.Message);
+            }
+                return View(school);
         }
     }
 }

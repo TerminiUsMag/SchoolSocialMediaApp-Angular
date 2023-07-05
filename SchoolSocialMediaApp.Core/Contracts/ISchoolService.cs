@@ -17,6 +17,13 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="id"></param>
         /// <returns></returns>
         Task<SchoolViewModel> GetSchoolByIdAsync(Guid id);
+
+        /// <summary>
+        /// Returns a school by user's id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<SchoolViewModel> GetSchoolByUserIdAsync(Guid userId);
         
         /// <summary>
         /// Returns school id by its name

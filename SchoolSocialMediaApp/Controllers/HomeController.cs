@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Models;
 using System.Diagnostics;
 
@@ -7,20 +8,32 @@ namespace SchoolSocialMediaApp.Controllers
 {
     public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> logger;
+        private readonly IRoleService roleService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> _logger, IRoleService _roleService)
         {
-            _logger = logger;
+            this.logger = _logger;
+            this.roleService = _roleService;
         }
 
-        public IActionResult Feed()
-        {
-            return View();
-        }
 
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
+        {
+           // if (this.User?.Identity?.IsAuthenticated ?? false)
+           // {
+           //     return RedirectToAction("Feed", "Home");
+           // }
+
+           //if (!await roleService.RoleExistsAsync("Principal"))
+           // {
+           //     return Error();
+           // }
+
+            return View();
+        }
+        public IActionResult Feed()
         {
             return View();
         }

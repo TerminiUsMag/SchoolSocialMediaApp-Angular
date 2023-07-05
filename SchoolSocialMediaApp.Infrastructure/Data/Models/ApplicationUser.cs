@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using validation = SchoolSocialMediaApp.Common.InfrastructureCommon.ValidationConstantsInfrastructure;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
@@ -21,6 +22,12 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [MaxLength(validation.MaxImageUrlLength)]
         [Required]
         public string ImageUrl { get; set; } = null!;
+
+        [Comment("The id of the school the user is in.")]
+        public Guid? SchoolId { get; set; }
+
+        [Comment("The school the user is in.")]
+        public School? School { get; set; } = null!;
 
         [Comment("The date and time the user was created.")]
         [Required]

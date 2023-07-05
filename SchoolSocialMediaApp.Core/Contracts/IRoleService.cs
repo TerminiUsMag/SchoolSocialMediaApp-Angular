@@ -1,10 +1,13 @@
-﻿namespace SchoolSocialMediaApp.Core.Contracts
+﻿using SchoolSocialMediaApp.Infrastructure.Data.Models;
+
+namespace SchoolSocialMediaApp.Core.Contracts
 {
     public interface IRoleService
     {
         Task<bool> CreateRoleAsync(string roleName);
-        Task<bool> RoleExists(string roleName);
-        Task<bool> AddUserToRole(string userId, string roleName);
-        Task<bool> RemoveUserFromRole(string userId, string roleName);
+        Task<bool> RoleExistsAsync(string roleName);
+        Task<bool> AddUserToRoleAsync(string userId, string roleName);
+        Task<bool> RemoveUserFromRoleAsync(string userId, string roleName);
+        Task<bool> UserIsInRoleAsync(string userId, string roleName);
     }
 }

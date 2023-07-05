@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -20,6 +21,24 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<SchoolSocialMediaDbContext>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Teacher", policy => policy.RequireRole("Teacher"));
+    options.AddPolicy("Student", policy => policy.RequireRole("Student"));
+    options.AddPolicy("Parent", policy => policy.RequireRole("Parent"));
+    options.AddPolicy("Principal", policy => policy.RequireRole("Principal"));
+});
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

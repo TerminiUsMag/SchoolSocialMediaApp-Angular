@@ -179,5 +179,11 @@ namespace SchoolSocialMediaApp.Controllers
 
             return RedirectToAction(nameof(BecomePrincipal), new { errorMsg = "Something went wrong" });
         }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

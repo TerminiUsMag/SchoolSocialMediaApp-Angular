@@ -17,7 +17,7 @@ namespace SchoolSocialMediaApp.Core.Services
             userManager = _userManager;
         }
 
-        public async Task<bool> AddUserToRole(string userId, string roleName)
+        public async Task<bool> AddUserToRoleAsync(string userId, string roleName)
         {
             var user = await userManager.FindByIdAsync(userId);
             if (user is null)
@@ -27,6 +27,17 @@ namespace SchoolSocialMediaApp.Core.Services
 
             try
             {
+                var roleExists = await roleManager.RoleExistsAsync(roleName);
+
+                if (!roleExists)
+                {
+                    roleExists = await CreateRoleAsync(roleName);
+                }
+
+                if (!roleExists)
+                {
+                    throw new ArgumentException("Role could not be created.");
+                }
                 var result = await userManager.AddToRoleAsync(user, roleName);
                 return true;
             }
@@ -51,7 +62,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
-        public async Task<bool> RemoveUserFromRole(string userId, string roleName)
+        public async Task<bool> RemoveUserFromRoleAsync(string userId, string roleName)
         {
             var user = await userManager.FindByIdAsync(userId);
             if (user is null)
@@ -70,7 +81,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
-        public async Task<bool> RoleExists(string roleName)
+        public async Task<bool> RoleExistsAsync(string roleName)
         {
             var roleExists = await roleManager.RoleExistsAsync(roleName);
 
@@ -84,6 +95,18 @@ namespace SchoolSocialMediaApp.Core.Services
             return true;
         }
 
-
+        public async Task<bool> UserIsInRoleAsync(string userId, string roleName)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user is null)
+            {
+                throw new ArgumentException("User does not exist");
+            }
+            if (!await userManager.IsInRoleAsync(user, roleName))
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace SchoolSocialMediaApp.Data
         public DbSet<PostsDislikes> PostsDislikes { get; set; } = null!;
 
         public DbSet<School> Schools { get; set; } = null!;
-        public DbSet<Principal> Principals { get; set; } = null!;
+        //public DbSet<Principal> Principals { get; set; } = null!;
         public DbSet<Teacher> Teachers { get; set; } = null!;
         public DbSet<Student> Students { get; set; } = null!;
         public DbSet<Parent> Parents { get; set; } = null!;
@@ -78,17 +78,23 @@ namespace SchoolSocialMediaApp.Data
                 .HasForeignKey(pl => pl.PostId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<Principal>()
+            //builder.Entity<Principal>()
+            //    .HasOne(d => d.School)
+            //    .WithOne(s => s.Principal)                          //edited for the test..............
+            //    .HasForeignKey<School>(s => s.PrincipalId)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<ApplicationUser>()
                 .HasOne(d => d.School)
-                .WithOne(s => s.Principal)
+                .WithOne(s => s.Principal)                          //edited for the test..............
                 .HasForeignKey<School>(s => s.PrincipalId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<School>()
                 .HasOne(s => s.Principal)
                 .WithOne(p => p.School)
-                .HasForeignKey<Principal>(p => p.SchoolId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey<ApplicationUser>(p => p.SchoolId) //edited for the test..............
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<Student>()
                 .HasOne(d => d.School)
