@@ -41,11 +41,11 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [ForeignKey(nameof(PrincipalId))]
         public ApplicationUser Principal { get; set; } = null!;
 
-        [Comment("The parents of the school.")]
-        public IEnumerable<Parent> Parents { get; set; } = new List<Parent>();
+        //[Comment("The parents of the school.")]
+        //public IEnumerable<ApplicationUser> Parents { get; set; } = new List<ApplicationUser>();
 
-        [Comment("The students of the school.")]
-        public IEnumerable<Student> Students { get; set; } = new List<Student>();
+        //[Comment("The students of the school.")]
+        //public IEnumerable<ApplicationUser> Students { get; set; } = new List<ApplicationUser>();
 
         [Comment("The posts of the school.")]
         public IEnumerable<Post> Posts { get; set; } = new List<Post>();

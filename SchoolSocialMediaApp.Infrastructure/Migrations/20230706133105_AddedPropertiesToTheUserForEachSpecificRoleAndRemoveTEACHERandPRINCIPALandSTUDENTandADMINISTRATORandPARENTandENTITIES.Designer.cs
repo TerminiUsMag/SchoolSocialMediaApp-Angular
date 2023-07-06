@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSocialMediaApp.Data;
 
@@ -11,9 +12,10 @@ using SchoolSocialMediaApp.Data;
 namespace SchoolSocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(SchoolSocialMediaDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230706133105_AddedPropertiesToTheUserForEachSpecificRoleAndRemoveTEACHERandPRINCIPALandSTUDENTandADMINISTRATORandPARENTandENTITIES")]
+    partial class AddedPropertiesToTheUserForEachSpecificRoleAndRemoveTEACHERandPRINCIPALandSTUDENTandADMINISTRATORandPARENTandENTITIES
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -304,7 +306,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
 
                     b.HasComment("A comment made by a user on a post.");
                 });
@@ -323,7 +325,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasIndex("CommentId");
 
-                    b.ToTable("CommentsDislikes", (string)null);
+                    b.ToTable("CommentsDislikes");
 
                     b.HasComment("Comments which are disliked by users");
                 });
@@ -342,7 +344,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasIndex("CommentId");
 
-                    b.ToTable("CommentsLikes", (string)null);
+                    b.ToTable("CommentsLikes");
 
                     b.HasComment("Comments liked by user");
                 });
@@ -378,7 +380,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
 
                     b.HasComment("A post made by a user.");
                 });
@@ -397,7 +399,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostsDislikes", (string)null);
+                    b.ToTable("PostsDislikes");
 
                     b.HasComment("Users who have disliked a post");
                 });
@@ -416,7 +418,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostsLikes", (string)null);
+                    b.ToTable("PostsLikes");
 
                     b.HasComment("Users who have liked a post");
                 });
@@ -458,7 +460,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Schools", (string)null);
+                    b.ToTable("Schools");
 
                     b.HasComment("A school that has a director and students.");
                 });

@@ -97,7 +97,7 @@ namespace SchoolSocialMediaApp.Core.Services
         {
             var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
 
-            if (isPrincipal/*await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId) is not null*/)
+            if (isPrincipal)
             {
                 return true;
             }
@@ -161,6 +161,9 @@ namespace SchoolSocialMediaApp.Core.Services
             var result = await userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
+                if (await roleService.RoleExistsAsync("User"))
+                    await userManager.AddToRoleAsync(user, "User");
+
                 await signInManager.SignInAsync(user, isPersistent: false);
                 return true;
             }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
@@ -10,11 +11,13 @@ namespace SchoolSocialMediaApp.Core.Services
     {
         private readonly IRepository repo;
         private readonly IRoleService roleService;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public SchoolService(IRepository _repo,IRoleService _roleService)
+        public SchoolService(IRepository _repo, IRoleService _roleService, UserManager<ApplicationUser> _userManager)
         {
             this.repo = _repo;
             this.roleService = _roleService;
+            this.userManager = _userManager;
         }
 
         public async Task<SchoolViewModel> CreateSchoolAsync(SchoolViewModel model, Guid userId)
@@ -32,11 +35,11 @@ namespace SchoolSocialMediaApp.Core.Services
             var userIsPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
             if (userIsPrincipal)
             {
-                               throw new ArgumentException("User is already a principal of another school.");
+                throw new ArgumentException("User is already a principal of another school.");
             }
 
             var userAddedToRole = await roleService.AddUserToRoleAsync(userId.ToString(), "Principal");
-            if(!userAddedToRole)
+            if (!userAddedToRole)
             {
                 throw new ArgumentException("User could not be added to role.");
             }
@@ -125,7 +128,7 @@ namespace SchoolSocialMediaApp.Core.Services
         public async Task<SchoolViewModel> GetSchoolByUserIdAsync(Guid userId)
         {
             var school = await repo.AllReadonly<School>().Where(s => s.PrincipalId == userId).FirstOrDefaultAsync();
-            if(school is null)
+            if (school is null)
             {
                 throw new ArgumentException("School does not exist.");
             }
@@ -160,41 +163,56 @@ namespace SchoolSocialMediaApp.Core.Services
             };
         }
 
+
         public async Task<Guid> GetSchoolIdByUserIdAsync(Guid userId)
         {
-            Guid school = Guid.Empty;
             if (userId == Guid.Empty)
             {
                 throw new ArgumentException("User id cannot be empty.");
             }
 
-            if (await repo.AllReadonly<Student>().AnyAsync(s => s.UserId == userId))//User is student
-            {
-                school = await repo.AllReadonly<Student>().Where(s => s.UserId == userId).Select(s => s.School.Id).FirstOrDefaultAsync();
-            }
-            else if (await repo.AllReadonly<Parent>().AnyAsync(p => p.UserId == userId))//User is parent
-            {
-                school = await repo.AllReadonly<Parent>().Where(p => p.UserId == userId).Select(p => p.School.Id).FirstOrDefaultAsync();
-            }
-            else if (await repo.AllReadonly<Teacher>().AnyAsync(t => t.UserId == userId))//User is teacher
-            {
-                school = await repo.AllReadonly<Teacher>().Where(t => t.UserId == userId).Select(t => t.School.Id).FirstOrDefaultAsync();
-            }
-            else if (await roleService.UserIsInRoleAsync(userId.ToString(),"Principal")/*await repo.AllReadonly<Principal>().AnyAsync(p => p.UserId == userId)*/)//User is principal
-            {
-                //school = await repo.AllReadonly<Principal>().Where(p => p.UserId == userId).Select(p => p.School.Id).FirstOrDefaultAsync();
-                school = await repo.AllReadonly<School>().Where(s => s.PrincipalId == userId).Select(s => s.Id).FirstOrDefaultAsync();
-            }
-            else
-            {
-                throw new ArgumentException("User is not a student, parent, teacher, or principal.");
-            }
+            var roles = new List<string>() { "Principal", "Teacher", "Parent", "Student" };
 
-            if (school == Guid.Empty)
+            foreach (var role in roles)
             {
-                throw new ArgumentException("School id cannot be empty.");
+                if (await roleService.UserIsInRoleAsync(userId.ToString(), role))
+                {
+                    var user = await userManager.FindByIdAsync(userId.ToString());
+                    var userEager = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
+                    var schoolId = user.SchoolId;
+                    if (schoolId == Guid.Empty || schoolId is null)
+                    {
+                        throw new ArgumentException("School id cannot be empty.");
+                    }
+                    return schoolId.Value;
+                }
             }
-            return school;
+            throw new ArgumentException("User is not a member of any school.");
+
+            //var schoolId = await repo.AllReadonly<School>().Where(s => s.PrincipalId == userId).Select(s => s.Id).FirstOrDefaultAsync();
+
+            //if (await repo.AllReadonly<Student>().AnyAsync(s => s.UserId == userId))//User is student
+            //{
+            //    school = await repo.AllReadonly<Student>().Where(s => s.UserId == userId).Select(s => s.School.Id).FirstOrDefaultAsync();
+            //}
+            //else if (await repo.AllReadonly<Parent>().AnyAsync(p => p.UserId == userId))//User is parent
+            //{
+            //    school = await repo.AllReadonly<Parent>().Where(p => p.UserId == userId).Select(p => p.School.Id).FirstOrDefaultAsync();
+            //}
+            //else if (await repo.AllReadonly<Teacher>().AnyAsync(t => t.UserId == userId))//User is teacher
+            //{
+            //    school = await repo.AllReadonly<Teacher>().Where(t => t.UserId == userId).Select(t => t.School.Id).FirstOrDefaultAsync();
+            //}
+            //else if (await roleService.UserIsInRoleAsync(userId.ToString(), "Principal")/*await repo.AllReadonly<Principal>().AnyAsync(p => p.UserId == userId)*/)//User is principal
+            //{
+            //    //school = await repo.AllReadonly<Principal>().Where(p => p.UserId == userId).Select(p => p.School.Id).FirstOrDefaultAsync();
+            //    school = await repo.AllReadonly<School>().Where(s => s.PrincipalId == userId).Select(s => s.Id).FirstOrDefaultAsync();
+            //}
+            //else
+            //{
+            //    throw new ArgumentException("User is not a student, parent, teacher, or principal.");
+            //}
+
         }
 
         public async Task UpdateSchoolAsync(SchoolViewModel school)

@@ -10,6 +10,15 @@ namespace SchoolSocialMediaApp.Common.InfrastructureCommon
     {
         //Post Validation Constants
         public const int MaxPostLength = 2000;
+        public const int MinPostLength = 2;
+        public const string PostContentRequired = "Post content is required.";
+        public const string PostIdRequired = "Post id is required.";
+        public const string PostDateAndTimeRequired = "Post creation date and time is required.";
+        public const string PostCreatorIdRequired = "Post creator id is required.";
+        public const string PostSchoolIdRequired = "Post school id is required.";
+        public const string PostCreatorRequired = "Post creator is required.";
+        public const string PostSchoolRequired = "Post school is required.";
+
 
         //Comment Validation Constants
         public const int MaxCommentLength = 1000;

@@ -14,7 +14,7 @@
 
         public Guid PostId { get; set; }
 
-        public PostViewModel Post { get; set; } = null!;
+        public PostCreateModel Post { get; set; } = null!;
 
         public IEnumerable<CommentsLikesViewModel> Likes { get; set; } = new List<CommentsLikesViewModel>();
 

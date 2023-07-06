@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 
@@ -23,11 +22,11 @@ namespace SchoolSocialMediaApp.Data
 
         public DbSet<School> Schools { get; set; } = null!;
         //public DbSet<Principal> Principals { get; set; } = null!;
-        public DbSet<Teacher> Teachers { get; set; } = null!;
-        public DbSet<Student> Students { get; set; } = null!;
-        public DbSet<Parent> Parents { get; set; } = null!;
-        public DbSet<StudentsParents> StudentsParents { get; set; } = null!;
-        public DbSet<Administrator> Administrators { get; set; } = null!;
+        //public DbSet<Teacher> Teachers { get; set; } = null!;
+        //public DbSet<Student> Students { get; set; } = null!;
+        //public DbSet<Parent> Parents { get; set; } = null!;
+        //public DbSet<StudentsParents> StudentsParents { get; set; } = null!;
+        //public DbSet<Administrator> Administrators { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -96,20 +95,25 @@ namespace SchoolSocialMediaApp.Data
                 .HasForeignKey<ApplicationUser>(p => p.SchoolId) //edited for the test..............
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.Entity<Student>()
-                .HasOne(d => d.School)
-                .WithMany(s => s.Students)
-                .HasForeignKey(d => d.SchoolId)
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.Entity<Student>()
+            //    .HasOne(d => d.School)
+            //    .WithMany(s => s.Students)
+            //    .HasForeignKey(d => d.SchoolId)
+            //    .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<StudentsParents>()
-                .HasKey(sp => new { sp.StudentId, sp.ParentId });
+            //builder.Entity<StudentsParents>()
+            //    .HasKey(sp => new { sp.StudentId, sp.ParentId });
 
-            builder.Entity<StudentsParents>()
-                .HasOne(sp => sp.Parent)
-                .WithMany(p => p.Students)
-                .HasForeignKey(sp => sp.ParentId)
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.Entity<StudentsParents>()
+            //    .HasOne(sp => sp.Parent)
+            //    .WithMany(p => p.Students)
+            //    .HasForeignKey(sp => sp.ParentId)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            //builder.Entity<StudentsParents>()
+            //    .HasOne(sp => sp.Parent)
+            //    .WithOne(p => p.)
+
 
             base.OnModelCreating(builder);
         }

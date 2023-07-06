@@ -32,5 +32,35 @@ namespace SchoolSocialMediaApp.Controllers
             }
             return View(posts);
         }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            var model = new PostCreateModel();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(PostCreateModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userId = this.GetUserId();
+            try
+            {
+                await postService.CreatePostAsync(model, userId);
+            }
+            catch (ArgumentException ae)
+            {
+                ModelState.AddModelError("", ae.Message);
+                throw;
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

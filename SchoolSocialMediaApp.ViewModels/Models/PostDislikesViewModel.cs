@@ -1,6 +1,6 @@
 ﻿namespace SchoolSocialMediaApp.ViewModels.Models
 {
-    public class PostDislikeViewModel
+    public class PostDislikesViewModel
     {
         public Guid PostId { get; set; }
 

@@ -38,6 +38,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Student", policy => policy.RequireRole("Student"));
     options.AddPolicy("Parent", policy => policy.RequireRole("Parent"));
     options.AddPolicy("Principal", policy => policy.RequireRole("Principal"));
+    options.AddPolicy("CanBePrincipal", policy => policy.RequireRole("User", "Parent", "Teacher", "Admin"));
 });
 
 builder.Services.Configure<IdentityOptions>(options =>

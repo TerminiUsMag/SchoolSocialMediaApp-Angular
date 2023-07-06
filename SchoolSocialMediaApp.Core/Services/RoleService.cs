@@ -39,6 +39,7 @@ namespace SchoolSocialMediaApp.Core.Services
                     throw new ArgumentException("Role could not be created.");
                 }
                 var result = await userManager.AddToRoleAsync(user, roleName);
+                user.IsPrincipal = true;
                 return true;
             }
             catch (Exception)

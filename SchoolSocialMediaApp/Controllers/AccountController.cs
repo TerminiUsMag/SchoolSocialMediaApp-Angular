@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
@@ -89,7 +90,6 @@ namespace SchoolSocialMediaApp.Controllers
                 PhoneNumber = model.PhoneNumber,
                 CreatedOn = DateTime.Now,
                 ImageUrl = "/images/defaultProfile.png",
-
             };
 
             //User Registration and Password Hashing
@@ -98,7 +98,6 @@ namespace SchoolSocialMediaApp.Controllers
                 ModelState.AddModelError("", "Something went wrong");
                 return View(model);
             }
-
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
@@ -136,6 +135,8 @@ namespace SchoolSocialMediaApp.Controllers
             return Redirect(model.ReturnUrl ?? "/");
         }
 
+        [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await accountService.LogoutAsync();
@@ -162,6 +163,7 @@ namespace SchoolSocialMediaApp.Controllers
         //}
 
         [HttpGet]
+        [Authorize(Policy = "CanBePrincipal")]
         public IActionResult BecomePrincipal(string errorMsg)
         {
             ViewBag.ErrorMsg = errorMsg;
@@ -169,6 +171,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "CanBePrincipal")]
         public IActionResult PrincipalCreate()
         {
             var userId = this.GetUserId();
@@ -181,8 +184,10 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult AccessDenied()
+        [AllowAnonymous]
+        public IActionResult AccessDenied(string msg)
         {
+            ViewBag.Error = msg;
             return View();
         }
     }

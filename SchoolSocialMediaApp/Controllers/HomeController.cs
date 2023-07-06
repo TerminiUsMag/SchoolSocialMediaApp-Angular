@@ -21,16 +21,20 @@ namespace SchoolSocialMediaApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-           // if (this.User?.Identity?.IsAuthenticated ?? false)
-           // {
-           //     return RedirectToAction("Feed", "Home");
-           // }
+            //if (this.User?.Identity?.IsAuthenticated ?? false)
+            //{
+            //    return RedirectToAction("Feed", "Home");
+            //}
 
-           //if (!await roleService.RoleExistsAsync("Principal"))
-           // {
-           //     return Error();
-           // }
+            var roles = new List<string> { "User", "Principal", "Teacher", "Parent", "Student" };
 
+            foreach (var role in roles)
+            {
+                if (!await roleService.RoleExistsAsync(role))
+                {
+                    return Error();
+                }
+            }
             return View();
         }
         public IActionResult Feed()

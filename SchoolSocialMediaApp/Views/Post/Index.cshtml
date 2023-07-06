@@ -5,20 +5,28 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<a class="btn btn-success mb-4" asp-controller="Post" asp-action="Create">Create New Post</a>
+
 @if (Model.Count > 0)
 {
     foreach (var post in Model)
     {
-        <div class="post">
-            <div class="post-header">
-                <img src="@post.Creator.ImageUrl" alt="Profile Picture" class="profile-picture" />
-                <div class="user-info">
-                    <h4>@post.Creator.Username</h4>
-                    <p>@post.CreatedOn</p>
-                </div>
+        <div class="row">
+            <div class="col-md-6">
+                <a class="btn btn-primary" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+                <a class="btn btn-danger" asp-controller="Post" asp-action="Delete" asp-route-id="@post.Id">Delete</a>
             </div>
-            <div class="post-content">
-                <p>@Html.Raw(post.Content)</p>
+            <div class="post">
+                <div class="post-header">
+                    <img src="@post.Creator.ImageUrl" alt="Profile Picture" class="profile-picture" style="max-width:15rem;" />
+                    <div class="user-info">
+                        <h4>@post.Creator.Username</h4>
+                        <p>@post.CreatedOn</p>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>@Html.Raw(post.Content)</p>
+                </div>
             </div>
         </div>
     }
