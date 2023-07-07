@@ -62,5 +62,45 @@ namespace SchoolSocialMediaApp.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid Id)
+        {
+            var post = await postService.GetPostByIdAsync(Id);
+
+            PostEditViewModel model = new PostEditViewModel
+            {
+                Id = post.Id,
+                Content = post.Content,
+                Comments = post.Comments,
+                Dislikes = post.Dislikes,
+                DislikesCount = post.DislikesCount,
+                Likes = post.Likes,
+                LikesCount = post.LikesCount
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(PostEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userId = this.GetUserId();
+            try
+            {
+                await postService.EditPostAsync(model, userId);
+            }
+            catch (ArgumentException ae)
+            {
+                ModelState.AddModelError("", ae.Message);
+                throw;
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

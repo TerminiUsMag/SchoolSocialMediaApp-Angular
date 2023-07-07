@@ -47,5 +47,8 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The dislikes on the post.")]
         public IEnumerable<PostsDislikes> Dislikes { get; set; } = new List<PostsDislikes>();
+
+        [Comment("Is the post edited.")]
+        public bool IsEdited { get; set; }
     }
 }
