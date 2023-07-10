@@ -21,6 +21,7 @@ namespace SchoolSocialMediaApp.Data
         public DbSet<PostsDislikes> PostsDislikes { get; set; } = null!;
 
         public DbSet<School> Schools { get; set; } = null!;
+        public DbSet<Invitation> Invitations { get; set; } = null!;
         //public DbSet<Principal> Principals { get; set; } = null!;
         //public DbSet<Teacher> Teachers { get; set; } = null!;
         //public DbSet<Student> Students { get; set; } = null!;
@@ -37,21 +38,11 @@ namespace SchoolSocialMediaApp.Data
             builder.Entity<CommentsLikes>()
                 .HasKey(cl => new { cl.UserId, cl.CommentId });
 
-            //builder.Entity<UsersComments>()
-            //    .HasKey(uc => new { uc.UserId, uc.CommentId });
-
-            //builder.Entity<UsersPosts>()
-            //    .HasKey(up => new { up.UserId, up.PostId });
-
-            //builder.Entity<PostsComments>()
-            //    .HasKey(pc => new { pc.PostId, pc.CommentId });
-
             builder.Entity<PostsDislikes>()
                 .HasKey(pd => new { pd.PostId, pd.UserId });
 
             builder.Entity<PostsLikes>()
                 .HasKey(pl => new { pl.PostId, pl.UserId });
-
 
             builder.Entity<Comment>()
                 .HasOne(Comment => Comment.Creator)
@@ -77,43 +68,35 @@ namespace SchoolSocialMediaApp.Data
                 .HasForeignKey(pl => pl.PostId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            //builder.Entity<Principal>()
-            //    .HasOne(d => d.School)
-            //    .WithOne(s => s.Principal)                          //edited for the test..............
-            //    .HasForeignKey<School>(s => s.PrincipalId)
-            //    .OnDelete(DeleteBehavior.NoAction);
-
             builder.Entity<ApplicationUser>()
                 .HasOne(d => d.School)
-                .WithOne(s => s.Principal)                          //edited for the test..............
+                .WithOne(s => s.Principal)
                 .HasForeignKey<School>(s => s.PrincipalId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<School>()
                 .HasOne(s => s.Principal)
                 .WithOne(p => p.School)
-                .HasForeignKey<ApplicationUser>(p => p.SchoolId) //edited for the test..............
+                .HasForeignKey<ApplicationUser>(p => p.SchoolId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            //builder.Entity<Student>()
-            //    .HasOne(d => d.School)
-            //    .WithMany(s => s.Students)
-            //    .HasForeignKey(d => d.SchoolId)
-            //    .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<Invitation>()
+                .HasOne(i => i.School)
+                .WithMany(s => s.Invitations)
+                .HasForeignKey(i => i.SchoolId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            //builder.Entity<StudentsParents>()
-            //    .HasKey(sp => new { sp.StudentId, sp.ParentId });
+            builder.Entity<Invitation>()
+                .HasOne(i=>i.Receiver)
+                .WithMany(r=>r.Invitations)
+                .HasForeignKey(i=>i.ReceiverId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            //builder.Entity<StudentsParents>()
-            //    .HasOne(sp => sp.Parent)
-            //    .WithMany(p => p.Students)
-            //    .HasForeignKey(sp => sp.ParentId)
-            //    .OnDelete(DeleteBehavior.NoAction);
-
-            //builder.Entity<StudentsParents>()
-            //    .HasOne(sp => sp.Parent)
-            //    .WithOne(p => p.)
-
+            builder.Entity<Invitation>()
+                .HasOne(i => i.Sender)
+                .WithMany(s => s.SentInvitations)
+                .HasForeignKey(i => i.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(builder);
         }

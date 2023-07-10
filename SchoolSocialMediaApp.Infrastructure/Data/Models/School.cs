@@ -50,5 +50,8 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("The posts of the school.")]
         public IEnumerable<Post> Posts { get; set; } = new List<Post>();
 
+        [Comment("The invitations of the school.")]
+        public IEnumerable<Invitation> Invitations { get; set; } = null!;
+
     }
 }

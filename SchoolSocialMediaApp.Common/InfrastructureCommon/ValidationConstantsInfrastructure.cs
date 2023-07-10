@@ -35,9 +35,12 @@ namespace SchoolSocialMediaApp.Common.InfrastructureCommon
         public const int MaxSchoolDescriptionLength = 1000;
         public const int MaxSchoolLocationLength = 150;
 
-        //Director Validation Constants
+        //Principal Validation Constants
 
         //Teacher Validation Constants
         public const int MaxSubjectLength = 50;
+
+        //Invitation Validation Constants
+        public const int maxRoleLength = 50;
     }
 }

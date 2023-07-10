@@ -78,5 +78,11 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The comments made by the user.")]
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        [Comment("The invitations the user has received.")]
+        public ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
+
+        [Comment("The invitations the user has sent.")]
+        public ICollection<Invitation> SentInvitations { get; set; } = new List<Invitation>();
     }
 }
