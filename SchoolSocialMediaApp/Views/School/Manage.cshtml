@@ -1,4 +1,33 @@
-﻿@{
-    ViewBag.Title = "Manage";
+﻿@model SchoolManageViewModel
+
+<h1>Manage School</h1>
+
+<h2>School Details</h2>
+<p>School Name: @Model.Name</p>
+<p>Principal: @Model.Principal.FirstName @Model.Principal.LastName"</p>
+
+<h2>Parents</h2>
+@if (Model.Parents.Any())
+{
+    foreach (var parent in Model.Parents)
+    {
+        <p>Parent Name: @parent.FirstName @parent.LastName</p>
+    }
 }
-<h1>@ViewBag.Title</h1>
+else
+{
+    <p>No parents found.</p>
+}
+
+<h2>Students</h2>
+@if (Model.Students.Any())
+{
+    foreach (var student in Model.Students)
+    {
+        <p>Student Name: @student.FirstName @student.LastName</p>
+    }
+}
+else
+{
+    <p>No students found.</p>
+}

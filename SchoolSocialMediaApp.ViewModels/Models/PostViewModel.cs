@@ -50,7 +50,7 @@ namespace SchoolSocialMediaApp.ViewModels.Models
         [Comment("Post Dislikes Count")]
         public int DislikesCount { get; set; } = 0;
 
-
+        public bool IsEdited { get; set; }
 
     }
 }

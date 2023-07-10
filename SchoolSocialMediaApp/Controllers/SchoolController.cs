@@ -96,11 +96,11 @@ namespace SchoolSocialMediaApp.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            SchoolViewModel? school = null;
+            SchoolManageViewModel? school = null;
 
             try
             {
-                school = await schoolService.GetSchoolByUserIdAsync(userId);
+                school = await schoolService.GetSchoolManageViewModelByUserIdAsync(userId);
             }
             catch (Exception e)
             {

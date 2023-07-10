@@ -127,22 +127,30 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<SchoolViewModel> GetSchoolByUserIdAsync(Guid userId)
         {
-            var school = await repo.AllReadonly<School>().Where(s => s.PrincipalId == userId).FirstOrDefaultAsync();
-            if (school is null)
-            {
-                throw new ArgumentException("School does not exist.");
-            }
+            
+            var roles = new List<string>() { "Principal", "Teacher", "Parent", "Student" };
 
-            return new SchoolViewModel
+            foreach (var role in roles)
             {
-                Id = school.Id,
-                Description = school.Description,
-                ImageUrl = school.ImageUrl,
-                Location = school.Location,
-                Name = school.Name,
-                PrincipalId = school.PrincipalId,
-                PrincipalName = school.Principal.FirstName + " " + school.Principal.LastName
-            };
+                if (await roleService.UserIsInRoleAsync(userId.ToString(), role))
+                {
+                    //var user = await userManager.FindByIdAsync(userId.ToString());
+                    var user = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
+                    var school = user!.School;
+
+                    return new SchoolViewModel
+                    {
+                        Id = school!.Id,
+                        Description = school.Description,
+                        ImageUrl = school.ImageUrl,
+                        Location = school.Location,
+                        Name = school.Name,
+                        PrincipalId = school.PrincipalId,
+                        PrincipalName = school.Principal.FirstName + " " + school.Principal.LastName
+                    };
+                }
+            }
+            throw new ArgumentException("User is not a member of any school.");
         }
 
         public async Task<SchoolViewModel> GetSchoolIdByNameAsync(string name)
@@ -178,7 +186,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 if (await roleService.UserIsInRoleAsync(userId.ToString(), role))
                 {
                     var user = await userManager.FindByIdAsync(userId.ToString());
-                    var userEager = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
+                    //var userEager = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
                     var schoolId = user.SchoolId;
                     if (schoolId == Guid.Empty || schoolId is null)
                     {
@@ -213,6 +221,48 @@ namespace SchoolSocialMediaApp.Core.Services
             //    throw new ArgumentException("User is not a student, parent, teacher, or principal.");
             //}
 
+        }
+
+        public async Task<SchoolManageViewModel?> GetSchoolManageViewModelByUserIdAsync(Guid userId)
+        {
+            if(userId == Guid.Empty)
+            {
+                throw new ArgumentException("User id cannot be empty.");
+            }
+
+            var roles = new List<string>() { "Principal", "Teacher", "Parent", "Student" };
+
+            foreach (var role in roles)
+            {
+                if (await roleService.UserIsInRoleAsync(userId.ToString(), role))
+                {
+                    //var user = await userManager.FindByIdAsync(userId.ToString());
+                    var user = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
+                    var school = user!.School;
+                    if(school is null)
+                    {
+                        throw new ArgumentException("School cannot be null.");
+                    }
+                    var parents = await repo.AllReadonly<ApplicationUser>().Where(u=> u.SchoolId == school.Id && u.IsParent).ToListAsync();
+                    var students = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsStudent).ToListAsync();
+                    var teachers = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsTeacher).ToListAsync();
+
+                    return new SchoolManageViewModel
+                    {
+                        Id = school.Id,
+                        Description = school.Description,
+                        ImageUrl = school.ImageUrl,
+                        Location = school.Location,
+                        Name = school.Name,
+                        PrincipalId = school.PrincipalId,
+                        Principal = school.Principal,
+                        Parents = parents,
+                        Students = students,
+                        Teachers = teachers,
+                    };
+                }
+            }
+            throw new ArgumentException("User is not a member of any school.");
         }
 
         public async Task UpdateSchoolAsync(SchoolViewModel school)

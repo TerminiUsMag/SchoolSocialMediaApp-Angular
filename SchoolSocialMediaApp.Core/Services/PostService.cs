@@ -35,10 +35,10 @@ namespace SchoolSocialMediaApp.Core.Services
                 SchoolId = schoolId.Value,
                 CreatedOn = DateTime.Now,
             };
-                this.PostIsValid(post);
-                await repo.AddAsync(post);
-                await repo.SaveChangesAsync();
-                return true;
+            this.PostIsValid(post);
+            await repo.AddAsync(post);
+            await repo.SaveChangesAsync();
+            return true;
         }
 
         private void PostIsValid(Post post)
@@ -71,7 +71,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<IEnumerable<PostViewModel>> GetAllPostsAsync(Guid schoolId)
         {
-            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).Select(p => new PostViewModel
+            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).OrderByDescending(p=>p.CreatedOn).Select(p => new PostViewModel
             {
                 Comments = p.Comments.Select(c => new CommentViewModel
                 {
@@ -104,6 +104,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 }),
                 Content = p.Content,
                 CreatorId = p.CreatorId,
+                IsEdited = p.IsEdited,
             }).ToListAsync();
 
             return posts;
@@ -142,12 +143,12 @@ namespace SchoolSocialMediaApp.Core.Services
                 CreatorId = post.CreatorId,
                 IsEdited = true,
                 SchoolId = post.SchoolId,
-                Likes = model.Likes.Select(l=> new PostsLikes
+                Likes = model.Likes.Select(l => new PostsLikes
                 {
                     PostId = l.PostId,
                     UserId = l.LikerId
                 }),
-                Dislikes = model.Dislikes.Select(dl=>new PostsDislikes
+                Dislikes = model.Dislikes.Select(dl => new PostsDislikes
                 {
                     PostId = dl.PostId,
                     UserId = dl.DislikerId
@@ -173,8 +174,8 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<PostViewModel> GetPostByIdAsync(Guid id)
         {
-            var post =await repo.All<Post>().Where(p=>p.Id == id).Include(p=>p.Creator).Include(p=>p.Comments).ThenInclude(p=>p.Creator).FirstOrDefaultAsync();
-            if(post is null)
+            var post = await repo.All<Post>().Where(p => p.Id == id).Include(p => p.Creator).Include(p => p.Comments).ThenInclude(p => p.Creator).FirstOrDefaultAsync();
+            if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
@@ -207,7 +208,7 @@ namespace SchoolSocialMediaApp.Core.Services
                     DislikerId = d.UserId,
                     PostId = d.PostId
                 }),
-                Likes = post.Likes.Select(l=> new PostLikesViewModel
+                Likes = post.Likes.Select(l => new PostLikesViewModel
                 {
                     LikerId = l.UserId,
                     PostId = l.PostId,
@@ -217,6 +218,31 @@ namespace SchoolSocialMediaApp.Core.Services
                 SchoolId = post.SchoolId,
             };
             return result;
+        }
+
+        public async Task DeletePostAsync(Guid id, Guid userId)
+        {
+            if (id == Guid.Empty || userId == Guid.Empty)
+            {
+                throw new ArgumentException("Id is empty.");
+            }
+
+            var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == id);
+            if (post.CreatorId != userId)
+            {
+                throw new ArgumentException("You are not the creator of this post.");
+            }
+
+            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user is null)
+            {
+                throw new ArgumentException("User does not exist.");
+            }
+
+            repo.Delete(post);
+            await repo.SaveChangesAsync();
+
         }
     }
 }

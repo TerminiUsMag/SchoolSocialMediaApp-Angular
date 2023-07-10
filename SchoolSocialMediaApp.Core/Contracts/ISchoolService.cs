@@ -60,5 +60,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="id"></param>
         /// <returns></returns>
         Task DeleteSchoolAsync(Guid id);
+        Task<SchoolManageViewModel?> GetSchoolManageViewModelByUserIdAsync(Guid userId);
     }
 }

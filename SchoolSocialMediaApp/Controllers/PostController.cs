@@ -102,5 +102,22 @@ namespace SchoolSocialMediaApp.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid Id)
+        {
+            var userId = this.GetUserId();
+            try
+            {
+                await postService.DeletePostAsync(Id, userId);
+            }
+            catch (ArgumentException ae)
+            {
+                ModelState.AddModelError("", ae.Message);
+                throw;
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
