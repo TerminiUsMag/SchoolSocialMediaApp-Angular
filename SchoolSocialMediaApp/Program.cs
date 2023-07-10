@@ -70,6 +70,7 @@ builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ISchoolService, SchoolService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IInvitationService, InvitationService>();
 
 var app = builder.Build();
 

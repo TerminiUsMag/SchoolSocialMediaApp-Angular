@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SchoolSocialMediaApp.Common;
 using System.ComponentModel.DataAnnotations;
-using validation = SchoolSocialMediaApp.Common.WebCommon.ValidationConstants;
+using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 namespace SchoolSocialMediaApp.Models
 {
     [Comment("Model for registering a user")]

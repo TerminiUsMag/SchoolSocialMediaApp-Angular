@@ -2,16 +2,29 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using validation = SchoolSocialMediaApp.Common.InfrastructureCommon.ValidationConstantsInfrastructure;
+using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 {
     public class ApplicationUser : IdentityUser<Guid>
     {
+        [Comment("Is principal of a school")]
         public bool IsPrincipal { get; set; }
+
+        [Comment("Is teacher in a school")]
         public bool IsTeacher { get; set; }
+
+        [Comment("Is parent in a school")]
         public bool IsParent { get; set; }
+
+        [Comment("Is student in a school")]
         public bool IsStudent { get; set; }
+
+        [Comment("Has a pending invitation for a school")]
+        public bool IsInvited { get; set; }
+
+        [Comment("Is admin of the app")]
+        public bool IsAdmin { get; set; }
 
         [Comment("The first name of the user.")]
         [MaxLength(validation.MaxFirstNameLength)]

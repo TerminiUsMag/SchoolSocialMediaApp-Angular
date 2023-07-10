@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using validation = SchoolSocialMediaApp.Common.InfrastructureCommon.ValidationConstantsInfrastructure;
+using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
 namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 {

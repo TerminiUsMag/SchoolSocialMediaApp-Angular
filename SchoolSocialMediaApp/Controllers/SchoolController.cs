@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using SchoolSocialMediaApp.Core.Contracts;
+using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models;
 
 namespace SchoolSocialMediaApp.Controllers
@@ -9,10 +10,14 @@ namespace SchoolSocialMediaApp.Controllers
     public class SchoolController : BaseController
     {
         private readonly ISchoolService schoolService;
+        private readonly IInvitationService invitationService;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public SchoolController(ISchoolService _schoolService)
+        public SchoolController(ISchoolService _schoolService,IInvitationService _invitationService,UserManager<ApplicationUser> _userManager)
         {
             this.schoolService = _schoolService;
+            this.invitationService = _invitationService;
+            this.userManager = _userManager;
         }
 
         [HttpGet]
@@ -88,7 +93,7 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Principal")]
-        public async Task<IActionResult> Manage()
+        public async Task<IActionResult> Manage(string message)
         {
             var userId = this.GetUserId();
             if (userId == Guid.Empty)
@@ -106,7 +111,10 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 ModelState.AddModelError("", e.Message);
             }
-                return View(school);
+            ViewBag.Message = message;
+            return View(school);
         }
+
+        
     }
 }

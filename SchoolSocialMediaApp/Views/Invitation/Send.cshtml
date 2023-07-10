@@ -1,0 +1,46 @@
+﻿@model CreateInvitationViewModel;
+@{
+    ViewBag.Title = "Send Invitation";
+}
+
+<h1>@ViewBag.Title for @ViewBag.Role</h1>
+<h2 class="badge text-bg-info">@ViewBag.Message</h2>
+
+
+@if (Model.Candidates.Any())
+{
+    <div class="row container-fluid">
+        <table class="table table-striped table-hover table-responsive-md ">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var candidate in Model.Candidates)
+                {
+                    <tr>
+                        <td>@candidate.FirstName @candidate.LastName </td>
+                        <td>@candidate.Email</td>
+                        <td>
+                            <form asp-controller="Invitation" asp-action="Send" method="post">
+                                <input type="hidden" name="role" value="@ViewBag.Role" />
+                                <input type="hidden" name="receiverId" value="@candidate.Id" />
+                                <input type="hidden" name="senderId" value="@Model.SenderId"/>
+                                <input type="hidden" name="schoolId" value="@Model.SchoolId"/>
+                                <button type="submit" class="btn btn-primary">Invite to school as @ViewBag.Role</button>
+                            </form>
+                        </td>
+                        @*<td><a asp-controller="Invitation" asp-action="Send" asp-route-role="@ViewBag.Role" asp-route-id="@candidate.Id" class="btn btn-primary">Invite to school as @ViewBag.Role</a></td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <h2>No candidates found.(Registered users without attached school)</h2>
+}

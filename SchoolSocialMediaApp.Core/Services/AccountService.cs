@@ -6,7 +6,7 @@ using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
-using validation = SchoolSocialMediaApp.Common.CoreCommon.ValidationConstantsCore;
+using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
 namespace SchoolSocialMediaApp.Core.Services
 {
