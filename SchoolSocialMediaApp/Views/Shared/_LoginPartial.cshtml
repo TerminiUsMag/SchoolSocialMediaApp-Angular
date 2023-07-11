@@ -8,13 +8,30 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
+        var userIsPrincipal = await UserManager.IsInRoleAsync(UserManager.GetUserAsync(User).Result, "Principal");
+        var userIsPartOfSchool = RoleService.IsUserPartOfSchool(UserManager.GetUserAsync(User).Result);
+
+        if (userIsPartOfSchool)
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="School" asp-action="Index">School</a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Invitation" asp-action="Index">Invitations</a>
+            </li>
+        }
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark btn" asp-area="" asp-controller="Account" asp-action="BecomePrincipal">Become a Principal</a>
-        </li>
-        var userIsPrincipal = await UserManager.IsInRoleAsync(UserManager.GetUserAsync(User).Result,"Principal");
+        if (!userIsPrincipal)
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark btn" asp-area="" asp-controller="Account" asp-action="BecomePrincipal">Become a Principal</a>
+            </li>
+        }
         if (userIsPrincipal)
         {
             <li class="nav-item">

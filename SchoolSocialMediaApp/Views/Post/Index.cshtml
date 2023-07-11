@@ -5,42 +5,48 @@
 
 <h1>@ViewData["Title"]  <i class="fa-sharp fa-solid fa-pen-to-square"></i></h1>
 
-<a class="btn btn-success mb-4" asp-controller="Post" asp-action="Create">Create New Post</a>
-
-@if (Model.Count > 0)
+@if (Model is not null)
 {
-    foreach (var post in Model)
+    <a class="btn btn-success mb-4" asp-controller="Post" asp-action="Create">Create New Post</a>
+    @if (Model.Count > 0)
     {
-        <div class="row">
-            <div class="col-md-6">
-            </div>
-            <div class="post">
-                <div class="post-header">
-                    <img src="@post.Creator.ImageUrl" alt="Profile Picture" class="profile-picture" style="max-width:15rem;" />
-                    <div class="user-info">
-                        <h4>@post.Creator.Username</h4>
-                        @if (post.IsEdited)
-                        {
-                            <p>@post.CreatedOn <i class="fa-solid fa-pen"></i> </p>
-                        }
-                        else
-                        {
-                            <p>@post.CreatedOn</p>
-                        }
+        foreach (var post in Model)
+        {
+            <div class="row">
+                <div class="col-md-6">
+                </div>
+                <div class="post">
+                    <div class="post-header">
+                        <img src="@post.Creator.ImageUrl" alt="Profile Picture" class="profile-picture" style="max-width:15rem;" />
+                        <div class="user-info">
+                            <h4>@post.Creator.Username</h4>
+                            @if (post.IsEdited)
+                            {
+                                <p>@post.CreatedOn <i class="fa-solid fa-pen"></i> </p>
+                            }
+                            else
+                            {
+                                <p>@post.CreatedOn</p>
+                            }
+                        </div>
                     </div>
+                    <div class="post-content">
+                        <p>@Html.Raw(post.Content)</p>
+                    </div>
+                    <a class="btn btn-primary" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+                    <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeletePostId('@post.Id')">Delete</a>
                 </div>
-                <div class="post-content">
-                    <p>@Html.Raw(post.Content)</p>
-                </div>
-                <a class="btn btn-primary" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
-                <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeletePostId('@post.Id')">Delete</a>
             </div>
-        </div>
+        }
+    }
+    else
+    {
+        <p>No posts to display.</p>
     }
 }
 else
 {
-    <p>No posts to display.</p>
+    <p class="badge text-bg-danger">You are not registered in any school</p>
 }
 
 <!-- Delete Confirmation Modal -->

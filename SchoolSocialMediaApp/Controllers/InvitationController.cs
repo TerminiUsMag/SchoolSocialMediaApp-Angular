@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models;
+using System.Runtime.InteropServices;
 
 namespace SchoolSocialMediaApp.Controllers
 {
@@ -19,10 +20,65 @@ namespace SchoolSocialMediaApp.Controllers
             this.userManager = _userManager;
             this.schoolService = _schoolService;
         }
-        public IActionResult Index()
+
+        [HttpGet]
+        public async Task<IActionResult> Index(string message, string classOfMessage)
         {
-            return View();
+            var userId = this.GetUserId();
+            if (userId == Guid.Empty)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            List<InvitationViewModel> invitations = await invitationService.GetReceivedInvitationsByUserIdAsync(userId) ?? new List<InvitationViewModel>();
+
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
+
+            return View(invitations);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Accept(Guid id)
+        {
+            var userId = this.GetUserId();
+            if (userId == Guid.Empty)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            try
+            {
+                await invitationService.AcceptInvitationAsync(id, userId);
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", e.Message);
+                return RedirectToAction("Index", "Invitation", new { message = $"{e.Message}", classOfMessage = "text-bg-error badge" });
+            }
+
+            return RedirectToAction("Index", "Invitation", new { message = "Successfully accepted the invitation", classOfMessage = "text-bg-success badge" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Decline(Guid id)
+        {
+            var userId = this.GetUserId();
+            if (userId == Guid.Empty)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            try
+            {
+                await invitationService.DeclineInvitationAsync(id, userId);
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", e.Message);
+                return RedirectToAction("Index", "Invitation", new { message = $"{e.Message}", classOfMessage = "text-bg-error badge" });
+            }
+
+            return RedirectToAction("Index", "Invitation", new { message = "Successfully declined the invitation", classOfMessage = "text-bg-success badge" });
+        }
+
         [HttpGet]
         [Authorize(Policy = "Principal")]
         public async Task<IActionResult> Send(string role, string message)

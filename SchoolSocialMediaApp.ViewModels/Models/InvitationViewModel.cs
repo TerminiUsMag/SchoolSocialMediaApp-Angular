@@ -31,6 +31,9 @@ namespace SchoolSocialMediaApp.ViewModels.Models
         [Required]
         public Guid SchoolId { get; set; }
 
+        [Comment("School is the school the invitation is for.")]
+        public SchoolViewModel? School{ get; set; }
+
         [Comment("Role is the role the invitation is for.")]
         [Required]
         [StringLength(validation.MaxRoleLength, MinimumLength = validation.MinRoleLength)]

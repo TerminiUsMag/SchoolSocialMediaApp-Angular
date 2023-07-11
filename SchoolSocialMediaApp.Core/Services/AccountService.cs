@@ -28,7 +28,7 @@ namespace SchoolSocialMediaApp.Core.Services
             this.roleService = _roleService;
         }
 
-        public Task<bool> CreateParentAsync(Guid userId)
+        public Task<bool> DeleteAsync(Guid userId)
         {
             throw new NotImplementedException();
         }
@@ -54,16 +54,6 @@ namespace SchoolSocialMediaApp.Core.Services
         //    return true;
         //}
 
-        public Task<bool> CreateStudentAsync(Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> CreateTeacherAsync(Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> EmailIsFree(string email)
         {
             var result = await userManager.FindByEmailAsync(email.ToUpper());
@@ -88,11 +78,6 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
-        public Task<bool> IsParentAsync(Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> IsPrincipalAsync(Guid userId)
         {
             var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
@@ -102,16 +87,6 @@ namespace SchoolSocialMediaApp.Core.Services
                 return true;
             }
             return false;
-        }
-
-        public Task<bool> IsStudentAsync(Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> IsTeacherAsync(Guid userId)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<bool> LoginAsync(string email, string password, bool rememberMe)

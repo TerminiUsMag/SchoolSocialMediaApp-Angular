@@ -28,7 +28,6 @@ namespace SchoolSocialMediaApp.Controllers
             catch (ArgumentException ae)
             {
                 ModelState.AddModelError("", ae.Message);
-                throw;
             }
             return View(posts);
         }

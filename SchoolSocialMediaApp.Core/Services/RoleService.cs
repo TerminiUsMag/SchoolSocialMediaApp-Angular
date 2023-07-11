@@ -63,6 +63,46 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
+        public async Task<List<string>> GetUserRolesAsync(Guid userId)
+        {
+            var user = await userManager.FindByIdAsync(userId.ToString());
+
+            var result = new List<string>();
+
+            if(await userManager.IsInRoleAsync(user, "Principal"))
+            {
+                result.Add("Principal");
+            }
+            if(await userManager.IsInRoleAsync(user, "Teacher"))
+            {
+                result.Add("Teacher");
+            }
+            if(await userManager.IsInRoleAsync(user, "Student"))
+            {
+                result.Add("Student");
+            }
+            if(await userManager.IsInRoleAsync(user, "Parent"))
+            {
+                result.Add("Parent");
+            }
+            if(await userManager.IsInRoleAsync(user, "Admin"))
+            {
+                result.Add("Admin");
+            }
+
+            return result;
+        }
+
+        public bool IsUserPartOfSchool(ApplicationUser user)
+        {
+            var u = user;
+            if (!u.IsParent && !u.IsPrincipal && !u.IsTeacher && !u.IsStudent && (u.SchoolId is null||u.SchoolId==Guid.Empty))
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<bool> RemoveUserFromRoleAsync(string userId, string roleName)
         {
             var user = await userManager.FindByIdAsync(userId);

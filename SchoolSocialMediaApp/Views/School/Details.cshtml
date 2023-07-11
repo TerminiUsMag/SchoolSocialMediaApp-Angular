@@ -1,5 +1,12 @@
-﻿@{
+﻿@model SchoolViewModel;
+@{
     ViewBag.Title = "Details";
 }
 
 <h1>@ViewBag.Title</h1>
+
+<h2>@Model.Name</h2>
+<img style ="max-width:50rem;" class="card-img-top img" src="@Model.ImageUrl" alt="School image">
+<p>Principal: @Model.PrincipalName</p>
+<p>Location: @Model.Location</p>
+<p>Description: @Model.Description</p>

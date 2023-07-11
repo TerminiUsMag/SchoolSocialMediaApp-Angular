@@ -9,5 +9,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task<bool> AddUserToRoleAsync(string userId, string roleName);
         Task<bool> RemoveUserFromRoleAsync(string userId, string roleName);
         Task<bool> UserIsInRoleAsync(string userId, string roleName);
+        bool IsUserPartOfSchool(ApplicationUser user);
+        Task<List<string>> GetUserRolesAsync(Guid userId);
     }
 }

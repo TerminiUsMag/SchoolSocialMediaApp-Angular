@@ -121,7 +121,8 @@ namespace SchoolSocialMediaApp.Core.Services
                 Description = school.Description,
                 ImageUrl = school.ImageUrl,
                 Location = school.Location,
-                PrincipalId = school.PrincipalId
+                PrincipalId = school.PrincipalId,
+                PrincipalName = school.Principal.FirstName + " " + school.Principal.LastName,
             };
         }
 
@@ -171,6 +172,23 @@ namespace SchoolSocialMediaApp.Core.Services
             };
         }
 
+        public async Task AddUserToSchoolAsync(Guid userId, Guid schoolId)
+        {
+            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+            {
+                throw new ArgumentException("User does not exist.");
+            }
+
+            var school = await repo.All<School>().FirstOrDefaultAsync(s => s.Id == schoolId);
+            if (school is null)
+            {
+                throw new ArgumentException("School does not exist.");
+            }
+
+            user.School = school;
+            await repo.SaveChangesAsync();
+        }
 
         public async Task<Guid> GetSchoolIdByUserIdAsync(Guid userId)
         {

@@ -228,6 +228,10 @@ namespace SchoolSocialMediaApp.Core.Services
             }
 
             var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == id);
+            if (post is null)
+            {
+                throw new ArgumentException("Post does not exist.");
+            }
             if (post.CreatorId != userId)
             {
                 throw new ArgumentException("You are not the creator of this post.");
