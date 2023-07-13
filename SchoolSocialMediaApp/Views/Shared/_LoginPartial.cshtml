@@ -11,13 +11,7 @@
         var userIsPrincipal = await UserManager.IsInRoleAsync(UserManager.GetUserAsync(User).Result, "Principal");
         var userIsPartOfSchool = RoleService.IsUserPartOfSchool(UserManager.GetUserAsync(User).Result);
 
-        if (userIsPartOfSchool)
-        {
-            <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="School" asp-action="Index">School</a>
-            </li>
-        }
-        else
+        if (!userIsPartOfSchool)
         {
             <li class="nav-item">
                 <a class="nav-link text-dark" asp-area="" asp-controller="Invitation" asp-action="Index">Invitations</a>

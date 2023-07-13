@@ -93,7 +93,7 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Principal")]
-        public async Task<IActionResult> Manage(string message)
+        public async Task<IActionResult> Manage(string message, string classOfMessage = "text-bg-danger")
         {
             var userId = this.GetUserId();
             if (userId == Guid.Empty)
@@ -112,7 +112,29 @@ namespace SchoolSocialMediaApp.Controllers
                 ModelState.AddModelError("", e.Message);
             }
             ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
             return View(school);
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "Principal")]
+        public async Task<IActionResult> Remove(Guid userId, Guid schoolId)
+        {
+            if(userId == Guid.Empty || schoolId == Guid.Empty)
+            {
+                return RedirectToAction("Manage", new { message = "Invalid user or school id." });
+            }
+
+            try
+            {
+                await schoolService.RemoveUserFromSchoolAsync(userId, schoolId);
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Manage", new { message = e.Message });
+            }
+
+            return RedirectToAction("Manage", new { message = "User removed successfully." , classOfMessage = "text-bg-success"});
         }
 
         

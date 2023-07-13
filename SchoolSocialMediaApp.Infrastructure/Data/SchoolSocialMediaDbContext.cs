@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using System.Reflection.Emit;
 
 namespace SchoolSocialMediaApp.Data
 {
@@ -73,6 +74,11 @@ namespace SchoolSocialMediaApp.Data
                 .WithOne(s => s.Principal)
                 .HasForeignKey<School>(s => s.PrincipalId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<ApplicationUser>(entity =>
+            {
+                entity.HasIndex(u => u.SchoolId).IsUnique(false);
+            });
 
             builder.Entity<School>()
                 .HasOne(s => s.Principal)

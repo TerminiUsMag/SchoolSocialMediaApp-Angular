@@ -93,11 +93,19 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<IEnumerable<SchoolViewModel>> GetAllSchoolsAsync()
         {
-            if (await repo.All<School>().CountAsync() == 0)
+            var schoolCount = await repo.All<School>().CountAsync();
+            if (schoolCount == 0)
             {
                 throw new ArgumentException("There are no schools.");
             }
-            var schools = await repo.All<School>().Select(s => new SchoolViewModel
+            var schools = await repo.All<School>().ToListAsync();
+
+            foreach (var school in schools)
+            {
+                school.Principal = await userManager.FindByIdAsync(school.PrincipalId.ToString());
+            }
+
+            var result = schools.Select(s => new SchoolViewModel
             {
                 Id = s.Id,
                 Name = s.Name,
@@ -106,9 +114,10 @@ namespace SchoolSocialMediaApp.Core.Services
                 Location = s.Location,
                 PrincipalId = s.PrincipalId,
                 PrincipalName = s.Principal.FirstName + " " + s.Principal./*User.*/LastName
-            }).ToListAsync();
+            }).ToList();
 
-            return schools;
+
+            return result;
         }
 
         public async Task<SchoolViewModel> GetSchoolByIdAsync(Guid id)
@@ -128,7 +137,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<SchoolViewModel> GetSchoolByUserIdAsync(Guid userId)
         {
-            
+
             var roles = new List<string>() { "Principal", "Teacher", "Parent", "Student" };
 
             foreach (var role in roles)
@@ -187,6 +196,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
 
             user.School = school;
+            user.SchoolId = school.Id;
             await repo.SaveChangesAsync();
         }
 
@@ -243,7 +253,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<SchoolManageViewModel?> GetSchoolManageViewModelByUserIdAsync(Guid userId)
         {
-            if(userId == Guid.Empty)
+            if (userId == Guid.Empty)
             {
                 throw new ArgumentException("User id cannot be empty.");
             }
@@ -257,11 +267,11 @@ namespace SchoolSocialMediaApp.Core.Services
                     //var user = await userManager.FindByIdAsync(userId.ToString());
                     var user = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
                     var school = user!.School;
-                    if(school is null)
+                    if (school is null)
                     {
                         throw new ArgumentException("School cannot be null.");
                     }
-                    var parents = await repo.AllReadonly<ApplicationUser>().Where(u=> u.SchoolId == school.Id && u.IsParent).ToListAsync();
+                    var parents = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsParent).ToListAsync();
                     var students = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsStudent).ToListAsync();
                     var teachers = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsTeacher).ToListAsync();
 
@@ -297,6 +307,52 @@ namespace SchoolSocialMediaApp.Core.Services
             schoolToUpdate.ImageUrl = school.ImageUrl!;
             schoolToUpdate.Location = school.Location;
             schoolToUpdate.PrincipalId = school.PrincipalId;
+
+            await repo.SaveChangesAsync();
+        }
+
+        public async Task RemoveUserFromSchoolAsync(Guid userId, Guid schoolId)
+        {
+            if (userId == Guid.Empty)
+            {
+                throw new ArgumentException("User id cannot be empty.");
+            }
+
+            if (schoolId == Guid.Empty)
+            {
+                throw new ArgumentException("School id cannot be empty.");
+            }
+
+            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            var school = await repo.All<School>().FirstOrDefaultAsync(s => s.Id == schoolId);
+
+            if (user is null)
+            {
+                throw new ArgumentException("User does not exist.");
+            }
+
+            if (school is null)
+            {
+                throw new ArgumentException("School does not exist.");
+            }
+
+            if (user.SchoolId != school.Id)
+            {
+                throw new ArgumentException("User is not a member of this school.");
+            }
+
+            user.SchoolId = null;
+            user.School = null;
+            user.IsParent = false;
+            user.IsStudent = false;
+            user.IsTeacher = false;
+            var userRoles = await roleService.GetUserRolesAsync(userId);
+
+            foreach (var role in userRoles)
+            {
+                if (role.ToLower() != "User" && role.ToLower() != "admin" && role.ToLower() != "principal")
+                    await roleService.RemoveUserFromRoleAsync(userId.ToString(), role);
+            }
 
             await repo.SaveChangesAsync();
         }

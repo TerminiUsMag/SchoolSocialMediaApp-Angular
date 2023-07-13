@@ -39,7 +39,16 @@ namespace SchoolSocialMediaApp.Core.Services
                     throw new ArgumentException("Role could not be created.");
                 }
                 var result = await userManager.AddToRoleAsync(user, roleName);
-                user.IsPrincipal = true;
+                if (roleName.ToLower() == "principal")
+                    user.IsPrincipal = true;
+                else if (roleName.ToLower() == "teacher")
+                    user.IsTeacher = true;
+                else if (roleName.ToLower() == "student")
+                    user.IsStudent = true;
+                else if (roleName.ToLower() == "parent")
+                    user.IsParent = true;
+                else if (roleName.ToLower() == "admin")
+                    user.IsAdmin = true;
                 return true;
             }
             catch (Exception)
@@ -69,23 +78,23 @@ namespace SchoolSocialMediaApp.Core.Services
 
             var result = new List<string>();
 
-            if(await userManager.IsInRoleAsync(user, "Principal"))
+            if (await userManager.IsInRoleAsync(user, "Principal"))
             {
                 result.Add("Principal");
             }
-            if(await userManager.IsInRoleAsync(user, "Teacher"))
+            if (await userManager.IsInRoleAsync(user, "Teacher"))
             {
                 result.Add("Teacher");
             }
-            if(await userManager.IsInRoleAsync(user, "Student"))
+            if (await userManager.IsInRoleAsync(user, "Student"))
             {
                 result.Add("Student");
             }
-            if(await userManager.IsInRoleAsync(user, "Parent"))
+            if (await userManager.IsInRoleAsync(user, "Parent"))
             {
                 result.Add("Parent");
             }
-            if(await userManager.IsInRoleAsync(user, "Admin"))
+            if (await userManager.IsInRoleAsync(user, "Admin"))
             {
                 result.Add("Admin");
             }
@@ -96,7 +105,7 @@ namespace SchoolSocialMediaApp.Core.Services
         public bool IsUserPartOfSchool(ApplicationUser user)
         {
             var u = user;
-            if (!u.IsParent && !u.IsPrincipal && !u.IsTeacher && !u.IsStudent && (u.SchoolId is null||u.SchoolId==Guid.Empty))
+            if (!u.IsParent && !u.IsPrincipal && !u.IsTeacher && !u.IsStudent && (u.SchoolId is null || u.SchoolId == Guid.Empty))
             {
                 return false;
             }
