@@ -2,8 +2,9 @@
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using SchoolSocialMediaApp.ViewModels.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Comment;
 using SchoolSocialMediaApp.ViewModels.Models.Post;
+using SchoolSocialMediaApp.ViewModels.Models.User;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
 namespace SchoolSocialMediaApp.Core.Services
@@ -72,7 +73,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<IEnumerable<PostViewModel>> GetAllPostsAsync(Guid schoolId)
         {
-            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).OrderByDescending(p=>p.CreatedOn).Select(p => new PostViewModel
+            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).OrderByDescending(p => p.CreatedOn).Select(p => new PostViewModel
             {
                 Comments = p.Comments.Select(c => new CommentViewModel
                 {

@@ -2,8 +2,8 @@
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using SchoolSocialMediaApp.ViewModels.Models;
 using SchoolSocialMediaApp.ViewModels.Models.Invitation;
+using SchoolSocialMediaApp.ViewModels.Models.School;
 
 namespace SchoolSocialMediaApp.Core.Services
 {
@@ -70,7 +70,7 @@ namespace SchoolSocialMediaApp.Core.Services
             invitation.IsPending = false;
             user.IsInvited = false;
             repo.Delete(invitation);
-            await repo.SaveChangesAsync(); 
+            await repo.SaveChangesAsync();
         }
 
         public async Task DeleteAllInvitationsBySchoolIdAsync(Guid schoolId)
