@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using SchoolSocialMediaApp.ViewModels.Models;
+using SchoolSocialMediaApp.ViewModels.Models.School;
 
 namespace SchoolSocialMediaApp.Controllers
 {

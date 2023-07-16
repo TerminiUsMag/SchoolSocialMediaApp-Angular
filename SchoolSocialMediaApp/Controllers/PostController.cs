@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
-using SchoolSocialMediaApp.ViewModels.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Post;
 
 namespace SchoolSocialMediaApp.Controllers
 {

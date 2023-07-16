@@ -1,4 +1,4 @@
-﻿using SchoolSocialMediaApp.ViewModels.Models;
+﻿using SchoolSocialMediaApp.ViewModels.Models.School;
 
 namespace SchoolSocialMediaApp.Core.Contracts
 {

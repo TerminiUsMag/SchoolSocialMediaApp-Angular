@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.School;
 using System.ComponentModel.DataAnnotations;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
-namespace SchoolSocialMediaApp.ViewModels.Models
+namespace SchoolSocialMediaApp.ViewModels.Models.Invitation
 {
     public class InvitationViewModel
     {
@@ -32,7 +33,7 @@ namespace SchoolSocialMediaApp.ViewModels.Models
         public Guid SchoolId { get; set; }
 
         [Comment("School is the school the invitation is for.")]
-        public SchoolViewModel? School{ get; set; }
+        public SchoolViewModel? School { get; set; }
 
         [Comment("Role is the role the invitation is for.")]
         [Required]

@@ -1,4 +1,6 @@
-﻿namespace SchoolSocialMediaApp.ViewModels.Models
+﻿using SchoolSocialMediaApp.ViewModels.Models.User;
+
+namespace SchoolSocialMediaApp.ViewModels.Models.Comment
 {
     public class CommentsDislikesViewModel
     {

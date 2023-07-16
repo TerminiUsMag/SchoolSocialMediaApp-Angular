@@ -1,4 +1,4 @@
-﻿namespace SchoolSocialMediaApp.ViewModels.Models
+﻿namespace SchoolSocialMediaApp.ViewModels.Models.Post
 {
     public class PostDislikesViewModel
     {

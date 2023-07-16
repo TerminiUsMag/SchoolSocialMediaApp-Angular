@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
-namespace SchoolSocialMediaApp.ViewModels.Models
+namespace SchoolSocialMediaApp.ViewModels.Models.Post
 {
     public class PostCreateModel
     {

@@ -1,4 +1,7 @@
-﻿namespace SchoolSocialMediaApp.ViewModels.Models
+﻿using SchoolSocialMediaApp.ViewModels.Models.Post;
+using SchoolSocialMediaApp.ViewModels.Models.User;
+
+namespace SchoolSocialMediaApp.ViewModels.Models.Comment
 {
     public class CommentViewModel
     {

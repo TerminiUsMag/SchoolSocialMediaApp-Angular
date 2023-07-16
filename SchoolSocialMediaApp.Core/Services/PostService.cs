@@ -3,6 +3,7 @@ using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Post;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
 namespace SchoolSocialMediaApp.Core.Services

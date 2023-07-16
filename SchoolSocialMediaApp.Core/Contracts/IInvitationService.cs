@@ -1,5 +1,5 @@
 ﻿using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using SchoolSocialMediaApp.ViewModels.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Invitation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
