@@ -19,10 +19,6 @@
         //Comment Validation Constants
         public const int MaxCommentLength = 1000;
 
-        //User Validation Constants
-        public const int MaxUserFirstNameLength = 50;
-        public const int MaxUserLastNameLength = 50;
-
         //Common Validation Constants
         public const int MaxImageUrlLength = 200;
 
@@ -47,12 +43,15 @@
 
         //WEB Validation Constants
 
-        //RegisterViewModel Validation Constants
+        //User Validation Constants
         public const int MaxFirstNameLength = 50;
         public const int MinFirstNameLength = 2;
 
         public const int MaxLastNameLength = 50;
         public const int MinLastNameLength = 2;
+
+        public const int MaxUsernameLength = 100;
+        public const int MinUsernameLength = 2;
 
         public const int MaxEmailLength = 320;
         public const int MinEmailLength = 3;
@@ -63,12 +62,23 @@
         public const int MaxPhoneNumberLength = 15;
         public const int MinPhoneNumberLength = 7;
 
-        public const string PasswordsDoNotMatch = "Passwords do not match.";
-        public const string InvalidEmail = "Invalid Email (Must be between {2} and {1} characters).";
-        public const string InvalidPassword = "Invalid Password (Must be between {2} and {1} characters).";
         public const string InvalidFirstName = "Invalid First Name (Must be between {2} and {1} characters).";
         public const string InvalidLastName = "Invalid Last Name (Must be between {2} and {1} characters).";
+        public const string InvalidUsername = "Invalid Username (Must be between {2} and {1} characters).";
+        public const string InvalidEmail = "Invalid Email (Must be between {2} and {1} characters).";
         public const string InvalidPhoneNumber = "Invalid Phone Number (Must be between {2} and {1} characters).";
+        public const string InvalidPassword = "Invalid Password (Must be between {2} and {1} characters).";
+        public const string PasswordsDoNotMatch = "Passwords do not match.";
+
+        public const string RequiredFirstName = "First name is required.";
+        public const string RequiredLastName = "Last name is required.";
+        public const string RequiredUsername = "Username is required.";
+        public const string RequiredEmail = "Email is required.";
+        public const string RequiredPhoneNumber = "Phone number is required.";
+        public const string RequiredPassword = "Password is required.";
+        public const string RequiredConfirmPassword = "Password confirmation is required.";
+        public const string RequiredImageUrl = "Image url is required.";
+        public const string RequiredId = "Id is required.";
 
         public const string RequiredEmailRegisterViewModel = "Email is required for account creation.";
         public const string RequiredPasswordRegisterViewModel = "Password is required for account creation.";

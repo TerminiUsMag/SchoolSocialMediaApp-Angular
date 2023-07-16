@@ -38,12 +38,12 @@ namespace SchoolSocialMediaApp.ViewModels.Models.School
         public ApplicationUser Principal { get; set; } = null!;
 
         [Comment("Parents in the school.")]
-        public List<ApplicationUser> Parents { get; set; } = new List<ApplicationUser>();
+        public ICollection<ApplicationUser> Parents { get; set; } = new List<ApplicationUser>();
 
         [Comment("Students in the school.")]
-        public List<ApplicationUser> Students { get; set; } = new List<ApplicationUser>();
+        public ICollection<ApplicationUser> Students { get; set; } = new List<ApplicationUser>();
 
         [Comment("Teachers in the school.")]
-        public List<ApplicationUser> Teachers { get; set; } = new List<ApplicationUser>();
+        public ICollection<ApplicationUser> Teachers { get; set; } = new List<ApplicationUser>();
     }
 }

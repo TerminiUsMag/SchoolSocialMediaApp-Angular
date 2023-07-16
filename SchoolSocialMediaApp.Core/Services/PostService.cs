@@ -71,7 +71,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
-        public async Task<IEnumerable<PostViewModel>> GetAllPostsAsync(Guid schoolId)
+        public async Task<ICollection<PostViewModel>> GetAllPostsAsync(Guid schoolId)
         {
             var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).OrderByDescending(p => p.CreatedOn).Select(p => new PostViewModel
             {
@@ -85,7 +85,7 @@ namespace SchoolSocialMediaApp.Core.Services
                         Username = c.Creator.UserName
                     },
                     CreatedOn = c.CreatedOn
-                }),
+                }).ToList(),
                 Creator = new UserViewModel
                 {
                     Id = p.Creator.Id,
@@ -97,13 +97,13 @@ namespace SchoolSocialMediaApp.Core.Services
                 {
                     DislikerId = d.UserId,
                     PostId = d.PostId
-                }),
+                }).ToList(),
                 Id = p.Id,
                 Likes = p.Likes.Select(l => new PostLikesViewModel
                 {
                     LikerId = l.UserId,
                     PostId = l.PostId,
-                }),
+                }).ToList(),
                 Content = p.Content,
                 CreatorId = p.CreatorId,
                 IsEdited = p.IsEdited,
@@ -132,14 +132,14 @@ namespace SchoolSocialMediaApp.Core.Services
                     {
                         CommentId = cdl.CommentId,
                         UserId = cdl.DislikerId
-                    }),
+                    }).ToList(),
                     Likes = c.Likes.Select(cl => new CommentsLikes
                     {
                         CommentId = cl.CommentId,
                         UserId = cl.LikerId
-                    }),
+                    }).ToList(),
                     PostId = c.PostId,
-                }),
+                }).ToList(),
                 Content = model.Content,
                 CreatedOn = post.CreatedOn,
                 CreatorId = post.CreatorId,
@@ -149,12 +149,12 @@ namespace SchoolSocialMediaApp.Core.Services
                 {
                     PostId = l.PostId,
                     UserId = l.LikerId
-                }),
+                }).ToList(),
                 Dislikes = model.Dislikes.Select(dl => new PostsDislikes
                 {
                     PostId = dl.PostId,
                     UserId = dl.DislikerId
-                }),
+                }).ToList(),
                 Id = model.Id
             };
 
@@ -204,17 +204,17 @@ namespace SchoolSocialMediaApp.Core.Services
                         ImageUrl = c.Creator.ImageUrl,
                         Username = c.Creator.UserName
                     }
-                }),
+                }).ToList(),
                 Dislikes = post.Dislikes.Select(d => new PostDislikesViewModel
                 {
                     DislikerId = d.UserId,
                     PostId = d.PostId
-                }),
+                }).ToList(),
                 Likes = post.Likes.Select(l => new PostLikesViewModel
                 {
                     LikerId = l.UserId,
                     PostId = l.PostId,
-                }),
+                }).ToList(),
                 LikesCount = post.Likes.Count(),
                 DislikesCount = post.Dislikes.Count(),
                 SchoolId = post.SchoolId,
@@ -249,6 +249,76 @@ namespace SchoolSocialMediaApp.Core.Services
             repo.Delete(post);
             await repo.SaveChangesAsync();
 
+        }
+
+        public async Task LikePostAsync(Guid postId, Guid userId)
+        {
+            var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == postId);
+            if (post is null)
+            {
+                throw new ArgumentException("Post does not exist.");
+            }
+            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+            {
+                throw new ArgumentException("User does not exist.");
+            }
+            post.Likes.Add(new PostsLikes
+            {
+                PostId = postId,
+                UserId = userId
+            });
+
+            await repo.SaveChangesAsync();
+        }
+
+        public async Task UnlikePostAsync(Guid postId, Guid userId)
+        {
+            var post = await repo.All<Post>().Include(p=>p.Likes).FirstOrDefaultAsync(p => p.Id == postId);
+            if(post is null)
+            {
+                throw new ArgumentException("Post does not exist.");
+            }
+            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            if(user is null)
+            {
+                throw new ArgumentException("User does not exist.");
+            }
+            var like = post.Likes.FirstOrDefault(l => l.PostId == postId && l.UserId == userId);
+            if(like is null)
+            {
+                throw new ArgumentException("You have not liked this post.");
+            }
+            post.Likes.Remove(like);
+
+            await repo.SaveChangesAsync();
+        }
+
+        public async Task AddCommentAsync(Guid postId, Guid userId, string commentText)
+        {
+            var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == postId);
+            if(post is null)
+            {
+                throw new ArgumentException("Post does not exist.");
+            }
+            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            if(user is null)
+            {
+                throw new ArgumentException("User does not exist.");
+            }
+            var comment = new Comment
+            {
+                Content = commentText,
+                CreatorId = userId,
+                PostId = postId,
+                CreatedOn = DateTime.Now,
+                Likes = new List<CommentsLikes>(),
+                Dislikes = new List<CommentsDislikes>(),
+                Creator = user,
+                Post = post
+            };
+            post.Comments.Add(comment);
+            await repo.SaveChangesAsync();
         }
     }
 }

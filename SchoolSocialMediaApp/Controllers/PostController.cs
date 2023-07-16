@@ -118,5 +118,46 @@ namespace SchoolSocialMediaApp.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Like(Guid PostId, bool liked)
+        {
+            var userId = this.GetUserId();
+            bool result = false;
+
+            try
+            {
+                if (!liked)
+                    await postService.LikePostAsync(PostId, userId);
+                else
+                    await postService.UnlikePostAsync(PostId, userId);
+                result = true;
+            }
+            catch (ArgumentException ae)
+            {
+                ModelState.AddModelError("", ae.Message);
+                result = false;
+            }
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddComment(Guid PostId, string commentText)
+        {
+            var userId = this.GetUserId();
+            bool result = false;
+
+            try
+            {
+                await postService.AddCommentAsync(PostId, userId, commentText);
+                result = true;
+            }
+            catch (ArgumentException ae)
+            {
+                ModelState.AddModelError("", ae.Message);
+                result = false;
+            }
+            return Json(new { success = result });
+        }
     }
 }

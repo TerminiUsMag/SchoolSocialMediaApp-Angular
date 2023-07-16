@@ -95,11 +95,19 @@ app.UseStaticFiles(new StaticFileOptions
         Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images")),
     RequestPath = "/images"
     
-});app.UseStaticFiles(new StaticFileOptions
+});
+app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
         Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images","home-page")),
     RequestPath = "/images/home-page"
+    
+});
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images","user-images")),
+    RequestPath = "/images/user-images"
     
 });
 

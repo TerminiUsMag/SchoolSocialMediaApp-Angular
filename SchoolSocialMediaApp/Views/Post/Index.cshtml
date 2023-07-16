@@ -1,6 +1,15 @@
-﻿@model List<PostViewModel>
+﻿@using Microsoft.AspNetCore.Identity;
+@using SchoolSocialMediaApp.Infrastructure.Data.Models;
+
+@inject UserManager<ApplicationUser> UserManager;
+
+@model List<PostViewModel>
 @{
     ViewData["Title"] = "Posts Index";
+    var user = await UserManager.GetUserAsync(User);
+    var userId = user.Id;
+    var isPrincipal = await UserManager.IsInRoleAsync(user, "Principal");
+    var isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
 }
 
 <h1>@ViewData["Title"]  <i class="fa-sharp fa-solid fa-pen-to-square"></i></h1>
@@ -12,29 +21,59 @@
     {
         foreach (var post in Model)
         {
-            <div class="row">
-                <div class="col-md-6">
-                </div>
-                <div class="post">
-                    <div class="post-header">
-                        <img src="@post.Creator.ImageUrl" alt="Profile Picture" class="profile-picture" style="max-width:15rem;" />
-                        <div class="user-info">
-                            <h4>@post.Creator.Username</h4>
-                            @if (post.IsEdited)
-                            {
-                                <p>@post.CreatedOn <i class="fa-solid fa-pen"></i> </p>
-                            }
-                            else
-                            {
-                                <p>@post.CreatedOn</p>
-                            }
+            <div class="container mt-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex align-items-center">
+                                    <img src="@post.Creator.ImageUrl" alt="Profile Picture" class="rounded-circle mr-3" style="width: 40px; height: 40px;">
+                                    <h5 class="mb-0 m-2">@post.Creator.Username</h5>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">@post.Content</p>
+                                <div>
+                                    <p class="card-text text-muted">
+                                        @if (post.IsEdited)
+                                        {
+                                            <span>Posted on @post.CreatedOn <i class="fa-solid fa-pen"></i> </span>
+                                        }
+                                        else
+                                        {
+                                            <span>Posted on @post.CreatedOn</span>
+                                        }
+                                    </p>
+
+                                </div>
+                                <p class="card-text text-muted">Likes: <span class="likes-count">@post.Likes.Count()</span></p>
+                                <form id="commentForm">
+                                    <input type="hidden" id="postId" value="@post.Id" />
+                                    <textarea class="card-text container" id="commentText" rows="3" required></textarea>
+                                    <button class="btn btn-primary mr-2 like-button" data-post-id="@post.Id" data-liked="false">Like</button>
+                                    <button type="submit" class="btn btn-secondary">Add Comment</button>
+                                </form>
+
+                                @if (userId == post.CreatorId || isAdmin || isPrincipal)
+                                {
+                                    <a asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id" class="btn btn-success mr-2">Edit</a>
+                                    <a data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeletePostId('@post.Id')" class="btn btn-danger">Delete</a>
+                                }
+
+
+                                <div id="comments-container">
+                                    @foreach (var comment in post.Comments)
+                                    {
+                                        <div>
+                                            <p>@comment.Content</p>
+                                            <p>Posted by: @comment.Creator.Username | @comment.CreatedOn</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
+
                     </div>
-                    <div class="post-content">
-                        <p>@Html.Raw(post.Content)</p>
-                    </div>
-                    <a class="btn btn-primary" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
-                    <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeletePostId('@post.Id')">Delete</a>
                 </div>
             </div>
         }
@@ -75,4 +114,106 @@ else
     function setDeletePostId(postId) {
         document.getElementById("deletePostId").value = postId;
     }
+</script>
+
+@*<script>
+    $(document).ready(function () {
+        // Handle like button click
+        $(".like-button").click(function () {
+            var postId = $(this).data("post-id");
+            likePost(postId);
+        });
+
+        function likePost(postId) {
+            $.ajax({
+                type: "POST",
+                url: "/Post/Like",
+                data: { postId: postId },
+                success: function (response) {
+                    // Update the UI based on the server response
+                    if (response.success) {
+                        var likesCountElement = $(".likes-count");
+                        var currentLikesCount = parseInt(likesCountElement.text());
+                        var newLikesCount = currentLikesCount + 1;
+                        likesCountElement.text(newLikesCount);
+                    } else {
+                        console.log("Failed to like the post.");
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error: " + errorThrown);
+                }
+            });
+        }
+    });
+</script>*@
+
+<script>
+    //like button
+    $(document).ready(function () {
+        // Handle like button click
+        $(".like-button").click(function () {
+            var likeButton = $(this);
+            var postId = likeButton.data("post-id");
+            var liked = likeButton.data("liked");
+
+            // Send an AJAX request to the server to like/dislike the post
+            $.ajax({
+                type: "POST",
+                url: "/Post/Like",
+                data: { postId: postId, liked: !liked }, // Toggle the liked status
+                success: function (response) {
+                    // Update the UI based on the server response
+                    if (response.success) {
+                        // Toggle the like/dislike status in the UI
+                        if (liked) {
+                            likeButton.text("Like");
+                            likeButton.data("liked", false);
+                        } else {
+                            likeButton.text("Dislike");
+                            likeButton.data("liked", true);
+                        }
+
+                        // Update the likes count for the specific post
+                        var likesCountElement = likeButton.closest(".card-body").find(".likes-count");
+                        var currentLikesCount = parseInt(likesCountElement.text());
+                        var newLikesCount = currentLikesCount + (liked ? -1 : 1);
+                        likesCountElement.text(newLikesCount);
+                    } else {
+                        console.log("Failed to like/dislike the post.");
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error: " + errorThrown);
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    //comment button
+    $(document).ready(function () {
+        $("#commentForm").submit(function (event) {
+            event.preventDefault();
+            var postId = $("#postId").val();
+            var commentText = $("#commentText").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/Post/AddComment",
+                data: { postId: postId, commentText: commentText },
+                success: function (response) {
+                    // Update the comments container with the new comment
+                    $("#comments-container").append(response);
+
+                    // Clear the comment text area
+                    $("#commentText").val("");
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error: " + errorThrown);
+                }
+            });
+        });
+    });
 </script>

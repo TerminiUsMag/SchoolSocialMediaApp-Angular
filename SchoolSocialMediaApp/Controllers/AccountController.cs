@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
@@ -143,24 +142,6 @@ namespace SchoolSocialMediaApp.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Profile()
-        //{
-        //    var user = await accountService.GetUserAsync();
-
-        //    var model = new ProfileViewModel()
-        //    {
-        //        FirstName = user.FirstName,
-        //        LastName = user.LastName,
-        //        Email = user.Email,
-        //        PhoneNumber = user.PhoneNumber,
-        //        ImageUrl = user.ImageUrl,
-        //        CreatedOn = user.CreatedOn
-        //    };
-
-        //    return View(model);
-        //}
-
         [HttpGet]
         [Authorize(Policy = "CanBePrincipal")]
         public IActionResult BecomePrincipal(string errorMsg)
@@ -189,5 +170,51 @@ namespace SchoolSocialMediaApp.Controllers
             ViewBag.Error = msg;
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Manage()
+        {
+            var userId = this.GetUserId();
+            if (userId == Guid.Empty)
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+            var model = await accountService.GetUserManageViewModelAsync(userId.ToString());
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Manage(UserManageViewModel model)
+        {
+            var userId = this.GetUserId();
+            if (userId == Guid.Empty)
+            {
+                return RedirectToAction(nameof(AccountController.Login), "Account");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
+            }
+
+            var result = await accountService.UpdateAsync(userId, model);
+
+            if (!result)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
+            }
+
+            return RedirectToAction("AccountChangesSuccess");
+        }
+
+        [HttpGet]
+        public IActionResult AccountChangesSuccess()
+        {
+            return View();
+        }
+
     }
 }

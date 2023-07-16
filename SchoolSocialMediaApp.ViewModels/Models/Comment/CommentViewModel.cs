@@ -19,8 +19,8 @@ namespace SchoolSocialMediaApp.ViewModels.Models.Comment
 
         public PostCreateModel Post { get; set; } = null!;
 
-        public IEnumerable<CommentsLikesViewModel> Likes { get; set; } = new List<CommentsLikesViewModel>();
+        public ICollection<CommentsLikesViewModel> Likes { get; set; } = new List<CommentsLikesViewModel>();
 
-        public IEnumerable<CommentsDislikesViewModel> Dislikes { get; set; } = new List<CommentsDislikesViewModel>();
+        public ICollection<CommentsDislikesViewModel> Dislikes { get; set; } = new List<CommentsDislikesViewModel>();
     }
 }

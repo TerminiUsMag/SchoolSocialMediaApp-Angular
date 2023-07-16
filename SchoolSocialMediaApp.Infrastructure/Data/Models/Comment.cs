@@ -40,9 +40,9 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         public ApplicationUser Creator { get; set; } = null!;
 
         [Comment("Likes of the comment.")]
-        public IEnumerable<CommentsLikes> Likes { get; set; } = new List<CommentsLikes>();
+        public ICollection<CommentsLikes> Likes { get; set; } = new List<CommentsLikes>();
 
         [Comment("Dislikes of the comment.")]
-        public IEnumerable<CommentsDislikes> Dislikes { get; set; } = new List<CommentsDislikes>();
+        public ICollection<CommentsDislikes> Dislikes { get; set; } = new List<CommentsDislikes>();
     }
 }

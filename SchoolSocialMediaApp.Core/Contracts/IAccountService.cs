@@ -1,4 +1,5 @@
 ﻿using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.User;
 
 namespace SchoolSocialMediaApp.Core.Contracts
 {
@@ -14,6 +15,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task<bool> UsernameIsFree(string username);
         Task<bool> DeleteAsync(Guid userId);
         Task<bool> UserExists(Guid userId);
-
+        Task<UserManageViewModel> GetUserManageViewModelAsync(string userId);
+        Task<bool> UpdateAsync(Guid userId, UserManageViewModel model);
     }
 }

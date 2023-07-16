@@ -22,4 +22,8 @@
     <ProjectReference Include="..\SchoolSocialMediaApp.ViewModels\SchoolSocialMediaApp.ViewModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\user-images\" />
+  </ItemGroup>
+
 </Project>

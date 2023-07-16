@@ -42,6 +42,6 @@ namespace SchoolSocialMediaApp.ViewModels.Models.Invitation
         public DateTime? DeclinedOn { get; set; }
 
         [Comment("Candidates is a list of users who can be invited to a school.")]
-        public List<ApplicationUser> Candidates { get; set; } = new List<ApplicationUser>();
+        public ICollection<ApplicationUser> Candidates { get; set; } = new List<ApplicationUser>();
     }
 }

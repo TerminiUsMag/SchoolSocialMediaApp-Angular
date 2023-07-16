@@ -40,13 +40,13 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         public School School { get; set; } = null!;
 
         [Comment("The comments on the post.")]
-        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
         [Comment("The likes on the post.")]
-        public IEnumerable<PostsLikes> Likes { get; set; } = new List<PostsLikes>();
+        public ICollection<PostsLikes> Likes { get; set; } = new List<PostsLikes>();
 
         [Comment("The dislikes on the post.")]
-        public IEnumerable<PostsDislikes> Dislikes { get; set; } = new List<PostsDislikes>();
+        public ICollection<PostsDislikes> Dislikes { get; set; } = new List<PostsDislikes>();
 
         [Comment("Is the post edited.")]
         public bool IsEdited { get; set; }

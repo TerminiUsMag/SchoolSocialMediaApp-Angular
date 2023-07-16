@@ -39,13 +39,13 @@ namespace SchoolSocialMediaApp.ViewModels.Models.Post
         public SchoolViewModel School { get; set; } = null!;
 
         [Comment("Likes")]
-        public IEnumerable<PostLikesViewModel> Likes { get; set; } = new List<PostLikesViewModel>();
+        public ICollection<PostLikesViewModel> Likes { get; set; } = new List<PostLikesViewModel>();
 
         [Comment("Dislikes")]
-        public IEnumerable<PostDislikesViewModel> Dislikes { get; set; } = new List<PostDislikesViewModel>();
+        public ICollection<PostDislikesViewModel> Dislikes { get; set; } = new List<PostDislikesViewModel>();
 
         [Comment("Comments")]
-        public IEnumerable<CommentViewModel> Comments { get; set; } = new List<CommentViewModel>();
+        public ICollection<CommentViewModel> Comments { get; set; } = new List<CommentViewModel>();
 
         [Comment("Post Likes Count")]
         public int LikesCount { get; set; } = 0;

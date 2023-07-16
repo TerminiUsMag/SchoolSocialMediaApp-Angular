@@ -48,10 +48,10 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         //public IEnumerable<ApplicationUser> Students { get; set; } = new List<ApplicationUser>();
 
         [Comment("The posts of the school.")]
-        public IEnumerable<Post> Posts { get; set; } = new List<Post>();
+        public ICollection<Post> Posts { get; set; } = new List<Post>();
 
         [Comment("The invitations of the school.")]
-        public IEnumerable<Invitation> Invitations { get; set; } = null!;
+        public ICollection<Invitation> Invitations { get; set; } = null!;
 
     }
 }
