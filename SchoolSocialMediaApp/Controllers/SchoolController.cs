@@ -13,7 +13,7 @@ namespace SchoolSocialMediaApp.Controllers
         private readonly IInvitationService invitationService;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public SchoolController(ISchoolService _schoolService,IInvitationService _invitationService,UserManager<ApplicationUser> _userManager)
+        public SchoolController(ISchoolService _schoolService, IInvitationService _invitationService, UserManager<ApplicationUser> _userManager)
         {
             this.schoolService = _schoolService;
             this.invitationService = _invitationService;
@@ -118,9 +118,38 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpPost]
         [Authorize(Policy = "Principal")]
+        public async Task<IActionResult> Manage(SchoolManageViewModel model)
+        {
+            var userId = this.GetUserId();
+            if (userId == Guid.Empty)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
+            }
+
+            try
+            {
+                await schoolService.UpdateSchoolAsync(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(model);
+            }
+
+            return RedirectToAction("Manage", "School", new { message = "Updated successfully", classOfMessage = "text-bg-success" });
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "Principal")]
         public async Task<IActionResult> Remove(Guid userId, Guid schoolId)
         {
-            if(userId == Guid.Empty || schoolId == Guid.Empty)
+            if (userId == Guid.Empty || schoolId == Guid.Empty)
             {
                 return RedirectToAction("Manage", new { message = "Invalid user or school id." });
             }
@@ -134,9 +163,65 @@ namespace SchoolSocialMediaApp.Controllers
                 return RedirectToAction("Manage", new { message = e.Message });
             }
 
-            return RedirectToAction("Manage", new { message = "User removed successfully." , classOfMessage = "text-bg-success"});
+            return RedirectToAction("Manage", new { message = "User removed successfully.", classOfMessage = "text-bg-success" });
         }
 
-        
+        [HttpPost]
+        public async Task<IActionResult> Rename(Guid schoolId, string schoolName)
+        {
+            try
+            {
+                await schoolService.RenameSchoolAsync(schoolId, schoolName);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+
+                return Json(new { success = false, errorMsg = ex.Message });
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadPicture()
+        {
+            try
+            {
+                // Get the uploaded file from the request
+                var file = Request.Form.Files[0];
+                var fileExtension = Path.GetExtension(file.FileName);
+
+                // Check if a file was uploaded
+                if (file == null || file.Length == 0 || (fileExtension != ".jpg" && fileExtension != ".png"))
+                {
+                    return BadRequest("No file uploaded.");
+                }
+
+                // Create a unique file name to save the uploaded image
+                var fileName = Guid.NewGuid().ToString() + fileExtension;
+
+                // Specify the directory where the image will be saved
+                var imagePath = Path.Combine("wwwroot", "images", "school-images", fileName);
+
+                // Save the file to the specified path
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                //Change the Image url in the database
+                var userId = this.GetUserId();
+
+                await schoolService.ChangeSchoolPicture(userId, $"images/school-images/{fileName}");
+
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions that occur during the upload process
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
     }
 }
+

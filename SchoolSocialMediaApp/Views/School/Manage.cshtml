@@ -1,15 +1,70 @@
 ﻿@model SchoolManageViewModel
-<h1>Manage School</h1>
-@if(ViewBag.Message != null)
+
+@{
+    ViewBag.IsRenaming = false;
+    ViewBag.Title = "Manage School";
+}
+@if (ViewBag.Message != null)
 {
-<h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
 }
 
-<h2>School Details</h2>
-<p>School Name: @Model.Name</p>
-<p>Principal: @Model.Principal.FirstName @Model.Principal.LastName</p>
+<form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="name">School Name</label>
+        <input type="text" class="form-control" id="name" name="name" value="@Model.Name">
+    </div>
+    <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" class="form-control" id="location" name="location" value="@Model.Location">
+    </div>
+    <div class="form-group">
+        <label for="principal">School's Principal'</label>
+        <input type="text" class="form-control" id="principal" name="principal" value="@Model.Principal.FirstName @Model.Principal.LastName" readonly>
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description" name="description" value="@Model.Description">
+    </div>
+    <input type="hidden" name="id" value="@Model.Id">
+    <input type="hidden" name="imageUrl" value="@Model.ImageUrl">
+    <div class="form-group">
+        <label for="imageFile">Upload New Profile Picture</label>
+        <input type="file" class="form-control" id="imageFile" name="imageFile">
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
 
-<a asp-controller="Invitation" asp-action="ManageSent" asp-route-schoolId ="@Model.Id" class="btn btn-primary mb-4">Manage Sent Invitations</a>
+@*<h2 class="text-xxl-start mb-4">Manage School</h2>
+<div class="card border-0">
+    <div class="card-body p-4">
+        <div class="d-flex align-items-center">
+            <h4 class="text-success mb-3 mr-3 card-title">School Name:  </h4>
+            <h4 class="card-title mb-3 text-success school-name">@Model.Name</h4>
+            <div class="input-group mb-3 rename-group" style="display: none;">
+                <input type="text" class="form-control school-name-input" placeholder="Enter school name" value="@Model.Name" />
+                <div class="input-group-append">
+                    <button class="btn btn-success save-button" type="button">Save</button>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-small m-3 rename-button">Rename</button>
+        </div>
+        <p class="card-text">Principal: <span class="font-italic text-decoration-underline font-monospace">@Model.Principal.FirstName @Model.Principal.LastName</span></p>
+    </div>
+</div>
+
+<div class="input-group mb-3">
+    <div class="custom-file">
+        <input type="file" class="custom-file-input form-control" id="change-picture-input">
+        <label class="custom-file-label" for="change-picture-input">Choose picture</label>
+    </div>
+    <div class="input-group-append">
+        <button class="btn btn-success" type="button">Upload</button>
+    </div>
+</div>*@
+
+
+<a asp-controller="Invitation" asp-action="ManageSent" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4">Manage Sent Invitations</a>
 
 <h2>Teachers</h2>
 @if (Model.Teachers.Any())
@@ -121,3 +176,121 @@ else
     <p>No students found.</p>
 }
 <a asp-controller="Invitation" asp-action="Send" asp-route-role="Student" class="btn btn-primary mb-4">Send Invitation</a>
+
+<style>
+    .school-name {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .principal-name {
+        font-size: 18px;
+        color: #333;
+    }
+
+    /* Custom CSS for input field width */
+    .school-name-input {
+        max-width: 200px; /* Adjust the width as needed */
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $(".rename-button").click(function () {
+            var renameGroup = $(this).siblings(".rename-group");
+            var schoolNameElement = $(this).siblings(".school-name");
+
+            // Toggle the visibility of the rename input group
+            renameGroup.toggle();
+            schoolNameElement.toggle();
+
+            // Set the input box value to the current school name and focus on it
+            var schoolName = schoolNameElement.text().trim().replace("School Name: ", "");
+            renameGroup.find(".school-name-input").val(schoolName).focus();
+
+            // Hide the "Rename" button after it's clicked
+            $(this).hide();
+        });
+
+        $(".save-button").click(function () {
+            var renameGroup = $(this).closest(".rename-group");
+            var schoolNameElement = renameGroup.siblings(".school-name");
+            var schoolName = renameGroup.find(".school-name-input").val();
+
+            // Send an AJAX request to update the school name
+            $.ajax({
+                type: "POST",
+                url: "/School/Rename",
+                data: { schoolId: "@Model.Id", schoolName: schoolName },
+                success: function (response) {
+                    if (response.success) {
+                        // If renaming is successful, update the school name in the UI
+                        schoolNameElement.text(schoolName);
+                    } else {
+                        console.log("Failed to rename the school.");
+                    }
+
+                    // Toggle the visibility of the rename input group
+                    renameGroup.toggle();
+                    schoolNameElement.toggle();
+
+                    // Show the "Rename" button again
+                    renameGroup.siblings(".rename-button").show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error: " + errorThrown);
+
+                    // Toggle the visibility of the rename input group
+                    renameGroup.toggle();
+                    schoolNameElement.toggle();
+
+                    // Show the "Rename" button again
+                    renameGroup.siblings(".rename-button").show();
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).next(".custom-file-label").text(fileName);
+        });
+
+        $(".btn-success").on("click", function () {
+            // Get the selected image file
+            var fileInput = $(".custom-file-input")[0];
+            var file = fileInput.files[0];
+
+            // Create a FormData object to send the file
+            var formData = new FormData();
+            formData.append("image", file);
+
+            // Send the AJAX request to upload the file
+            $.ajax({
+                type: "POST",
+                url: "/School/UploadPicture",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        // If the upload is successful, update the UI or display a success message
+                        console.log("Image uploaded successfully.");
+                    } else {
+                        console.log("Failed to upload the image.");
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error: " + errorThrown);
+                }
+            });
+        });
+    });
+</script>
+
+

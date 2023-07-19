@@ -16,6 +16,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task<bool> DeleteAsync(Guid userId);
         Task<bool> UserExists(Guid userId);
         Task<UserManageViewModel> GetUserManageViewModelAsync(string userId);
-        Task<bool> UpdateAsync(Guid userId, UserManageViewModel model);
+        Task UpdateAsync(Guid userId, UserManageViewModel model);
     }
 }

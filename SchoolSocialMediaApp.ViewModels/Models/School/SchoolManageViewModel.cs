@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using System.ComponentModel.DataAnnotations;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
@@ -24,6 +25,9 @@ namespace SchoolSocialMediaApp.ViewModels.Models.School
         [Required]
         public string ImageUrl { get; set; } = null!;
 
+        [Comment("The Image File of the school")]
+        public IFormFile? ImageFile { get; set; }
+
         [Comment("The location of the school.")]
         [StringLength(validation.MaxSchoolLocationLength, MinimumLength = validation.MinSchoolLocationLength)]
         [Required]
@@ -34,8 +38,7 @@ namespace SchoolSocialMediaApp.ViewModels.Models.School
         public Guid PrincipalId { get; set; }
 
         [Comment("The principal of the school.")]
-        [Required]
-        public ApplicationUser Principal { get; set; } = null!;
+        public ApplicationUser? Principal { get; set; }
 
         [Comment("Parents in the school.")]
         public ICollection<ApplicationUser> Parents { get; set; } = new List<ApplicationUser>();

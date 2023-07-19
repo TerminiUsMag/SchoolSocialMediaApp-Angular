@@ -199,9 +199,11 @@ namespace SchoolSocialMediaApp.Controllers
                 return View(model);
             }
 
-            var result = await accountService.UpdateAsync(userId, model);
-
-            if (!result)
+            try
+            {
+                await accountService.UpdateAsync(userId, model);
+            }
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", "Something went wrong");
                 return View(model);

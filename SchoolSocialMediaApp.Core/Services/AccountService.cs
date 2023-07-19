@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -158,39 +157,45 @@ namespace SchoolSocialMediaApp.Core.Services
             return false;
         }
 
-        public async Task<bool> UpdateAsync(Guid userId, UserManageViewModel model)
+        public async Task UpdateAsync(Guid userId, UserManageViewModel model)
         {
-            var result = false;
             var user = await userManager.FindByIdAsync(userId.ToString());
 
             if (user is null)
             {
-                return result;
+                throw new ArgumentException("User doesn't exist");
             }
 
-
-            // Check if a profile picture was uploaded
-            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            try
             {
-                // Generate a unique file name for the uploaded picture
-                string uniqueFileName = model.Id.ToString() + "_" + Guid.NewGuid().ToString() + ".jpg";
+                // Get the uploaded file from the request
+                var file = model.ImageFile;
+                var fileExtension = Path.GetExtension(file?.FileName);
 
-                //// Set the path to save the file (wwwroot/user-images)
-                //string imagePath = $"/images/user-images/{uniqueFileName}";
-
-                // Set the path to save the file (wwwroot/images/user-images)
-                string imagePath = Path.Combine(env.WebRootPath, "images", "user-images", uniqueFileName);
-
-                // Save the uploaded file to the server
-                using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                // Check if a file was uploaded
+                if ((file is not null || file?.Length != 0) && (fileExtension == ".jpg" || fileExtension == ".png"))
                 {
-                    await model.ImageFile.CopyToAsync(fileStream);
+
+
+                    // Create a unique file name to save the uploaded image
+                    var fileName = Guid.NewGuid().ToString() + fileExtension;
+
+                    // Specify the directory where the image will be saved
+                    var imagePath = Path.Combine(env.WebRootPath, "images", "user-images", fileName);
+
+                    // Save the file to the specified path
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        await file!.CopyToAsync(stream);
+                    }
+
+                    model.ImageUrl = $"images/user-images/{fileName}";
                 }
 
-                // Update the user's profile with the file path or uniqueFileName as needed
-                // For example, you might store the file path in a database or link it to the user's profile.
-                // Your implementation will depend on your data storage strategy.
-                model.ImageUrl = $"images/user-images/{uniqueFileName}";
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException(ex.Message);
             }
 
             user.FirstName = model.FirstName;
@@ -204,9 +209,6 @@ namespace SchoolSocialMediaApp.Core.Services
             user.NormalizedEmail = model.Email.ToUpper();
 
             await repo.SaveChangesAsync();
-            result = true;
-
-            return result;
         }
 
         public async Task<bool> UserExists(Guid userId)

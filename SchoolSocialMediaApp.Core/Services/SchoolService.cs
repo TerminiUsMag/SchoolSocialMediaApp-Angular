@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
@@ -12,26 +13,18 @@ namespace SchoolSocialMediaApp.Core.Services
         private readonly IRepository repo;
         private readonly IRoleService roleService;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IWebHostEnvironment env;
 
-        public SchoolService(IRepository _repo, IRoleService _roleService, UserManager<ApplicationUser> _userManager)
+        public SchoolService(IRepository _repo, IRoleService _roleService, UserManager<ApplicationUser> _userManager,IWebHostEnvironment _env)
         {
             this.repo = _repo;
             this.roleService = _roleService;
             this.userManager = _userManager;
+            this.env = _env;
         }
 
         public async Task<SchoolViewModel> CreateSchoolAsync(SchoolViewModel model, Guid userId)
         {
-            //var principal = await repo.AllReadonly<Principal>().FirstOrDefaultAsync(x => x.UserId == userId);
-            //if (principal is not null)
-            //{
-            //    throw new ArgumentException("User is already a principal of another school.");
-            //}
-            //principal = new Principal
-            //{
-            //    UserId = userId,
-            //    Id = Guid.NewGuid()
-            //};
             var userIsPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
             if (userIsPrincipal)
             {
@@ -58,10 +51,6 @@ namespace SchoolSocialMediaApp.Core.Services
                 PrincipalId = userId,
             };
 
-            //principal.School = school;
-            //principal.SchoolId = school.Id;
-
-            //await repo.AddAsync<Principal>(principal);
             await repo.AddAsync<School>(school);
 
             await repo.SaveChangesAsync();
@@ -355,6 +344,82 @@ namespace SchoolSocialMediaApp.Core.Services
             }
 
             await repo.SaveChangesAsync();
+        }
+
+        public async Task RenameSchoolAsync(Guid schoolId, string schoolName)
+        {
+            var school = await repo.All<School>().Where(s => s.Id == schoolId).FirstOrDefaultAsync();
+            if (school is null)
+            {
+                throw new ArgumentException("School doesn't exist");
+            }
+
+            if (await repo.All<School>().AnyAsync(s => s.Name == schoolName))
+            {
+                throw new ArgumentException("Name is already taken");
+            }
+
+            school.Name = schoolName;
+
+            await repo.SaveChangesAsync();
+        }
+
+        public async Task ChangeSchoolPicture(Guid userId, string imagePath)
+        {
+            var school = await this.GetSchoolByUserIdAsync(userId);
+            if (school is null)
+            {
+                throw new ArgumentException("School doesn't exist");
+            }
+
+            school.ImageUrl = imagePath;
+            await UpdateSchoolAsync(school);
+        }
+
+        public async Task UpdateSchoolAsync(SchoolManageViewModel model)
+        {
+            var school = await repo.All<School>().Where(s=>s.Id == model.Id).FirstOrDefaultAsync();
+            if (school is null)
+            {
+                throw new ArgumentException("School doesn't exist");
+            }
+
+            try
+            {
+                // Get the uploaded file from the request
+                var file = model.ImageFile;
+                var fileExtension = Path.GetExtension(file?.FileName);
+
+                // Check if a file was uploaded
+                if ((file is not null || file?.Length != 0) && (fileExtension == ".jpg" || fileExtension == ".png"))
+                {
+                    // Create a unique file name to save the uploaded image
+                    var fileName = Guid.NewGuid().ToString() + fileExtension;
+
+                    // Specify the directory where the image will be saved
+                    var imagePath = Path.Combine(env.WebRootPath, "images", "user-images", fileName);
+
+                    // Save the file to the specified path
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        await file!.CopyToAsync(stream);
+                    }
+
+                    model.ImageUrl = $"images/user-images/{fileName}";
+                }
+
+                school.Location = model.Location;
+                //school.Principal = model.Principal;
+                school.Name = model.Name;
+                school.Description = model.Description;
+                school.ImageUrl = model.ImageUrl;
+
+                await repo.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException(ex.Message);
+            }
         }
     }
 }
