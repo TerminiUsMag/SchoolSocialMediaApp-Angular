@@ -71,12 +71,13 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
-        public async Task<ICollection<PostViewModel>> GetAllPostsAsync(Guid schoolId)
+        public async Task<ICollection<PostViewModel>> GetAllPostsAsync(Guid schoolId, Guid userId)
         {
-            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).OrderByDescending(p => p.CreatedOn).Select(p => new PostViewModel
+            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).Include(p=>p.Likes).OrderByDescending(p => p.CreatedOn).Select(p => new PostViewModel
             {
                 Comments = p.Comments.Select(c => new CommentViewModel
                 {
+                    Id = c.Id,
                     Content = c.Content,
                     Creator = new UserViewModel
                     {
@@ -84,7 +85,8 @@ namespace SchoolSocialMediaApp.Core.Services
                         ImageUrl = c.Creator.ImageUrl,
                         Username = c.Creator.UserName
                     },
-                    CreatedOn = c.CreatedOn
+                    CreatedOn = c.CreatedOn,
+                    PostId = c.PostId,
                 }).ToList(),
                 Creator = new UserViewModel
                 {
@@ -107,6 +109,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 Content = p.Content,
                 CreatorId = p.CreatorId,
                 IsEdited = p.IsEdited,
+                IsLikedByCurrentUser = p.Likes.Any(l => l.UserId == userId),
             }).ToListAsync();
 
             return posts;
@@ -229,7 +232,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("Id is empty.");
             }
 
-            var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == id);
+            var post = await repo.All<Post>().Include(p=>p.Comments).FirstOrDefaultAsync(p => p.Id == id);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
@@ -244,6 +247,12 @@ namespace SchoolSocialMediaApp.Core.Services
             if (user is null)
             {
                 throw new ArgumentException("User does not exist.");
+            }
+
+            if (post.Comments.Any())
+            {
+                var comments = post.Comments.ToList();
+                repo.DeleteRange(comments);
             }
 
             repo.Delete(post);
@@ -318,6 +327,53 @@ namespace SchoolSocialMediaApp.Core.Services
                 Post = post
             };
             post.Comments.Add(comment);
+            await repo.SaveChangesAsync();
+        }
+
+        public async Task<List<CommentViewModel>> GetCommentsByPostIdAsync(Guid postId)
+        {
+            var post = await repo.All<Post>().Include(p=>p.Comments).ThenInclude(c=>c.Creator).FirstOrDefaultAsync(p => p.Id == postId);
+            if(post is null)
+            {
+                throw new ArgumentException("Post does not exist.");
+            }
+            var comments = post.Comments.OrderByDescending(c=>c.CreatedOn).Select(c => new CommentViewModel
+            {
+                Content = c.Content,
+                CreatedOn = c.CreatedOn,
+                Creator = new UserViewModel
+                {
+                    Id = c.Creator.Id,
+                    ImageUrl = c.Creator.ImageUrl,
+                    Username = c.Creator.UserName
+                },
+                CreatorId = c.CreatorId,
+                Dislikes = c.Dislikes.Select(d => new CommentsDislikesViewModel
+                {
+                    CommentId = d.CommentId,
+                    DislikerId = d.UserId
+                }).ToList(),
+                Likes = c.Likes.Select(l => new CommentsLikesViewModel
+                {
+                    CommentId = l.CommentId,
+                    LikerId = l.UserId
+                }).ToList(),
+                PostId = c.PostId,
+                Id = c.Id
+            }).ToList();
+
+            return comments;
+        }
+
+        public async Task DeleteCommentAsync(Guid commentId)
+        {
+            var comment = await repo.All<Comment>().Include(c=>c.Post).Where(c=>c.Id == commentId).FirstOrDefaultAsync();
+            if (comment is null)
+            {
+                throw new ArgumentException("The comment does not exist.");
+            }
+
+            repo.Delete(comment);
             await repo.SaveChangesAsync();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
+using SchoolSocialMediaApp.ViewModels.Models.Comment;
 using SchoolSocialMediaApp.ViewModels.Models.Post;
 
 namespace SchoolSocialMediaApp.Controllers
@@ -23,7 +24,7 @@ namespace SchoolSocialMediaApp.Controllers
             try
             {
                 var schoolId = await schoolService.GetSchoolIdByUserIdAsync(userId);
-                posts = await postService.GetAllPostsAsync(schoolId);
+                posts = await postService.GetAllPostsAsync(schoolId,userId);
             }
             catch (ArgumentException ae)
             {
@@ -158,6 +159,35 @@ namespace SchoolSocialMediaApp.Controllers
                 result = false;
             }
             return Json(new { success = result });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetComments(Guid postId)
+        {
+            try
+            {
+                var comments = await postService.GetCommentsByPostIdAsync(postId);
+                return PartialView("_CommentsPartial", comments); // Assuming "_CommentsPartial" is the name of your partial view for comments
+            }
+            catch (ArgumentException ae)
+            {
+                ModelState.AddModelError("", ae.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CommentDelete(Guid commentId)
+        {
+            try
+            {
+                await postService.DeleteCommentAsync(commentId);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
         }
     }
 }

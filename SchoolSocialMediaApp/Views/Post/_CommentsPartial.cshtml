@@ -1,0 +1,43 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using SchoolSocialMediaApp.Infrastructure.Data.Models;
+
+@inject UserManager<ApplicationUser> UserManager;
+@model List<CommentViewModel>
+
+@if (Model != null && Model.Count > 0)
+{
+    var user = await UserManager.GetUserAsync(User);
+    var userId = user.Id;
+    var isPrincipal = await UserManager.IsInRoleAsync(user, "Principal");
+    var isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+
+    @foreach (var comment in Model)
+    {
+
+        @if (userId == comment.CreatorId || isPrincipal || isAdmin)
+        {
+            <div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <p><img src="@comment.Creator.ImageUrl" class="rounded-circle pb-1" style="width: 40px; height: 40px;"> @comment.Creator.Username | @comment.CreatedOn </p>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-sm btn-danger rounded-pill m-0 comment-delete" data-comment-id="@comment.Id" data-post-id="@comment.PostId">Delete</button>
+                    </div>
+                </div>
+                <p>@comment.Content</p>
+            </div>
+        }
+        else
+        {
+            <div>
+                <p>@comment.Content</p>
+                <p><img src="@comment.Creator.ImageUrl" class="rounded-circle mr-3" style="width: 40px; height: 40px;"> @comment.Creator.Username | @comment.CreatedOn</p>
+            </div>
+        }
+    }
+}
+else
+{
+    <p>No comments yet.</p>
+}

@@ -29,6 +29,15 @@
                                 <div class="d-flex align-items-center">
                                     <img src="@post.Creator.ImageUrl" alt="Profile Picture" class="rounded-circle mr-3" style="width: 40px; height: 40px;">
                                     <h5 class="mb-0 m-2">@post.Creator.Username</h5>
+                                    @if (userId == post.CreatorId || isAdmin || isPrincipal)
+                                    {
+                                        <div class="col-md-5">
+                                        </div>
+                                        <div class="container-fluid mb-0">
+                                            <a asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id" class="btn btn-success mr-2">Edit</a>
+                                            <a data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeletePostId('@post.Id')" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div class="card-body">
@@ -47,28 +56,23 @@
 
                                 </div>
                                 <p class="card-text text-muted">Likes: <span class="likes-count">@post.Likes.Count()</span></p>
-                                <form id="commentForm">
-                                    <input type="hidden" id="postId" value="@post.Id" />
-                                    <textarea class="card-text container" id="commentText" rows="3" required></textarea>
-                                    <button class="btn btn-primary mr-2 like-button" data-post-id="@post.Id" data-liked="false">Like</button>
-                                    <button type="submit" class="btn btn-secondary">Add Comment</button>
+                                @if (post.IsLikedByCurrentUser)
+                                {
+                                    <button style="border:none; background:none" class=" mr-2 like-button" data-post-id="@post.Id" data-liked="true"> <i class="fa-solid fa-heart fa-2xl" style="color: #ff0000;"></i></button>
+                                }
+                                else
+                                {
+                                    <button style="border:none; background:none" class=" mr-2 like-button" data-post-id="@post.Id" data-liked="false"> <i class="fa-regular fa-heart fa-2xl" style="color: #ff0000;"></i></button>
+                                }
+                                <button style="border:none; background:none" class="mr-2 comment-button" data-visible="false"><i class="fa-regular fa-comment fa-2xl"></i></button>
+                                <form class="comment-form mb-2 mt-3" style="display:none">
+                                    <input type="hidden" class="post-id" value="@post.Id" />
+                                    <textarea class="comment-text container rounded-pill scrollable-content" style="padding:15px;background:white" rows="2" placeholder="Write your comment here" required></textarea>
+                                    <button type="submit" class="btn btn-secondary">Comment</button>
                                 </form>
 
-                                @if (userId == post.CreatorId || isAdmin || isPrincipal)
-                                {
-                                    <a asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id" class="btn btn-success mr-2">Edit</a>
-                                    <a data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeletePostId('@post.Id')" class="btn btn-danger">Delete</a>
-                                }
-
-
-                                <div id="comments-container">
-                                    @foreach (var comment in post.Comments)
-                                    {
-                                        <div>
-                                            <p>@comment.Content</p>
-                                            <p>Posted by: @comment.Creator.Username | @comment.CreatedOn</p>
-                                        </div>
-                                    }
+                                <div class="comments-container mt-4 scrollable-content rounded-5 " style="background: #c4c4c4;">
+                                    @Html.Partial("_CommentsPartial", post.Comments)
                                 </div>
                             </div>
                         </div>
@@ -110,75 +114,67 @@ else
     </div>
 </div>
 
+<style>
+    .scrollable-content {
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: scroll; /* Set to 'scroll' to always show the scrollbar */
+    }
+
+        /* Hide the scrollbar */
+        .scrollable-content::-webkit-scrollbar {
+            width: 0.001em;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: #c4c4c4;
+        }
+</style>
+
+
 <script>
     function setDeletePostId(postId) {
         document.getElementById("deletePostId").value = postId;
     }
 </script>
-
-@*<script>
+<script>
+    //comment form visibility button
     $(document).ready(function () {
-        // Handle like button click
+        $(".comment-button").click(function () {
+            var commentForm = $(this).closest(".card").find(".comment-form");
+            commentForm.toggle();
+
+            var isVisible = commentForm.is(":visible");
+            var iconClass = isVisible ? "fa-solid fa-comment" : "fa-comment";
+            $(this).find("i").removeClass("fa-comment fa-solid").addClass(iconClass);
+        });
+    });
+</script>
+<script>
+    //like/unlike button
+    $(document).ready(function () {
         $(".like-button").click(function () {
             var postId = $(this).data("post-id");
-            likePost(postId);
-        });
+            var liked = $(this).data("liked");
 
-        function likePost(postId) {
             $.ajax({
                 type: "POST",
                 url: "/Post/Like",
-                data: { postId: postId },
+                data: { postId: postId, liked: liked },
                 success: function (response) {
-                    // Update the UI based on the server response
                     if (response.success) {
-                        var likesCountElement = $(".likes-count");
-                        var currentLikesCount = parseInt(likesCountElement.text());
-                        var newLikesCount = currentLikesCount + 1;
-                        likesCountElement.text(newLikesCount);
-                    } else {
-                        console.log("Failed to like the post.");
-                    }
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log("Error: " + errorThrown);
-                }
-            });
-        }
-    });
-</script>*@
+                        var likeButton = $(".like-button[data-post-id='" + postId + "']");
+                        var likesCountElement = likeButton.closest(".card-body").find(".likes-count");
 
-<script>
-    //like button
-    $(document).ready(function () {
-        // Handle like button click
-        $(".like-button").click(function () {
-            var likeButton = $(this);
-            var postId = likeButton.data("post-id");
-            var liked = likeButton.data("liked");
-
-            // Send an AJAX request to the server to like/dislike the post
-            $.ajax({
-                type: "POST",
-                url: "/Post/Like",
-                data: { postId: postId, liked: !liked }, // Toggle the liked status
-                success: function (response) {
-                    // Update the UI based on the server response
-                    if (response.success) {
-                        // Toggle the like/dislike status in the UI
                         if (liked) {
-                            likeButton.text("Like");
-                            likeButton.data("liked", false);
+                            likeButton.html(' <i class="fa-regular fa-heart fa-2xl" style="color: #ff0000;"></i>');
+                            likesCountElement.text(parseInt(likesCountElement.text()) - 1);
                         } else {
-                            likeButton.text("Dislike");
-                            likeButton.data("liked", true);
+                            likeButton.html(' <i class="fa-solid fa-heart fa-2xl" style="color: #ff0000;"></i>');
+                            likesCountElement.text(parseInt(likesCountElement.text()) + 1);
                         }
 
-                        // Update the likes count for the specific post
-                        var likesCountElement = likeButton.closest(".card-body").find(".likes-count");
-                        var currentLikesCount = parseInt(likesCountElement.text());
-                        var newLikesCount = currentLikesCount + (liked ? -1 : 1);
-                        likesCountElement.text(newLikesCount);
+                        likeButton.data("liked", !liked);
                     } else {
                         console.log("Failed to like/dislike the post.");
                     }
@@ -190,30 +186,80 @@ else
         });
     });
 </script>
-
 <script>
-    //comment button
+    // Comment button
     $(document).ready(function () {
-        $("#commentForm").submit(function (event) {
+        $(".comment-form").submit(function (event) {
             event.preventDefault();
-            var postId = $("#postId").val();
-            var commentText = $("#commentText").val();
+            var form = $(this);
+            var postId = form.find(".post-id").val();
+            var commentText = form.find(".comment-text").val();
 
             $.ajax({
                 type: "POST",
                 url: "/Post/AddComment",
                 data: { postId: postId, commentText: commentText },
                 success: function (response) {
-                    // Update the comments container with the new comment
-                    $("#comments-container").append(response);
-
                     // Clear the comment text area
-                    $("#commentText").val("");
+                    form.find(".comment-text").val("");
+
+                    // Fetch the updated comments for the specific post
+                    $.ajax({
+                        type: "GET",
+                        url: "/Post/GetComments",
+                        data: { postId: postId },
+                        success: function (commentsResponse) {
+                            // Replace the content of the comments container with the updated comments
+                            form.siblings(".comments-container").html(commentsResponse);
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error fetching comments: " + errorThrown);
+                        }
+                    });
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log("Error: " + errorThrown);
+                    console.log("Error adding comment: " + errorThrown);
                 }
             });
+        });
+    });
+</script>
+<script>
+
+    // Your delete comment AJAX logic here
+    // JavaScript code to handle comment deletion
+    $(document).on("click", ".comment-delete", function () {
+        var commentId = $(this).data("comment-id");
+
+        // Get the postId from the nearest form element or any other element that contains the postId data attribute.
+        var postId = $(this).data("post-id");
+
+        $.ajax({
+            type: "POST",
+            url: "/Post/CommentDelete",
+            data: { commentId: commentId },
+            success: function (response) {
+                // If deletion is successful, remove the deleted comment element from the DOM
+                if (response.success) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Post/GetComments",
+                        data: { postId: postId },
+                        success: function (commentsResponse) {
+                            // Replace the content of the comments container with the updated comments
+                            $(".comments-container").html(commentsResponse);
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error fetching comments: " + errorThrown);
+                        }
+                    });
+                } else {
+                    console.log("Failed to delete the comment.");
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log("Error: " + errorThrown);
+            }
         });
     });
 </script>
