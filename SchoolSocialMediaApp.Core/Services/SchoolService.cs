@@ -15,7 +15,7 @@ namespace SchoolSocialMediaApp.Core.Services
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IWebHostEnvironment env;
 
-        public SchoolService(IRepository _repo, IRoleService _roleService, UserManager<ApplicationUser> _userManager,IWebHostEnvironment _env)
+        public SchoolService(IRepository _repo, IRoleService _roleService, UserManager<ApplicationUser> _userManager, IWebHostEnvironment _env)
         {
             this.repo = _repo;
             this.roleService = _roleService;
@@ -25,25 +25,34 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<SchoolViewModel> CreateSchoolAsync(SchoolViewModel model, Guid userId)
         {
+            //Checks if the user is already principal of a school
             var userIsPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
             if (userIsPrincipal)
             {
                 throw new ArgumentException("User is already a principal of another school.");
             }
 
+            //Checks if the name of the new school is unique
+            if (await repo.All<School>().AnyAsync(s => s.Name.ToLower().Trim() == model.Name.ToLower().Trim()))
+            {
+                throw new ArgumentException("Already exists school with that name");
+            }
+
+            //Adds user to the "Principal" role
             var userAddedToRole = await roleService.AddUserToRoleAsync(userId.ToString(), "Principal");
             if (!userAddedToRole)
             {
                 throw new ArgumentException("User could not be added to role.");
             }
 
+            //Gets the user from the Db
             var user = repo.All<ApplicationUser>().Where(x => x.Id == userId).FirstOrDefault();
 
-
+            //Creates the new school entity
             var school = new School
             {
                 Id = Guid.NewGuid(),
-                Name = model.Name,
+                Name = model.Name.Trim(),
                 Description = model.Description,
                 ImageUrl = model.ImageUrl!,
                 Location = model.Location,
@@ -51,10 +60,12 @@ namespace SchoolSocialMediaApp.Core.Services
                 PrincipalId = userId,
             };
 
+            //Adds the school entity to the Db
             await repo.AddAsync<School>(school);
-
+            //Save changes to Db
             await repo.SaveChangesAsync();
 
+            //Returns the school model to be viewed in the success page
             return new SchoolViewModel
             {
                 Id = school.Id,
@@ -92,6 +103,14 @@ namespace SchoolSocialMediaApp.Core.Services
             foreach (var school in schools)
             {
                 school.Principal = await userManager.FindByIdAsync(school.PrincipalId.ToString());
+                if (school.Principal is null)
+                {
+                    school.Principal = new ApplicationUser
+                    {
+                        FirstName = "Deleted",
+                        LastName = "User"
+                    };
+                }
             }
 
             var result = schools.Select(s => new SchoolViewModel
@@ -111,7 +130,21 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<SchoolViewModel> GetSchoolByIdAsync(Guid id)
         {
-            var school = await repo.GetByIdAsync<School>(id);
+            var school = await repo.All<School>().Where(s => s.Id == id).Include(s => s.Principal).FirstOrDefaultAsync();
+            if (school is null)
+            {
+                throw new ArgumentException("The school doesn't exist");
+            }
+
+            if (school.Principal is null)
+            {
+                school.Principal = new ApplicationUser
+                {
+                    FirstName = "Deleted",
+                    LastName = "User"
+                };
+            }
+
             return new SchoolViewModel
             {
                 Id = school.Id,
@@ -247,39 +280,76 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("User id cannot be empty.");
             }
 
-            var roles = new List<string>() { "Principal", "Teacher", "Parent", "Student" };
-
-            foreach (var role in roles)
+            if (await roleService.UserIsInRoleAsync(userId.ToString(), "Principal"))
             {
-                if (await roleService.UserIsInRoleAsync(userId.ToString(), role))
+                var user = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
+                if (user is null)
                 {
-                    //var user = await userManager.FindByIdAsync(userId.ToString());
-                    var user = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
-                    var school = user!.School;
-                    if (school is null)
-                    {
-                        throw new ArgumentException("School cannot be null.");
-                    }
-                    var parents = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsParent).ToListAsync();
-                    var students = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsStudent).ToListAsync();
-                    var teachers = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsTeacher).ToListAsync();
-
-                    return new SchoolManageViewModel
-                    {
-                        Id = school.Id,
-                        Description = school.Description,
-                        ImageUrl = school.ImageUrl,
-                        Location = school.Location,
-                        Name = school.Name,
-                        PrincipalId = school.PrincipalId,
-                        Principal = school.Principal,
-                        Parents = parents,
-                        Students = students,
-                        Teachers = teachers,
-                    };
+                    throw new ArgumentException("User doesn't exist");
                 }
+
+                var school = user.School;
+                if (school is null)
+                {
+                    await roleService.RemoveUserFromRoleAsync(userId.ToString(), "Principal");
+                    throw new ArgumentException("School cannot be null.");
+                }
+
+                var parents = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsParent).ToListAsync();
+                var students = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsStudent).ToListAsync();
+                var teachers = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsTeacher).ToListAsync();
+
+                return new SchoolManageViewModel
+                {
+                    Id = school.Id,
+                    Description = school.Description,
+                    ImageUrl = school.ImageUrl,
+                    Location = school.Location,
+                    Name = school.Name,
+                    PrincipalId = school.PrincipalId,
+                    Principal = school.Principal,
+                    Parents = parents,
+                    Students = students,
+                    Teachers = teachers,
+                };
+
+
             }
-            throw new ArgumentException("User is not a member of any school.");
+
+            //var roles = new List<string>() { "Principal", "Teacher", "Parent", "Student" };
+
+            //foreach (var role in roles)
+            //{
+            //    if (await roleService.UserIsInRoleAsync(userId.ToString(), role))
+            //    {
+            //        //var user = await userManager.FindByIdAsync(userId.ToString());
+            //        var user = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
+            //        var school = user!.School;
+            //        if (school is null)
+            //        {
+            //            roleService.RemoveUserFromRoleAsync(userId.ToString(), "Principal");
+            //            throw new ArgumentException("School cannot be null.");
+            //        }
+            //        var parents = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsParent).ToListAsync();
+            //        var students = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsStudent).ToListAsync();
+            //        var teachers = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsTeacher).ToListAsync();
+
+            //        return new SchoolManageViewModel
+            //        {
+            //            Id = school.Id,
+            //            Description = school.Description,
+            //            ImageUrl = school.ImageUrl,
+            //            Location = school.Location,
+            //            Name = school.Name,
+            //            PrincipalId = school.PrincipalId,
+            //            Principal = school.Principal,
+            //            Parents = parents,
+            //            Students = students,
+            //            Teachers = teachers,
+            //        };
+            //    }
+            //}
+            throw new ArgumentException("User is not a principal of any school.");
         }
 
         public async Task UpdateSchoolAsync(SchoolViewModel school)
@@ -378,7 +448,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task UpdateSchoolAsync(SchoolManageViewModel model)
         {
-            var school = await repo.All<School>().Where(s=>s.Id == model.Id).FirstOrDefaultAsync();
+            var school = await repo.All<School>().Where(s => s.Id == model.Id).FirstOrDefaultAsync();
             if (school is null)
             {
                 throw new ArgumentException("School doesn't exist");

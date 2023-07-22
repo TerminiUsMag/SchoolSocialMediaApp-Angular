@@ -60,7 +60,7 @@
         public const int MinPasswordLength = 6;
 
         public const int MaxPhoneNumberLength = 15;
-        public const int MinPhoneNumberLength = 7;
+        public const int MinPhoneNumberLength = 9;
 
         public const string InvalidFirstName = "Invalid First Name (Must be between {2} and {1} characters).";
         public const string InvalidLastName = "Invalid Last Name (Must be between {2} and {1} characters).";

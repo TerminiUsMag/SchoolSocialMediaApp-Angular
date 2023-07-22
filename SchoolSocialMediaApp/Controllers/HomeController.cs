@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Models;
@@ -37,15 +38,6 @@ namespace SchoolSocialMediaApp.Controllers
             }
             return View();
         }
-        public IActionResult Feed()
-        {
-            return View();
-        }
-
-        //public IActionResult Privacy()
-        //{
-        //    return View();
-        //}
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

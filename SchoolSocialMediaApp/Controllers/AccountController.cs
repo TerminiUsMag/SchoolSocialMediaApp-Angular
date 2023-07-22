@@ -193,6 +193,40 @@ namespace SchoolSocialMediaApp.Controllers
                 return RedirectToAction(nameof(AccountController.Login), "Account");
             }
 
+
+            //Phone Number Validation and Verification
+            if (!accountService.PhoneNumberIsValid(model.PhoneNumber))
+            {
+                ModelState.AddModelError("", "Invalid Phone Number");
+                return View(model);
+            }
+            if (!await accountService.PhoneNumberIsFree(model.PhoneNumber))
+            {
+                ModelState.AddModelError("", "Phone Number is already taken");
+                return View(model);
+            }
+
+            //Email Validation and Verification
+            if (!accountService.EmailIsValid(model.Email))
+            {
+                ModelState.AddModelError("", "Invalid Email");
+                return View(model);
+            }
+            if (!await accountService.EmailIsFree(model.Email))
+            {
+                ModelState.AddModelError("", "Email is already taken");
+                return View(model);
+            }
+
+            //Username Validation and Verification
+            var username = $"{model.FirstName}.{model.LastName}".ToLower();
+            if (!await accountService.UsernameIsFree(username))
+            {
+                ModelState.AddModelError("", $"Username '{username}' is already taken");
+                return View(model);
+            }
+
+            //Model Validation
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong");

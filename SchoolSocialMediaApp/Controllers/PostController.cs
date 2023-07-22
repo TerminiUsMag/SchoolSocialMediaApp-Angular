@@ -73,7 +73,6 @@ namespace SchoolSocialMediaApp.Controllers
                 Id = post.Id,
                 Content = post.Content,
                 Comments = post.Comments,
-                Dislikes = post.Dislikes,
                 DislikesCount = post.DislikesCount,
                 Likes = post.Likes,
                 LikesCount = post.LikesCount

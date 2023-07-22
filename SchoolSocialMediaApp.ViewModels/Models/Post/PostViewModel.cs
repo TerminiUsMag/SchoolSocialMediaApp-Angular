@@ -41,9 +41,6 @@ namespace SchoolSocialMediaApp.ViewModels.Models.Post
         [Comment("Likes")]
         public ICollection<PostLikesViewModel> Likes { get; set; } = new List<PostLikesViewModel>();
 
-        [Comment("Dislikes")]
-        public ICollection<PostDislikesViewModel> Dislikes { get; set; } = new List<PostDislikesViewModel>();
-
         [Comment("Comments")]
         public ICollection<CommentViewModel> Comments { get; set; } = new List<CommentViewModel>();
 

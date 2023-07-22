@@ -38,11 +38,5 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Required]
         [ForeignKey(nameof(CreatorId))]
         public ApplicationUser Creator { get; set; } = null!;
-
-        [Comment("Likes of the comment.")]
-        public ICollection<CommentsLikes> Likes { get; set; } = new List<CommentsLikes>();
-
-        [Comment("Dislikes of the comment.")]
-        public ICollection<CommentsDislikes> Dislikes { get; set; } = new List<CommentsDislikes>();
     }
 }

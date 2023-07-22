@@ -45,9 +45,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("The likes on the post.")]
         public ICollection<PostsLikes> Likes { get; set; } = new List<PostsLikes>();
 
-        [Comment("The dislikes on the post.")]
-        public ICollection<PostsDislikes> Dislikes { get; set; } = new List<PostsDislikes>();
-
         [Comment("Is the post edited.")]
         public bool IsEdited { get; set; }
     }

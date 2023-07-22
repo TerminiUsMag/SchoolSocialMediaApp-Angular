@@ -95,11 +95,6 @@ namespace SchoolSocialMediaApp.Core.Services
                     Username = p.Creator.UserName
                 },
                 CreatedOn = p.CreatedOn,
-                Dislikes = p.Dislikes.Select(d => new PostDislikesViewModel
-                {
-                    DislikerId = d.UserId,
-                    PostId = d.PostId
-                }).ToList(),
                 Id = p.Id,
                 Likes = p.Likes.Select(l => new PostLikesViewModel
                 {
@@ -131,16 +126,6 @@ namespace SchoolSocialMediaApp.Core.Services
                     CreatedOn = c.CreatedOn,
                     Id = c.Id,
                     CreatorId = c.CreatorId,
-                    Dislikes = c.Dislikes.Select(cdl => new CommentsDislikes
-                    {
-                        CommentId = cdl.CommentId,
-                        UserId = cdl.DislikerId
-                    }).ToList(),
-                    Likes = c.Likes.Select(cl => new CommentsLikes
-                    {
-                        CommentId = cl.CommentId,
-                        UserId = cl.LikerId
-                    }).ToList(),
                     PostId = c.PostId,
                 }).ToList(),
                 Content = model.Content,
@@ -153,17 +138,11 @@ namespace SchoolSocialMediaApp.Core.Services
                     PostId = l.PostId,
                     UserId = l.LikerId
                 }).ToList(),
-                Dislikes = model.Dislikes.Select(dl => new PostsDislikes
-                {
-                    PostId = dl.PostId,
-                    UserId = dl.DislikerId
-                }).ToList(),
                 Id = model.Id
             };
 
             post.Comments = newPost.Comments;
             post.Content = newPost.Content;
-            post.Dislikes = newPost.Dislikes;
             post.Likes = newPost.Likes;
             post.Creator = newPost.Creator;
             post.CreatorId = newPost.CreatorId;
@@ -208,18 +187,12 @@ namespace SchoolSocialMediaApp.Core.Services
                         Username = c.Creator.UserName
                     }
                 }).ToList(),
-                Dislikes = post.Dislikes.Select(d => new PostDislikesViewModel
-                {
-                    DislikerId = d.UserId,
-                    PostId = d.PostId
-                }).ToList(),
                 Likes = post.Likes.Select(l => new PostLikesViewModel
                 {
                     LikerId = l.UserId,
                     PostId = l.PostId,
                 }).ToList(),
                 LikesCount = post.Likes.Count(),
-                DislikesCount = post.Dislikes.Count(),
                 SchoolId = post.SchoolId,
             };
             return result;
@@ -321,8 +294,6 @@ namespace SchoolSocialMediaApp.Core.Services
                 CreatorId = userId,
                 PostId = postId,
                 CreatedOn = DateTime.Now,
-                Likes = new List<CommentsLikes>(),
-                Dislikes = new List<CommentsDislikes>(),
                 Creator = user,
                 Post = post
             };
@@ -348,16 +319,6 @@ namespace SchoolSocialMediaApp.Core.Services
                     Username = c.Creator.UserName
                 },
                 CreatorId = c.CreatorId,
-                Dislikes = c.Dislikes.Select(d => new CommentsDislikesViewModel
-                {
-                    CommentId = d.CommentId,
-                    DislikerId = d.UserId
-                }).ToList(),
-                Likes = c.Likes.Select(l => new CommentsLikesViewModel
-                {
-                    CommentId = l.CommentId,
-                    LikerId = l.UserId
-                }).ToList(),
                 PostId = c.PostId,
                 Id = c.Id
             }).ToList();

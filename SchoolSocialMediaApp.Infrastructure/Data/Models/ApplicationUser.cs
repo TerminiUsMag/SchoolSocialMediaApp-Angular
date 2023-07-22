@@ -77,15 +77,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("The posts the user has liked.")]
         public ICollection<PostsLikes> LikedPosts { get; set; } = new List<PostsLikes>();
 
-        [Comment("The posts the user has disliked.")]
-        public ICollection<PostsDislikes> DislikedPosts { get; set; } = new List<PostsDislikes>();
-
-        [Comment("The comments the user has liked.")]
-        public ICollection<CommentsLikes> LikedComments { get; set; } = new List<CommentsLikes>();
-
-        [Comment("The comments the user has disliked.")]
-        public ICollection<CommentsDislikes> DislikedComments { get; set; } = new List<CommentsDislikes>();
-
         [Comment("The posts made by the user.")]
         public ICollection<Post> Posts { get; set; } = new List<Post>();
 

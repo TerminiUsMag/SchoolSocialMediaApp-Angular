@@ -38,7 +38,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "User")]
+        [Authorize(Policy = "CanBePrincipal")]
         public IActionResult Register()
         {
             var model = new SchoolViewModel();
@@ -47,7 +47,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "User")]
+        [Authorize(Policy = "CanBePrincipal")]
         public async Task<IActionResult> Register(SchoolViewModel model)
         {
             if (!ModelState.IsValid)
@@ -76,7 +76,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Principal")]
+        [Authorize(Policy = "Principal")]
         public IActionResult Success(SchoolViewModel model)
         {
             return View(model);
@@ -110,6 +110,7 @@ namespace SchoolSocialMediaApp.Controllers
             catch (Exception e)
             {
                 ModelState.AddModelError("", e.Message);
+                ViewBag.Code = 404;
             }
             ViewBag.Message = message;
             ViewBag.ClassOfMessage = classOfMessage;
