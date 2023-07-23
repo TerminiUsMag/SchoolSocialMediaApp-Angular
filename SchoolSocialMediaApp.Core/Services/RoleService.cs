@@ -24,6 +24,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<bool> AddUserToRoleAsync(string userId, string roleName)
         {
+            //Gets the user and checks if exists.
             var user = await userManager.FindByIdAsync(userId);
             if (user is null)
             {
@@ -32,17 +33,21 @@ namespace SchoolSocialMediaApp.Core.Services
 
             try
             {
+                //checks id the role exists.
                 var roleExists = await roleManager.RoleExistsAsync(roleName);
 
+                //if its doesn't exist tries to create it.
                 if (!roleExists)
                 {
                     roleExists = await CreateRoleAsync(roleName);
                 }
 
+                //if failed creating the role throws exception.
                 if (!roleExists)
                 {
                     throw new ArgumentException("Role could not be created.");
                 }
+                //Sets the user's role and based on that modifies his properties.
                 var result = await userManager.AddToRoleAsync(user, roleName);
                 if (roleName.ToLower() == "principal")
                 {
@@ -69,6 +74,7 @@ namespace SchoolSocialMediaApp.Core.Services
                     user.IsAdmin = true;
                     await userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Admin"));
                 }
+                //Refreshes the Sign In to refresh user's roles and get the permissions of the new role without logingout.
                 await signInManager.RefreshSignInAsync(user);
                 return true;
             }
@@ -80,9 +86,12 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<bool> CreateRoleAsync(string roleName)
         {
+            //creates the role.
             var role = new ApplicationRole { Name = roleName };
+            //adds the role to the rolemanager.
             var result = await roleManager.CreateAsync(role);
 
+            //checks if it was successfull.
             if (result.Succeeded)
             {
                 return true;
@@ -95,10 +104,15 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<List<string>> GetUserRolesAsync(Guid userId)
         {
+            //gets the user and checks if it exists.
             var user = await userManager.FindByIdAsync(userId.ToString());
+            if (user is null)
+            {
+                throw new ArgumentException("The user doesn't exist.");
+            }
 
             var result = new List<string>();
-
+            //Checks each role and ads it in the result List if the user is assigned to it.
             if (await userManager.IsInRoleAsync(user, "Principal"))
             {
                 result.Add("Principal");
@@ -120,15 +134,18 @@ namespace SchoolSocialMediaApp.Core.Services
                 result.Add("Admin");
             }
 
+            //returns the result.
             return result;
         }
 
         public bool IsUserPartOfSchool(ApplicationUser user)
         {
+            //gets the user and checks if exists.
             var u = user;
             if (u is null)
                 return false;
 
+            //If the user exists checks if he has assigned school to it and if he is in one of the roles.
             if (!u.IsParent && !u.IsPrincipal && !u.IsTeacher && !u.IsStudent && (u.SchoolId is null || u.SchoolId == Guid.Empty))
             {
                 return false;
@@ -138,17 +155,23 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<bool> RemoveUserFromRoleAsync(string userId, string roleName)
         {
+            //Get the user and check if it exists. 
             var user = await userManager.FindByIdAsync(userId);
             if (user is null)
             {
                 throw new ArgumentException("User does not exist");
             }
 
+            //Remove the user from the role and refresh his signIn to remove his permissions.
             try
             {
                 var result = await userManager.RemoveFromRoleAsync(user, roleName);
-                await signInManager.RefreshSignInAsync(user);
-                return true;
+                if (result.Succeeded)
+                {
+                    await signInManager.RefreshSignInAsync(user);
+                    return true;
+                }
+                return false;
             }
             catch (Exception)
             {
@@ -158,8 +181,10 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<bool> RoleExistsAsync(string roleName)
         {
+            //checks if a role exists.
             var roleExists = await roleManager.RoleExistsAsync(roleName);
 
+            //If the role doesn't exist it creates it.
             if (!roleExists)
             {
                 if (!await CreateRoleAsync(roleName))
@@ -172,11 +197,13 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<bool> UserIsInRoleAsync(string userId, string roleName)
         {
+            //Get the user and check if he exists.
             var user = await userManager.FindByIdAsync(userId);
             if (user is null)
             {
                 throw new ArgumentException("User does not exist");
             }
+            //checks if the user is in the role.
             if (!await userManager.IsInRoleAsync(user, roleName))
             {
                 return false;

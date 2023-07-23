@@ -6,65 +6,119 @@ namespace SchoolSocialMediaApp.Core.Contracts
     {
 
         /// <summary>
-        /// Returns a list of all registered schools
+        /// Gets all registered schools from the Database.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>List of SchoolViewModel</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<IEnumerable<SchoolViewModel>> GetAllSchoolsAsync();
 
         /// <summary>
-        /// Returns a school by its id
+        /// Get School by it's Id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">School ID</param>
+        /// <returns>SchoolViewModel</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<SchoolViewModel> GetSchoolByIdAsync(Guid id);
 
         /// <summary>
-        /// Returns a school by user's id
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<SchoolViewModel> GetSchoolByUserIdAsync(Guid userId);
-        
-        /// <summary>
-        /// Returns school id by its name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        Task<SchoolViewModel> GetSchoolIdByNameAsync(string name);
-
-        /// <summary>
-        /// Returns school id by user's id
+        /// Get school by user ID
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>SchoolViewModel</returns>
-        /// <exception cref="InvalidOperationException">Thrown if the user is not a student, parent, teacher or principal</exception>
+        /// <exception cref="ArgumentException"></exception>
+        Task<SchoolViewModel> GetSchoolByUserIdAsync(Guid userId);
+
+        /// <summary>
+        /// Get school by Name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>SchoolViewModel</returns>
+        /// <exception cref="ArgumentException"></exception>
+        Task<SchoolViewModel> GetSchoolByNameAsync(string name);
+
+        /// <summary>
+        /// Get School's ID using User's ID
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>School's ID (Guid)</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<Guid> GetSchoolIdByUserIdAsync(Guid userId);
 
         /// <summary>
-        /// Creates a new school and adds it to the database
+        /// Create a school from a SchoolViewModel with principalId -> userId and add it to the Database.
         /// </summary>
-        /// <param name="school"></param>
-        /// <returns></returns>
+        /// <param name="model">A SchoolViewModel from which to create school</param>
+        /// <param name="userId">Id of the principal of the school</param>
+        /// <returns>SchoolViewModel</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<SchoolViewModel> CreateSchoolAsync(SchoolViewModel school, Guid userId);
 
         /// <summary>
-        /// Updates a school and saves the changes to the database
+        /// Update school in Database using a SchoolViewModel
         /// </summary>
         /// <param name="school"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         Task UpdateSchoolAsync(SchoolViewModel school);
 
         /// <summary>
-        /// Deletes a school from the database with all it's information (posts, comments, students, teachers, etc.)
+        /// Delete school from Database using it's Id
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">School Id</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         Task DeleteSchoolAsync(Guid id);
+
+        /// <summary>
+        /// Get SchoolViewModel for the Manage School Panel by User ID.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>ManageSchoolViewModel</returns>
+        /// <exception cref="ArgumentException"></exception>
         Task<SchoolManageViewModel?> GetSchoolManageViewModelByUserIdAsync(Guid userId);
+
+        /// <summary>
+        /// Add User to School using their IDs
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <param name="schoolId">School ID</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         Task AddUserToSchoolAsync(Guid userId, Guid schoolId);
+
+        /// <summary>
+        /// Remove User from School using School's ID and user's ID.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="schoolId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         Task RemoveUserFromSchoolAsync(Guid userId, Guid schoolId);
+
+        /// <summary>
+        /// Rename school by ID
+        /// </summary>
+        /// <param name="schoolId"></param>
+        /// <param name="schoolName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         Task RenameSchoolAsync(Guid schoolId, string schoolName);
+
+        /// <summary>
+        /// Change school's profile picture using the principal's user ID and the path of the image.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="imagePath"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         Task ChangeSchoolPicture(Guid userId, string imagePath);
+
+        /// <summary>
+        /// Update a School from the Manage Panel using SchoolManageViewModel
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         Task UpdateSchoolAsync(SchoolManageViewModel model);
     }
 }
