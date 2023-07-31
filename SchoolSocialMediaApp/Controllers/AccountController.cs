@@ -41,8 +41,8 @@ namespace SchoolSocialMediaApp.Controllers
             return View(model);
         }
 
-        [AllowAnonymous]
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             //Username Validation and Verification
@@ -308,6 +308,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "IsPartOfSchoolButNotPrincipal")]
         public async Task<IActionResult> QuitSchool()
         {
             var userId = this.GetUserId();
@@ -324,6 +325,8 @@ namespace SchoolSocialMediaApp.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [Authorize(Policy = "IsPartOfSchoolButNotPrincipal")]
         public async Task<IActionResult> QuitSchool(UserQuitSchoolViewModel model)
         {
             if (!ModelState.IsValid)
