@@ -5,7 +5,7 @@
 
 @model List<PostViewModel>
 @{
-    ViewData["Title"] = "Posts Index";
+    ViewData["Title"] = $"Posts Index for {ViewBag.SchoolName}";
     var user = await UserManager.GetUserAsync(User);
     var userId = user.Id;
     var isPrincipal = await UserManager.IsInRoleAsync(user, "Principal");

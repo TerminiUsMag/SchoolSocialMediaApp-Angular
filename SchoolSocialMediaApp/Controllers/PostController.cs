@@ -24,7 +24,9 @@ namespace SchoolSocialMediaApp.Controllers
             try
             {
                 var schoolId = await schoolService.GetSchoolIdByUserIdAsync(userId);
+                var school = await schoolService.GetSchoolByIdAsync(schoolId);
                 posts = await postService.GetAllPostsAsync(schoolId,userId);
+                ViewBag.SchoolName = school.Name;
             }
             catch (ArgumentException ae)
             {
