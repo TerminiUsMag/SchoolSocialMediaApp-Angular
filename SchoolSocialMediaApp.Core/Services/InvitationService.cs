@@ -20,6 +20,7 @@ namespace SchoolSocialMediaApp.Core.Services
             this.schoolService = _schoolService;
         }
 
+
         public async Task AcceptInvitationAsync(Guid id, Guid userId)
         {
             var invitation = repo.All<Invitation>().FirstOrDefault(i => i.Id == id && i.ReceiverId == userId);
@@ -52,6 +53,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
+
         public async Task DeclineInvitationAsync(Guid id, Guid userId)
         {
             var invitation = repo.All<Invitation>().FirstOrDefault(i => i.Id == id && i.ReceiverId == userId);
@@ -73,6 +75,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
+
         public async Task DeleteAllInvitationsBySchoolIdAsync(Guid schoolId)
         {
             var invitations = await repo.All<Invitation>().Where(i => i.SchoolId == schoolId).Include(i => i.Receiver).ToListAsync();
@@ -84,13 +87,14 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
+
         public async Task DeleteInvitationByIdAsync(Guid invitationId)
         {
             var invitation = await repo.AllReadonly<Invitation>().Include(i => i.Receiver).FirstOrDefaultAsync(i => i.Id == invitationId);
 
             if (invitation is null)
             {
-                throw new ArgumentException("Invitation is null.");
+                throw new ArgumentException("No such invitation.");
             }
 
             var user = invitation.Receiver;
@@ -100,10 +104,12 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
+
         public async Task<List<ApplicationUser>> GetCandidatesAsync()
         {
             return await repo.AllReadonly<ApplicationUser>().Where(u => !u.IsParent && !u.IsTeacher && !u.IsStudent && !u.IsPrincipal && !u.IsAdmin && !u.IsInvited).ToListAsync();
         }
+
 
         public async Task<List<InvitationViewModel>> GetReceivedInvitationsByUserIdAsync(Guid userId)
         {
@@ -131,6 +137,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }).ToList();
         }
 
+
         public async Task<List<InvitationViewModel>> GetSentInvitationsBySchoolIdAsync(Guid schoolId)
         {
             return await repo.All<Invitation>().Where(i => i.SchoolId == schoolId).Include(i => i.Sender).Include(i => i.Receiver).Select(i => new InvitationViewModel
@@ -146,6 +153,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 IsPending = i.IsPending,
             }).ToListAsync();
         }
+
 
         public async Task SendInvitationAsync(CreateInvitationViewModel model)
         {
