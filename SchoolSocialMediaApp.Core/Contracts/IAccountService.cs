@@ -13,7 +13,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task<bool> EmailIsFree(string email);
         Task<bool> PhoneNumberIsFree(string phoneNumber);
         Task<bool> UsernameIsFree(string username);
-        Task<bool> DeleteAsync(Guid userId);
         Task<bool> UserExists(Guid userId);
         Task<UserManageViewModel> GetUserManageViewModelAsync(string userId);
         Task UpdateAsync(Guid userId, UserManageViewModel model);

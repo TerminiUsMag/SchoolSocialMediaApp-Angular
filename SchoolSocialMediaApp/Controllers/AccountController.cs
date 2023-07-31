@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
@@ -8,11 +9,17 @@ namespace SchoolSocialMediaApp.Controllers
 {
     public class AccountController : BaseController
     {
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly IAccountService accountService;
+        private readonly IRoleService roleService;
+        private readonly ISchoolService schoolService;
 
-        public AccountController(IAccountService _accountService)
+        public AccountController(IAccountService _accountService, UserManager<ApplicationUser> _userManager, IRoleService _roleService, ISchoolService _schoolService)
         {
             this.accountService = _accountService;
+            this.userManager = _userManager;
+            this.roleService = _roleService;
+            this.schoolService = _schoolService;
         }
         //private readonly UserManager<ApplicationUser> userManager;
         //private readonly SignInManager<ApplicationUser> signInManager;
@@ -172,7 +179,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Manage()
+        public async Task<IActionResult> Manage(string message, string classOfMessage)
         {
             var userId = this.GetUserId();
             if (userId == Guid.Empty)
@@ -180,6 +187,8 @@ namespace SchoolSocialMediaApp.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             var model = await accountService.GetUserManageViewModelAsync(userId.ToString());
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
 
             return View(model);
         }
@@ -250,6 +259,111 @@ namespace SchoolSocialMediaApp.Controllers
         public IActionResult AccountChangesSuccess()
         {
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult Delete()
+        {
+            var model = new UserDeleteViewModel();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(UserDeleteViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong!");
+                return View();
+            }
+
+
+            try
+            {
+                var userId = GetUserId();
+                var user = await userManager.FindByIdAsync(userId.ToString());
+                if (user is null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
+                if (!correctPassword)
+                {
+                    return RedirectToAction("Manage", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
+                }
+                if (await roleService.UserIsInRoleAsync(userId.ToString(), "Principal"))
+                {
+                    return RedirectToAction("Manage", "School", new { message = "Delete your school first", classOfMessage = "text-bg-danger" });
+                }
+
+                await userManager.DeleteAsync(user);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Manage", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+            return RedirectToAction("Index", "Home", new { message = "You have successfully deleted your profile !", classOfMessage = "text-bg-success" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> QuitSchool()
+        {
+            var userId = this.GetUserId();
+
+            var school = await schoolService.GetSchoolByUserIdAsync(userId);
+            if (school is null)
+            {
+                return RedirectToAction("Index", "Home", new { message = "You are not part of any school yet", classOfMessage = "text-bg-danger" });
+            }
+
+            var model = new UserQuitSchoolViewModel();
+            ViewBag.SchoolName = school.Name;
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> QuitSchool(UserQuitSchoolViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong!");
+                return View();
+            }
+
+
+            try
+            {
+                var userId = GetUserId();
+                var user = await userManager.FindByIdAsync(userId.ToString());
+                if (user is null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
+                if (!correctPassword)
+                {
+                    return RedirectToAction("Manage", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
+                }
+                if (await roleService.UserIsInRoleAsync(userId.ToString(), "Principal"))
+                {
+                    return RedirectToAction("Manage", "School", new { message = "You cannot quit your school, you have to delete it", classOfMessage = "text-bg-danger" });
+                }
+                Guid schoolId;
+                if (user.SchoolId is null || user.SchoolId == Guid.Empty)
+                {
+                    return RedirectToAction("Index", "Home", new { message = "You aren't a part of any school", classOfMessage = "text-bg-danger" });
+                }
+                schoolId = Guid.Parse(user.SchoolId.ToString()!);
+                await schoolService.RemoveUserFromSchoolAsync(userId, schoolId);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Manage", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+            return RedirectToAction("Index", "Home", new { message = "You have successfully unsigned from your school!", classOfMessage = "text-bg-success" });
         }
 
     }

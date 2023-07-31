@@ -1,4 +1,5 @@
-﻿using SchoolSocialMediaApp.ViewModels.Models.School;
+﻿using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.School;
 
 namespace SchoolSocialMediaApp.Core.Contracts
 {
@@ -120,5 +121,11 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         Task UpdateSchoolAsync(SchoolManageViewModel model);
+        /// <summary>
+        /// Returns a List of users which are registered in the school.
+        /// </summary>
+        /// <param name="schoolId"></param>
+        /// <returns></returns>
+        Task<List<ApplicationUser>> GetAllUsersInSchool(Guid schoolId);
     }
 }

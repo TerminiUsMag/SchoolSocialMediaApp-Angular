@@ -41,8 +41,13 @@ else
         </div>
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
+    <div class="row">
+        <div class="col-sm-3">
+            <a class="btn btn-danger" asp-controller="School" asp-action="Delete">Delete School</a>
+        </div>
+    </div>
 
-    <a asp-controller="Invitation" asp-action="ManageSent" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4">Manage Sent Invitations</a>
+    <a asp-controller="Invitation" asp-action="ManageSent" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4 mt-4">Manage Sent Invitations</a>
 
     <h2>Teachers</h2>
     @if (Model.Teachers.Any())

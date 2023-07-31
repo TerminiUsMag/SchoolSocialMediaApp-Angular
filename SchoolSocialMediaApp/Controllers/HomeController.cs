@@ -20,7 +20,7 @@ namespace SchoolSocialMediaApp.Controllers
 
 
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string message, string classOfMessage)
         {
             //if (this.User?.Identity?.IsAuthenticated ?? false)
             //{
@@ -36,6 +36,8 @@ namespace SchoolSocialMediaApp.Controllers
                     return Error();
                 }
             }
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
             return View();
         }
 

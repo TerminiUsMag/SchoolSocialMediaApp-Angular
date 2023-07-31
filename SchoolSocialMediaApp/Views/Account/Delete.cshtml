@@ -1,0 +1,19 @@
+﻿@model UserDeleteViewModel;
+@{
+    ViewBag.Title = "Delete your Account!";
+}
+
+<h1 class="text-danger">@ViewBag.Title</h1>
+<h2 class="text-bg-danger">If you delete your account all your information will be permanently deleted.</h2>
+<h2 class="text-bg-danger">If you are a principal you have to delete your school and then your profile.</h2>
+<div class="row mt-5">
+    <form method="post" class="col-md-5">
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Confirm Password">
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <button class="btn btn-danger col-md-3">Delete</button>
+    </form>
+        <a class="btn btn-success col align-self-md-center" asp-controller="Account" asp-action="Manage">Cancel</a>
+</div>

@@ -1,0 +1,19 @@
+﻿@model UserQuitSchoolViewModel;
+@{
+    ViewBag.Title = "Quit your School";
+}
+
+<h1 class="text-danger">@ViewBag.Title</h1>
+<h2 class="text-bg-danger">If you quit your school you won't have access to any of @ViewBag.SchoolName's posts !</h2>
+<h2 class="text-bg-danger">Unless the principal invites you again to the school you won't be able to join !</h2>
+<div class="row mt-5">
+    <form method="post" class="col-md-5">
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Confirm Password">
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <button class="btn btn-danger col-md-3">Quit</button>
+    </form>
+    <a class="btn btn-success col align-self-md-center" asp-controller="Account" asp-action="Manage">Cancel</a>
+</div>

@@ -100,5 +100,13 @@
         public const int MinImageUrlLength = 8;
         public const int MinSchoolLocationLength = 3;
 
+        //User Deletion
+        public const string RequiredPasswordDeleteViewModel = "Password is required for account deletion.";
+
+        //School Deletion
+        public const string RequiredPasswordDeleteSchoolViewModel = "Password is required for school deletion";
+
+        //User Quit School
+        public const string RequiredPasswordQuitViewModel = "Password is required to Quit school.";
     }
 }

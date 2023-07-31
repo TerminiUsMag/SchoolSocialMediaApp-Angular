@@ -4,20 +4,25 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.School;
+using SchoolSocialMediaApp.ViewModels.Models.User;
 
 namespace SchoolSocialMediaApp.Controllers
 {
     public class SchoolController : BaseController
     {
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly ISchoolService schoolService;
         private readonly IInvitationService invitationService;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IRoleService roleService;
 
-        public SchoolController(ISchoolService _schoolService, IInvitationService _invitationService, UserManager<ApplicationUser> _userManager)
+        public SchoolController(ISchoolService _schoolService, IInvitationService _invitationService, UserManager<ApplicationUser> _userManager, IRoleService _roleService, SignInManager<ApplicationUser> _signInManager)
         {
             this.schoolService = _schoolService;
             this.invitationService = _invitationService;
             this.userManager = _userManager;
+            this.roleService = _roleService;
+            this.signInManager = _signInManager;
         }
 
         [HttpGet]
@@ -167,6 +172,7 @@ namespace SchoolSocialMediaApp.Controllers
             return RedirectToAction("Manage", new { message = "User removed successfully.", classOfMessage = "text-bg-success" });
         }
 
+        [Authorize(Policy = "Principal")]
         [HttpPost]
         public async Task<IActionResult> Rename(Guid schoolId, string schoolName)
         {
@@ -184,6 +190,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Principal")]
         public async Task<IActionResult> UploadPicture()
         {
             try
@@ -222,6 +229,88 @@ namespace SchoolSocialMediaApp.Controllers
                 // Handle any exceptions that occur during the upload process
                 return StatusCode(500, new { success = false, message = ex.Message });
             }
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "Principal")]
+        public IActionResult Delete()
+        {
+            var model = new SchoolDeleteViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "Principal")]
+        public async Task<IActionResult> Delete(SchoolDeleteViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong!");
+                return View();
+            }
+
+
+            try
+            {
+                var userId = GetUserId();
+                var user = await userManager.FindByIdAsync(userId.ToString());
+                if (user is null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
+                if (!correctPassword)
+                {
+                    return RedirectToAction("Manage", "School", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
+                }
+                if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Principal"))
+                {
+                    return RedirectToAction("Manage", "Account", new { message = "You are not Principal", classOfMessage = "text-bg-danger" });
+                }
+
+                var school = await schoolService.GetSchoolByUserIdAsync(userId);
+                if (school is null)
+                {
+                    await roleService.RemoveUserFromRoleAsync(userId.ToString(), "Principal");
+                    return RedirectToAction("Manage", "Account", new { message = "You are not Principal anymore(The school is already missing!)", classOfMessage = "text-bg-danger" });
+                }
+
+                var usersInSchool = await schoolService.GetAllUsersInSchool(school.Id);
+
+                foreach (var participant in usersInSchool)
+                {
+                    if (participant is not null)
+                    {
+                        if (participant.IsParent)
+                        {
+                            participant.IsParent = false;
+                            await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Parent");
+                        }
+                        if (participant.IsTeacher)
+                        {
+                            participant.IsTeacher = false;
+                            await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Teacher");
+                        }
+                        if (participant.IsStudent)
+                        {
+                            participant.IsStudent = false;
+                            await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Student");
+                        }
+                        participant.SchoolId = null;
+                        participant.School = null;
+                        await signInManager.RefreshSignInAsync(participant);
+                    }
+                }
+
+                await schoolService.DeleteSchoolAsync(school.Id);
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Manage", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+            return RedirectToAction("Index", "Home", new { message = "School deleted successfully !", classOfMessage = "text-bg-success" });
         }
     }
 }

@@ -33,11 +33,6 @@ namespace SchoolSocialMediaApp.Core.Services
             this.env = _env;
         }
 
-        public Task<bool> DeleteAsync(Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> EmailIsFree(string email)
         {
             var result = await userManager.FindByEmailAsync(email.ToUpper());
