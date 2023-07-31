@@ -28,10 +28,11 @@ namespace SchoolSocialMediaApp.Core.Services
         {
             this.userManager = _userManager;
             this.signInManager = _signInManager;
-            this.repo = _repo;
             this.roleService = _roleService;
+            this.repo = _repo;
             this.env = _env;
         }
+
 
         public async Task<bool> EmailIsFree(string email)
         {
@@ -43,6 +44,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             return false;
         }
+
 
         public bool EmailIsValid(string email)
         {
@@ -56,6 +58,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 return false;
             }
         }
+
 
         public async Task<UserManageViewModel> GetUserManageViewModelAsync(string userId)
         {
@@ -85,16 +88,6 @@ namespace SchoolSocialMediaApp.Core.Services
             return model;
         }
 
-        public async Task<bool> IsPrincipalAsync(Guid userId)
-        {
-            var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
-
-            if (isPrincipal)
-            {
-                return true;
-            }
-            return false;
-        }
 
         public async Task<bool> LoginAsync(string email, string password, bool rememberMe)
         {
@@ -112,10 +105,12 @@ namespace SchoolSocialMediaApp.Core.Services
             return false;
         }
 
+
         public async Task LogoutAsync()
         {
             await signInManager.SignOutAsync();
         }
+
 
         public async Task<bool> PhoneNumberIsFree(string phoneNumber)
         {
@@ -128,6 +123,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return false;
         }
 
+
         public bool PhoneNumberIsValid(string phoneNumber)
         {
             var phoneRegex = new Regex(validation.PhoneNumberRegEx);
@@ -137,6 +133,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             return true;
         }
+
 
         public async Task<bool> RegisterAsync(ApplicationUser user, string password)
         {
@@ -151,6 +148,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             return false;
         }
+
 
         public async Task UpdateAsync(Guid userId, UserManageViewModel model)
         {
@@ -206,6 +204,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
+
         public async Task<bool> UserExists(Guid userId)
         {
             if (await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId) is null)
@@ -214,6 +213,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             return true;
         }
+
 
         public async Task<bool> UsernameIsFree(string username)
         {
