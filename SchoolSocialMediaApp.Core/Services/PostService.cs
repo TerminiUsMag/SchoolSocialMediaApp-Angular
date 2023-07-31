@@ -19,7 +19,13 @@ namespace SchoolSocialMediaApp.Core.Services
             this.repo = _repo;
             this.schoolService = _schoolService;
         }
-
+        /// <summary>
+        /// Creates a post, checks if its valid and adds it to the DB.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<bool> CreatePostAsync(PostCreateModel model, Guid userId)
         {
             Guid? schoolId = await schoolService.GetSchoolIdByUserIdAsync(userId);
@@ -43,6 +49,11 @@ namespace SchoolSocialMediaApp.Core.Services
             return true;
         }
 
+        /// <summary>
+        /// Checks if the post is valid.
+        /// </summary>
+        /// <param name="post"></param>
+        /// <exception cref="ArgumentException"></exception>
         private void PostIsValid(Post post)
         {
             if (post is null)
@@ -71,6 +82,12 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
+        /// <summary>
+        /// Gets all posts of a school and maps them to PostViewModel.
+        /// </summary>
+        /// <param name="schoolId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<ICollection<PostViewModel>> GetAllPostsAsync(Guid schoolId, Guid userId)
         {
             var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).Include(p=>p.Likes).OrderByDescending(p => p.CreatedOn).Select(p => new PostViewModel
@@ -110,6 +127,13 @@ namespace SchoolSocialMediaApp.Core.Services
             return posts;
         }
 
+        /// <summary>
+        /// Edits a post.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task EditPostAsync(PostEditViewModel model, Guid userId)
         {
             var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == model.Id);
@@ -156,6 +180,12 @@ namespace SchoolSocialMediaApp.Core.Services
 
         }
 
+        /// <summary>
+        /// Gets a post by it's ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<PostViewModel> GetPostByIdAsync(Guid id)
         {
             var post = await repo.All<Post>().Where(p => p.Id == id).Include(p => p.Creator).Include(p => p.Comments).ThenInclude(p => p.Creator).FirstOrDefaultAsync();
@@ -198,6 +228,13 @@ namespace SchoolSocialMediaApp.Core.Services
             return result;
         }
 
+        /// <summary>
+        /// Delete a post and all it's comments.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task DeletePostAsync(Guid id, Guid userId)
         {
             if (id == Guid.Empty || userId == Guid.Empty)
@@ -233,6 +270,13 @@ namespace SchoolSocialMediaApp.Core.Services
 
         }
 
+        /// <summary>
+        /// Like a post.
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task LikePostAsync(Guid postId, Guid userId)
         {
             var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == postId);
@@ -254,6 +298,13 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Unlike a post.
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task UnlikePostAsync(Guid postId, Guid userId)
         {
             var post = await repo.All<Post>().Include(p=>p.Likes).FirstOrDefaultAsync(p => p.Id == postId);
@@ -276,6 +327,14 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Add comment to a post.
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <param name="userId"></param>
+        /// <param name="commentText"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task AddCommentAsync(Guid postId, Guid userId, string commentText)
         {
             var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == postId);
@@ -301,6 +360,12 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Get all comments of a post.
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<List<CommentViewModel>> GetCommentsByPostIdAsync(Guid postId)
         {
             var post = await repo.All<Post>().Include(p=>p.Comments).ThenInclude(c=>c.Creator).FirstOrDefaultAsync(p => p.Id == postId);
@@ -326,6 +391,12 @@ namespace SchoolSocialMediaApp.Core.Services
             return comments;
         }
 
+        /// <summary>
+        /// Delete a comment of a post.
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task DeleteCommentAsync(Guid commentId)
         {
             var comment = await repo.All<Comment>().Include(c=>c.Post).Where(c=>c.Id == commentId).FirstOrDefaultAsync();
