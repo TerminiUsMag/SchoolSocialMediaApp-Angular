@@ -28,16 +28,16 @@
             if (!userIsPartOfSchool)
             {
                 <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Invitation" asp-action="Index">Invitations</a>
+                    <a class="nav-link text-dark" asp-controller="Invitation" asp-action="Index">Invitations</a>
                 </li>
             }
             <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Manage" title="Manage">Hello @user.UserName</a>
+                <a class="nav-link text-dark" asp-controller="Account" asp-action="Manage" title="Manage">Hello @user.UserName</a>
             </li>
             if (userCanBePrincipal)
             {
                 <li class="nav-item">
-                    <a class="nav-link text-dark btn" asp-area="" asp-controller="Account" asp-action="BecomePrincipal">Become a Principal</a>
+                    <a class="nav-link text-dark btn"  asp-controller="Account" asp-action="BecomePrincipal">Become a Principal</a>
                 </li>
             }
             else
@@ -49,7 +49,7 @@
             if (userIsPrincipal)
             {
                 <li class="nav-item">
-                    <a class="nav-link text-dark btn" asp-area="" asp-controller="School" asp-action="Manage">Manage School</a>
+                    <a class="nav-link text-dark btn" asp-controller="School" asp-action="Manage">Manage School</a>
                 </li>
             }
             <li class="nav-item">
