@@ -79,7 +79,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<ICollection<PostViewModel>> GetAllPostsAsync(Guid schoolId, Guid userId)
         {
-            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).Include(p=>p.Likes).OrderByDescending(p => p.CreatedOn).Select(p => new PostViewModel
+            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).Include(p => p.Likes).OrderByDescending(p => p.CreatedOn).Select(p => new PostViewModel
             {
                 Comments = p.Comments.Select(c => new CommentViewModel
                 {
@@ -214,7 +214,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("Id is empty.");
             }
 
-            var post = await repo.All<Post>().Include(p=>p.Comments).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await repo.All<Post>().Include(p => p.Comments).FirstOrDefaultAsync(p => p.Id == id);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
@@ -267,18 +267,18 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task UnlikePostAsync(Guid postId, Guid userId)
         {
-            var post = await repo.All<Post>().Include(p=>p.Likes).FirstOrDefaultAsync(p => p.Id == postId);
-            if(post is null)
+            var post = await repo.All<Post>().Include(p => p.Likes).FirstOrDefaultAsync(p => p.Id == postId);
+            if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
             var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
-            if(user is null)
+            if (user is null)
             {
                 throw new ArgumentException("User does not exist.");
             }
             var like = post.Likes.FirstOrDefault(l => l.PostId == postId && l.UserId == userId);
-            if(like is null)
+            if (like is null)
             {
                 throw new ArgumentException("You have not liked this post.");
             }
@@ -291,12 +291,12 @@ namespace SchoolSocialMediaApp.Core.Services
         public async Task AddCommentAsync(Guid postId, Guid userId, string commentText)
         {
             var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == postId);
-            if(post is null)
+            if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
             var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
-            if(user is null)
+            if (user is null)
             {
                 throw new ArgumentException("User does not exist.");
             }
@@ -316,12 +316,12 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<List<CommentViewModel>> GetCommentsByPostIdAsync(Guid postId)
         {
-            var post = await repo.All<Post>().Include(p=>p.Comments).ThenInclude(c=>c.Creator).FirstOrDefaultAsync(p => p.Id == postId);
-            if(post is null)
+            var post = await repo.All<Post>().Include(p => p.Comments).ThenInclude(c => c.Creator).FirstOrDefaultAsync(p => p.Id == postId);
+            if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
-            var comments = post.Comments.OrderByDescending(c=>c.CreatedOn).Select(c => new CommentViewModel
+            var comments = post.Comments.OrderByDescending(c => c.CreatedOn).Select(c => new CommentViewModel
             {
                 Content = c.Content,
                 CreatedOn = c.CreatedOn,
@@ -342,7 +342,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task DeleteCommentAsync(Guid commentId)
         {
-            var comment = await repo.All<Comment>().Include(c=>c.Post).Where(c=>c.Id == commentId).FirstOrDefaultAsync();
+            var comment = await repo.All<Comment>().Include(c => c.Post).Where(c => c.Id == commentId).FirstOrDefaultAsync();
             if (comment is null)
             {
                 throw new ArgumentException("The comment does not exist.");

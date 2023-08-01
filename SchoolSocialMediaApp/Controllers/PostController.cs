@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
-using SchoolSocialMediaApp.ViewModels.Models.Comment;
 using SchoolSocialMediaApp.ViewModels.Models.Post;
 
 namespace SchoolSocialMediaApp.Controllers
@@ -25,7 +24,7 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 var schoolId = await schoolService.GetSchoolIdByUserIdAsync(userId);
                 var school = await schoolService.GetSchoolByIdAsync(schoolId);
-                posts = await postService.GetAllPostsAsync(schoolId,userId);
+                posts = await postService.GetAllPostsAsync(schoolId, userId);
                 ViewBag.SchoolName = school.Name;
             }
             catch (ArgumentException ae)
