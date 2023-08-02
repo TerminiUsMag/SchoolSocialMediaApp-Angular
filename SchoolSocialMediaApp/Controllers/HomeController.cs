@@ -25,16 +25,6 @@ namespace SchoolSocialMediaApp.Controllers
             //{
             //    return RedirectToAction("Feed", "Home");
             //}
-
-            var roles = new List<string> { "User", "Principal", "Teacher", "Parent", "Student" };
-
-            foreach (var role in roles)
-            {
-                if (!await roleService.RoleExistsAsync(role))
-                {
-                    return Error();
-                }
-            }
             ViewBag.Message = message;
             ViewBag.ClassOfMessage = classOfMessage;
             return View();
