@@ -40,7 +40,7 @@
                     <a class="nav-link text-dark btn"  asp-controller="Account" asp-action="BecomePrincipal">Become a Principal</a>
                 </li>
             }
-            else
+            else if(!userIsPrincipal)
             {
                 <li class="nav-item">
                     <a class="nav-link text-dark btn" asp-controller="Account" asp-action="QuitSchool">Quit School</a>

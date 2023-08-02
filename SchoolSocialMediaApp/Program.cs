@@ -5,6 +5,7 @@ using Microsoft.Extensions.FileProviders;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Core.Services;
 using SchoolSocialMediaApp.Data;
+using SchoolSocialMediaApp.Infrastructure;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 
@@ -72,8 +73,26 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ISchoolService, SchoolService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IInvitationService, InvitationService>();
+builder.Services.AddScoped<DataSeeder>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    try
+    {
+        // Get the DataSeeder instance and call the SeedData method
+        var dataSeeder = services.GetRequiredService<DataSeeder>();
+        await dataSeeder.SeedData();
+    }
+    catch (Exception ex)
+    {
+        // Handle any errors during seeding if needed
+        Console.WriteLine("An error occurred while seeding the database: " + ex.Message);
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

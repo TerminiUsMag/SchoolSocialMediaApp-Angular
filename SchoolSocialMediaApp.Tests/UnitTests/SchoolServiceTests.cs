@@ -1,4 +1,4 @@
-namespace SchoolSocialMediaApp.Tests
+namespace SchoolSocialMediaApp.Tests.UnitTests
 {
     public class Tests
     {

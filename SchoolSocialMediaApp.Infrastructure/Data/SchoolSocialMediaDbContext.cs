@@ -1,16 +1,25 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using System.Reflection.Emit;
 
 namespace SchoolSocialMediaApp.Data
 {
     public class SchoolSocialMediaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
-        public SchoolSocialMediaDbContext(DbContextOptions<SchoolSocialMediaDbContext> options)
+        //private bool seedDb;
+
+        public SchoolSocialMediaDbContext(DbContextOptions<SchoolSocialMediaDbContext> options/*, bool seed = true*/)
             : base(options)
         {
-
+            //this.seedDb = seed;
+            if (this.Database.IsRelational())
+            {
+                this.Database.Migrate();
+            }
+            else
+            {
+                this.Database.EnsureCreated();
+            }
         }
 
         public DbSet<Comment> Comments { get; set; } = null!;
@@ -24,6 +33,13 @@ namespace SchoolSocialMediaApp.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            //if (this.seedDb)
+            //{
+            //    builder.ApplyConfiguration(new RolesConfiguration());
+            //    builder.ApplyConfiguration(new UserConfiguration());
+            //    //builder.ApplyConfiguration(new SchoolConfiguration());
+            //}
 
             builder.Entity<PostsLikes>()
                 .HasKey(pl => new { pl.PostId, pl.UserId });
@@ -70,9 +86,9 @@ namespace SchoolSocialMediaApp.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Invitation>()
-                .HasOne(i=>i.Receiver)
-                .WithMany(r=>r.Invitations)
-                .HasForeignKey(i=>i.ReceiverId)
+                .HasOne(i => i.Receiver)
+                .WithMany(r => r.Invitations)
+                .HasForeignKey(i => i.ReceiverId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Invitation>()
