@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using SchoolSocialMediaApp.Infrastructure.Migrations;
-using System.Reflection.Metadata;
 
 namespace SchoolSocialMediaApp.Infrastructure
 {
