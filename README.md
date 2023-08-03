@@ -20,4 +20,6 @@ Main Functionalities:
 11. You can edit your profile, change your profile picture.
 12. If you are a principal you can edit your school and change it's profile picture.
 
- 
+ ToDo:
+ 1.Create Admin panel.
+ 2.Fix post and comment deletion not possible for principal and andmin (exception : You are not the creator of the post).
