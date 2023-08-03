@@ -369,5 +369,10 @@ namespace SchoolSocialMediaApp.Controllers
             return RedirectToAction("Index", "Home", new { message = "You have successfully unsigned from your school!", classOfMessage = "text-bg-success" });
         }
 
+        public async Task<IActionResult> AdminPanel()
+        {
+            return View();
+        }
+
     }
 }

@@ -6,14 +6,6 @@
 <h1>@ViewBag.Title</h1>
 
 
-@*<div class="card text-black mb-3" style="max-width: 25rem;">
-    <div class="card-header">@Model.Name</div>
-    <img class="card-img-top img img-fluid" src="~/images/defaultSchool.png" alt="Card image cap">
-    <div class="card-body">
-        <h5 class="card-title">@Model.Location</h5>
-        <p class="card-text">@Model.Description</p>
-    </div>
-</div>*@
 <div class="row">
     <div class="col-md-4"> </div>
     <div class="col-md-4">
@@ -26,8 +18,7 @@
                 <h5 class="card-title">@Model.Name</h5>
                 <img class="card-img-top img" src="@Model.ImageUrl" alt="School image">
                 <p class="card-text">Location: @Model.Location</p>
-                @*<p class="card-text">Description: @Model.Description</p>*@
-                <a href="@Url.Action("Details","School")" class="btn btn-primary">Details</a>
+                <a asp-controller="School" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Details</a>
             </div>
         </div>
     </div>

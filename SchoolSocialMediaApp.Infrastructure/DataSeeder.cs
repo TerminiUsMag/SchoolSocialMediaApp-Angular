@@ -41,11 +41,6 @@ namespace SchoolSocialMediaApp.Infrastructure
 
         private async Task FixPrincipal(IRepository repo)
         {
-            //var principal = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Principal").FirstOrDefaultAsync();
-            //await userManager.RemoveFromRoleAsync(principal, "User");
-            //await userManager.AddToRoleAsync(principal, "Principal");
-            //principal.IsPrincipal = true;
-            //await repo.SaveChangesAsync();
 
             var role = await repo.All<ApplicationRole>().Where(r => r.Name == "User").FirstOrDefaultAsync();
             var principal = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Principal").FirstOrDefaultAsync();
@@ -73,6 +68,7 @@ namespace SchoolSocialMediaApp.Infrastructure
                 school.Principal = principal;
                 principal.School = school;
                 principal.SchoolId = school.Id;
+                principal.IsPrincipal = true;
 
                 await repo.AddAsync(school);
                 await repo.SaveChangesAsync();
@@ -109,6 +105,7 @@ namespace SchoolSocialMediaApp.Infrastructure
                 if (user.FirstName == "Admin")
                 {
                     await userManager.AddToRoleAsync(user, "Admin");
+                    user.IsAdmin = true;
                 }
                 else
                 {

@@ -34,11 +34,19 @@
                         </li>
                         @if (SignInManager.IsSignedIn(User))
                         {
-                            var userIsPartOfSchool = RoleService.IsUserPartOfSchool(UserManager.GetUserAsync(User).Result);
+                            var user = await UserManager.GetUserAsync(User);
+                            var userIsPartOfSchool = RoleService.IsUserPartOfSchool(await UserManager.GetUserAsync(User));
+                            var userIsAdmin = await UserManager.IsInRoleAsync(user, "Admin");
                             if (userIsPartOfSchool)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Post" asp-action="Index">Posts from your School</a>
+                                </li>
+                            }
+                            else if (userIsAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark btn" asp-controller="Account" asp-action="AdminPanel">Admin Panel</a>
                                 </li>
                             }
                         }

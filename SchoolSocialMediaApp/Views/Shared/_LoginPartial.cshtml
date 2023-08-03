@@ -4,6 +4,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @inject IRoleService RoleService
+@inject IInvitationService InvitationService
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
@@ -16,6 +17,7 @@
         else
         {
             var userIsPrincipal = await UserManager.IsInRoleAsync(user, "Principal");
+            var userIsAdmin = await UserManager.IsInRoleAsync(user, "Admin");
             var rolesThatCannotBePrincipal = new string[] { "Teacher", "Student", "Parent", "Principal", "Admin" };
             bool userCanBePrincipal = true;
             foreach (var role in rolesThatCannotBePrincipal)
@@ -24,23 +26,34 @@
                     userCanBePrincipal = false;
             }
             var userIsPartOfSchool = RoleService.IsUserPartOfSchool(user);
+            var userInvitations = await InvitationService.GetReceivedInvitationsByUserIdAsync(user.Id);
+            var userHasInvitations = userInvitations.Any();
 
-            if (!userIsPartOfSchool)
+            if (!userIsPartOfSchool && !userIsAdmin)
             {
                 <li class="nav-item">
-                    <a class="nav-link text-dark" asp-controller="Invitation" asp-action="Index">Invitations</a>
+                    <a class="nav-link text-dark" asp-controller="Invitation" asp-action="Index">Invitations @if (userHasInvitations)
+                        {
+                            <i class="fa-solid fa-circle fa-bounce fa-2xs" style="color: #00c220;"></i>
+                        }</a>
                 </li>
             }
+            @*if (userIsAdmin)
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-dark btn" asp-controller="Account" asp-action="AdminPanel">Admin Panel</a>
+                </li>
+            }*@
             <li class="nav-item">
                 <a class="nav-link text-dark" asp-controller="Account" asp-action="Manage" title="Manage">Hello @user.UserName</a>
             </li>
             if (userCanBePrincipal)
             {
                 <li class="nav-item">
-                    <a class="nav-link text-dark btn"  asp-controller="Account" asp-action="BecomePrincipal">Become a Principal</a>
+                    <a class="nav-link text-dark btn" asp-controller="Account" asp-action="BecomePrincipal">Become a Principal</a>
                 </li>
             }
-            else if(!userIsPrincipal)
+            else if (!userIsPrincipal && !userIsAdmin)
             {
                 <li class="nav-item">
                     <a class="nav-link text-dark btn" asp-controller="Account" asp-action="QuitSchool">Quit School</a>

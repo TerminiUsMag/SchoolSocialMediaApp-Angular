@@ -24,7 +24,6 @@ else
                         <h5 class="card-title">@school.Name</h5>
                         <img class="card-img-top img" src="@school.ImageUrl" alt="School image">
                         <p class="card-text">Location: @school.Location</p>
-                        @*                <p class="card-text">Description: @school.Description</p>*@
                         <a asp-controller="School" asp-action ="Details" asp-route-id="@school.Id" class="btn btn-primary">Details</a>
                     </div>
                 </div>

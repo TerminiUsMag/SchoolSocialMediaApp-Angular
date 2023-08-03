@@ -3,10 +3,22 @@
     ViewBag.Title = "Details";
 }
 
-<h1>@ViewBag.Title</h1>
+<div class="container text-center">
+    <h1 class="custom-text">@ViewBag.Title</h1>
+    <h2 class="custom-text">@Model.Name</h2>
+    <img class="card-img-top img-fluid custom-image" src="@Model.ImageUrl" alt="School image">
+    <p class="custom-text">Principal: @Model.PrincipalName</p>
+    <p class="custom-text">Location: @Model.Location</p>
+    <p class="custom-text">Description: @Model.Description</p>
+</div>
 
-<h2>@Model.Name</h2>
-<img style ="max-width:50rem;" class="card-img-top img" src="@Model.ImageUrl" alt="School image">
-<p>Principal: @Model.PrincipalName</p>
-<p>Location: @Model.Location</p>
-<p>Description: @Model.Description</p>
+<style>
+    .custom-image {
+        max-width: 400px;
+        height: auto;
+    }
+
+    .custom-text {
+        font-size: 18px;
+    }
+</style>
