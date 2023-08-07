@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Post;
 using System.ComponentModel.DataAnnotations;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 namespace SchoolSocialMediaApp.ViewModels.Models.School
@@ -48,5 +49,8 @@ namespace SchoolSocialMediaApp.ViewModels.Models.School
 
         [Comment("Teachers in the school.")]
         public ICollection<ApplicationUser> Teachers { get; set; } = new List<ApplicationUser>();
+
+        [Comment("Posts in the school.")]
+        public ICollection<PostViewModel> Posts { get; set; } = new List<PostViewModel>();
     }
 }

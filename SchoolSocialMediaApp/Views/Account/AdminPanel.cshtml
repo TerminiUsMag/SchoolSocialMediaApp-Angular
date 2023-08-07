@@ -1,7 +1,83 @@
-﻿@{
+﻿@model AdminPanelViewModel
+@{
     ViewBag.Title = "Admin Panel";
 }
 
 <div class="row">
     <h1>Welcome to the @ViewBag.Title</h1>
 </div>
+<h2>Schools</h2>
+@if (Model.Schools.Any())
+{
+    <div class="row container-fluid">
+        <table class="table table-striped table-hover table-responsive-md ">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Principal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var school in Model.Schools)
+                {
+                    <tr>
+                        <td>@school.Name</td>
+                        <td>@school.Location</td>
+                        <td>@school.Principal.FirstName @school.Principal.LastName</td>
+                        <td>
+@*                            <form asp-controller="School" asp-action="Manage" method="post">
+                                <input type="hidden" name="schoolId" value="@teacher.SchoolId" />
+                                <input type="hidden" name="userId" value="@teacher.Id" />
+                                <button type="submit" class="btn btn-primary">Remove from school</button>
+                            </form>*@
+                            <a class="btn btn-primary" asp-action="AdminSchoolManage" asp-controller="School" asp-route-schoolId="@school.Id">Manage</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No Schools found !</p>
+}
+<h2>Users</h2>
+@if (Model.Users.Any())
+{
+    <div class="row container-fluid">
+        <table class="table table-striped table-hover table-responsive-md ">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.FirstName @user.LastName</td>
+                        <td>@user.UserName</td>
+                        <td>
+                            @*                            <form asp-controller="School" asp-action="Manage" method="post">
+                    <input type="hidden" name="schoolId" value="@teacher.SchoolId" />
+                    <input type="hidden" name="userId" value="@teacher.Id" />
+                    <button type="submit" class="btn btn-primary">Remove from school</button>
+                    </form>*@
+                            <a class="btn btn-primary" asp-action="DeleteUser" asp-controller="Account" asp-route-id="@user.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No Users found !</p>
+}
+@*<a asp-controller="Invitation" asp-action="Send" asp-route-role="Parent" class="btn btn-primary mb-4">Send Invitation</a>*@

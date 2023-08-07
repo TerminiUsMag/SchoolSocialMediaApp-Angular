@@ -2,6 +2,7 @@
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.Infrastructure.Migrations;
 using SchoolSocialMediaApp.ViewModels.Models.Comment;
 using SchoolSocialMediaApp.ViewModels.Models.Post;
 using SchoolSocialMediaApp.ViewModels.Models.User;
@@ -13,11 +14,13 @@ namespace SchoolSocialMediaApp.Core.Services
     {
         private readonly IRepository repo;
         private readonly ISchoolService schoolService;
+        private readonly IRoleService roleService;
 
-        public PostService(IRepository _repo, ISchoolService _schoolService)
+        public PostService(IRepository _repo, ISchoolService _schoolService, IRoleService _roleService)
         {
             this.repo = _repo;
             this.schoolService = _schoolService;
+            this.roleService = _roleService;
         }
 
         public async Task<bool> CreatePostAsync(PostCreateModel model, Guid userId)
@@ -117,7 +120,7 @@ namespace SchoolSocialMediaApp.Core.Services
         }
 
 
-        public async Task EditPostAsync(PostEditViewModel model, Guid userId)
+        public async Task<Guid> EditPostAsync(PostEditViewModel model, Guid userId)
         {
             var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == model.Id);
             if (post is null)
@@ -137,7 +140,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 }).ToList(),
                 Content = model.Content,
                 CreatedOn = post.CreatedOn,
-                CreatorId = post.CreatorId,
+                //CreatorId = post.CreatorId,
                 IsEdited = true,
                 SchoolId = post.SchoolId,
                 Likes = model.Likes.Select(l => new PostsLikes
@@ -151,8 +154,8 @@ namespace SchoolSocialMediaApp.Core.Services
             post.Comments = newPost.Comments;
             post.Content = newPost.Content;
             post.Likes = newPost.Likes;
-            post.Creator = newPost.Creator;
-            post.CreatorId = newPost.CreatorId;
+            //post.Creator = newPost.Creator;
+            //post.CreatorId = newPost.CreatorId;
             post.CreatedOn = newPost.CreatedOn;
             post.Id = newPost.Id;
             post.SchoolId = newPost.SchoolId;
@@ -160,7 +163,7 @@ namespace SchoolSocialMediaApp.Core.Services
             post.IsEdited = newPost.IsEdited;
 
             await repo.SaveChangesAsync();
-
+            return post.SchoolId;
         }
 
 
@@ -214,12 +217,13 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("Id is empty.");
             }
 
-            var post = await repo.All<Post>().Include(p => p.Comments).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await repo.All<Post>().Include(p => p.Comments).Include(p=>p.School).FirstOrDefaultAsync(p => p.Id == id);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
-            if (post.CreatorId != userId)
+            var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+            if (post.CreatorId != userId && post.School.PrincipalId != userId && !userIsAdmin)
             {
                 throw new ArgumentException("You are not the creator of this post.");
             }

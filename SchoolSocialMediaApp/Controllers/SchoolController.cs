@@ -311,6 +311,23 @@ namespace SchoolSocialMediaApp.Controllers
 
             return RedirectToAction("Index", "Home", new { message = "School deleted successfully !", classOfMessage = "text-bg-success" });
         }
+
+        [HttpGet]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> AdminSchoolManage(Guid schoolId)
+        {
+            var userId = this.GetUserId();
+            var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+
+            if (!userIsAdmin)
+            {
+                throw new InvalidOperationException("You are not admin!");
+            }
+
+            SchoolManageViewModel? model = await schoolService.GetSchoolManageViewModelBySchoolIdAsync(schoolId);
+
+            return View(model);
+        }
     }
 }
 

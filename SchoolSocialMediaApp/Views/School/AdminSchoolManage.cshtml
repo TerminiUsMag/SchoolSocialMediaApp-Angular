@@ -11,7 +11,7 @@
 
 @if (ViewBag.Code == 404)
 {
-    <h1 class="text-warning">No school to manage. You're not principal anymore!</h1>
+    <h1 class="text-warning">No school to manage.</h1>
 }
 
 else
@@ -48,6 +48,7 @@ else
     </div>
 
     <a asp-controller="Invitation" asp-action="ManageSent" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4 mt-4">Manage Sent Invitations</a>
+    <a asp-controller="Post" asp-action="AdminPostView" asp-route-schoolId ="@Model.Id" class="btn btn-secondary mb-4 mt-4">View School's Posts</a>
 
     <h2>Teachers</h2>
     @if (Model.Teachers.Any())
@@ -84,7 +85,7 @@ else
     {
         <p>No teachers found.</p>
     }
-    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Teacher" asp-route-schoolId ="@Model.Id" class="btn btn-primary mb-4">Send Invitation</a>
+    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Teacher" class="btn btn-primary mb-4">Send Invitation</a>
 
     <h2>Parents</h2>
     @if (Model.Parents.Any())
@@ -276,5 +277,3 @@ else
         });
     </script>
 }
-
-

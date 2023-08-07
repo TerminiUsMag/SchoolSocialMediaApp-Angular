@@ -121,11 +121,20 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         Task UpdateSchoolAsync(SchoolManageViewModel model);
+        
         /// <summary>
         /// Returns a List of users which are registered in the school.
         /// </summary>
         /// <param name="schoolId"></param>
         /// <returns></returns>
         Task<List<ApplicationUser>> GetAllUsersInSchool(Guid schoolId);
+
+        /// <summary>
+        /// Get SchoolViewModel for the Manage School Admin Panel by school ID.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>ManageSchoolViewModel</returns>
+        /// <exception cref="ArgumentException"></exception>
+        Task<SchoolManageViewModel?> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId);
     }
 }

@@ -49,7 +49,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        Task EditPostAsync(PostEditViewModel model, Guid userId);
+        Task<Guid> EditPostAsync(PostEditViewModel model, Guid userId);
 
         /// <summary>
         /// Gets all posts of a school and maps them to PostViewModel.

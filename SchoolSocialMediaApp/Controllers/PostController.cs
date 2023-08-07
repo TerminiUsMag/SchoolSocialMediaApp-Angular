@@ -8,11 +8,13 @@ namespace SchoolSocialMediaApp.Controllers
     {
         private readonly IPostService postService;
         private readonly ISchoolService schoolService;
+        private readonly IRoleService roleService;
 
-        public PostController(IPostService _postService, ISchoolService _schoolService)
+        public PostController(IPostService _postService, ISchoolService _schoolService, IRoleService _roleService)
         {
             this.postService = _postService;
             this.schoolService = _schoolService;
+            this.roleService = _roleService;
         }
 
         [HttpGet]
@@ -92,7 +94,12 @@ namespace SchoolSocialMediaApp.Controllers
             var userId = this.GetUserId();
             try
             {
-                await postService.EditPostAsync(model, userId);
+                var schoolId = await postService.EditPostAsync(model, userId);
+                bool userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (userIsAdmin)
+                {
+                    return RedirectToAction("AdminPostView", new { schoolId = schoolId });
+                }
             }
             catch (ArgumentException ae)
             {
@@ -188,6 +195,15 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 return Json(new { success = false, error = ex.Message });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AdminPostView(Guid schoolId)
+        {
+            var userId = this.GetUserId();
+            var model = await postService.GetAllPostsAsync(schoolId, userId);
+
+            return View("Index", model);
         }
     }
 }

@@ -38,7 +38,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Teacher", policy => policy.RequireRole("Teacher"));
     options.AddPolicy("Student", policy => policy.RequireRole("Student"));
     options.AddPolicy("Parent", policy => policy.RequireRole("Parent"));
-    options.AddPolicy("Principal", policy => policy.RequireRole("Principal"));
+    options.AddPolicy("Principal", policy => policy.RequireRole("Principal","Admin"));
     options.AddPolicy("CanBePrincipal", policy => policy.RequireRole("User"/*, "Parent", "Teacher", "Admin"*/));
     options.AddPolicy("IsPartOfSchoolButNotPrincipal", policy => policy.RequireRole("Parent", "Teacher", "Student"));
 });

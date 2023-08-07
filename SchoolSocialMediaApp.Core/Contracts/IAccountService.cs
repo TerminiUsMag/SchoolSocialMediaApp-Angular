@@ -87,5 +87,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         Task UpdateAsync(Guid userId, UserManageViewModel model);
+        Task<AdminPanelViewModel> GetAdminPanelViewModel(Guid userId);
     }
 }

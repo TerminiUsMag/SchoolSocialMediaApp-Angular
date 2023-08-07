@@ -9,13 +9,13 @@ namespace SchoolSocialMediaApp.Infrastructure
     public class DataSeeder
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly RoleManager<ApplicationRole> roleManager;
+        //private readonly RoleManager<ApplicationRole> roleManager;
         private readonly IServiceProvider serviceProvider;
 
         public DataSeeder(UserManager<ApplicationUser> _userManager, RoleManager<ApplicationRole> _roleManager, IServiceProvider _serviceProvider)
         {
             this.userManager = _userManager;
-            this.roleManager = _roleManager;
+            //this.roleManager = _roleManager;
             this.serviceProvider = _serviceProvider;
         }
 
@@ -35,8 +35,36 @@ namespace SchoolSocialMediaApp.Infrastructure
                     await SeedUsers(repo);
                     await SeedSchool(repo);
                     await FixPrincipal(repo);
+                    await SeedPosts(repo);
                 }
             }
+        }
+
+        private async Task SeedPosts(IRepository repo)
+        {
+            foreach (var post in CreatePosts())
+            {
+                await repo.AddAsync(post);
+            }
+           await repo.SaveChangesAsync();
+        }
+
+        private List<Post> CreatePosts()
+        {
+            var posts = new List<Post>();
+            posts.Add(new Post
+            {
+                Id = Guid.Parse("FD1EC410-8A72-45B2-871A-08DB9743B838"),
+                Content = "Hello, to all new students and welcome to our school ! :) For any questions feel free to come to my office or the teacher's room, we're here for you all.",
+                CreatedOn = DateTime.Now,
+                CreatorId = Guid.Parse("A40FC683-6F20-49F8-1E10-08DB7BFE5717"),
+                SchoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A"),
+                IsEdited = false,
+                Comments = new List<Comment>(),
+                Likes = new List<PostsLikes>()
+            });
+
+            return posts;
         }
 
         private async Task FixPrincipal(IRepository repo)
@@ -163,7 +191,7 @@ namespace SchoolSocialMediaApp.Infrastructure
                 LockoutEnd = null,
                 LockoutEnabled = true,
                 AccessFailedCount = 0,
-                ImageUrl = "/images/defaultProfile.png"
+                ImageUrl = "/images/user-images/principalProfile.jpg"
             });
 
 

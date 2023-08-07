@@ -489,5 +489,15 @@ namespace SchoolSocialMediaApp.Core.Services
         {
             return await repo.All<ApplicationUser>().Where(u => u.SchoolId == schoolId).ToListAsync();
         }
+
+        public async Task<SchoolManageViewModel?> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId)
+        {
+            var school = await repo.All<School>().Where(s=>s.Id == schoolId).Include(s=>s.Principal).FirstOrDefaultAsync();
+            if (school is null)
+            {
+                throw new ArgumentException("No such school exists");
+            }
+            return await GetSchoolManageViewModelByUserIdAsync(school.PrincipalId);
+        }
     }
 }

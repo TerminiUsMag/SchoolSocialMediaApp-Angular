@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.School;
 using SchoolSocialMediaApp.ViewModels.Models.User;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -59,6 +60,61 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
+        public async Task<AdminPanelViewModel> GetAdminPanelViewModel(Guid userId)
+        {
+            var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+            if (!isAdmin)
+            {
+                throw new InvalidOperationException("You are not admin!");
+            }
+            var result = new AdminPanelViewModel();
+            var posts = await repo.All<Post>().ToListAsync();
+            var users = await repo.All<ApplicationUser>().ToListAsync();
+            var schools = await repo.All<School>().Include(s => s.Principal).Select(s => new SchoolManageViewModel
+            {
+                Description = s.Description,
+                Id = s.Id,
+                ImageUrl = s.ImageUrl,
+                Location = s.Location,
+                Name = s.Name,
+                PrincipalId = s.PrincipalId,
+                ImageFile = null,
+                Principal = s.Principal,
+            }).ToListAsync();
+
+            foreach (var school in schools)
+            {
+                var schoolUsers = users.Where(u => u.SchoolId == school.Id).ToList();
+                var schoolPosts = posts.Where(p => p.SchoolId == school.Id).ToList();
+                foreach (var user in schoolUsers)
+                {
+                    if (user.IsParent)
+                    {
+                        school.Parents.Add(user);
+                    }
+                    else if (user.IsStudent)
+                    {
+                        school.Students.Add(user);
+                    }
+                    else
+                    {
+                        if (!user.IsPrincipal)
+                        {
+                            school.Teachers.Add(user);
+                        }
+                    }
+                }
+            }
+
+            foreach (var user in users)
+            {
+                user.Posts = posts.Where(p => p.CreatorId == user.Id).ToList();
+            }
+
+            result.Schools = schools;
+            result.Users = users;
+            return result;
+        }
 
         public async Task<UserManageViewModel> GetUserManageViewModelAsync(string userId)
         {

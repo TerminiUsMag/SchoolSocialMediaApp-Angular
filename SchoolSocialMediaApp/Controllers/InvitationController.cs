@@ -80,12 +80,12 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Principal")]
-        public async Task<IActionResult> Send(string role, string message)
+        public async Task<IActionResult> Send(string role, Guid schoolId, string message)
         {
             var model = new CreateInvitationViewModel();
             model.Role = role;
             model.SenderId = this.GetUserId();
-            var school = await schoolService.GetSchoolByUserIdAsync(model.SenderId);
+            var school = await schoolService.GetSchoolByIdAsync(schoolId);
             model.SchoolId = school.Id;
             model.Candidates = await invitationService.GetCandidatesAsync();
             ViewBag.Role = role;

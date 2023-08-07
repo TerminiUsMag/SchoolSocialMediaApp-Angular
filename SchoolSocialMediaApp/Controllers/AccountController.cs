@@ -371,7 +371,9 @@ namespace SchoolSocialMediaApp.Controllers
 
         public async Task<IActionResult> AdminPanel()
         {
-            return View();
+            var userId = this.GetUserId();
+            AdminPanelViewModel model = await accountService.GetAdminPanelViewModel(userId);
+            return View(model);
         }
 
     }
