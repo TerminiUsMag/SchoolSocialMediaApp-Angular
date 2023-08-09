@@ -287,8 +287,9 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("User id cannot be empty.");
             }
 
-            //Checks if the user is Principal, because only principals have permission to manage schools.
-            if (await roleService.UserIsInRoleAsync(userId.ToString(), "Principal"))
+            //Checks if the user is Principal or Admin, because only principals and Admins have permission to manage schools.
+            var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+            if (isPrincipal)
             {
                 //If the user is Principal get the user and it's school.Check if the user is null.
                 var user = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
@@ -389,13 +390,16 @@ namespace SchoolSocialMediaApp.Core.Services
             user.IsStudent = false;
             user.IsTeacher = false;
 
-            //Gets the user's roles and removes parent, student and teeacher roles from the user.
+            //Gets the user's roles and removes parent, student and teacher roles from the user.
             var userRoles = await roleService.GetUserRolesAsync(userId);
             foreach (var role in userRoles)
             {
                 if (role.ToLower() != "user" && role.ToLower() != "admin" && role.ToLower() != "principal")
                     await roleService.RemoveUserFromRoleAsync(userId.ToString(), role);
             }
+
+            //Adds the user to the "User" role.
+            await roleService.AddUserToRoleAsync(userId.ToString(), "User");
 
             //Save changes to the Database.
             await repo.SaveChangesAsync();
@@ -492,7 +496,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<SchoolManageViewModel?> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId)
         {
-            var school = await repo.All<School>().Where(s=>s.Id == schoolId).Include(s=>s.Principal).FirstOrDefaultAsync();
+            var school = await repo.All<School>().Where(s => s.Id == schoolId).Include(s => s.Principal).FirstOrDefaultAsync();
             if (school is null)
             {
                 throw new ArgumentException("No such school exists");

@@ -43,7 +43,7 @@ else
     </form>
     <div class="row">
         <div class="col-sm-3">
-            <a class="btn btn-danger" asp-controller="School" asp-action="Delete">Delete School</a>
+            <a class="btn btn-danger" asp-controller="School" asp-action="DeleteAsAdmin" asp-route-schoolId = "@Model.Id" >Delete School</a>
         </div>
     </div>
 
@@ -85,7 +85,7 @@ else
     {
         <p>No teachers found.</p>
     }
-    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Teacher" class="btn btn-primary mb-4">Send Invitation</a>
+    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Teacher" asp-route-schoolId = "@Model.Id" class="btn btn-primary mb-4">Send Invitation</a>
 
     <h2>Parents</h2>
     @if (Model.Parents.Any())
@@ -122,7 +122,7 @@ else
     {
         <p>No parents found.</p>
     }
-    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Parent" class="btn btn-primary mb-4">Send Invitation</a>
+    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Parent" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4">Send Invitation</a>
 
     <h2>Students</h2>
     @if (Model.Students.Any())
@@ -159,7 +159,7 @@ else
     {
         <p>No students found.</p>
     }
-    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Student" class="btn btn-primary mb-4">Send Invitation</a>
+    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Student" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4">Send Invitation</a>
 
     <style>
         .school-name {

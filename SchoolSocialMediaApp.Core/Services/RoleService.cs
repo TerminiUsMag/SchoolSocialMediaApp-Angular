@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using System.Security.Claims;
@@ -131,6 +132,10 @@ namespace SchoolSocialMediaApp.Core.Services
             if (await userManager.IsInRoleAsync(user, "Admin"))
             {
                 result.Add("Admin");
+            }
+            if (await userManager.IsInRoleAsync(user, "User"))
+            {
+                result.Add("User");
             }
 
             //returns the result.

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Post;
 using SchoolSocialMediaApp.ViewModels.Models.School;
 using SchoolSocialMediaApp.ViewModels.Models.User;
 using System.Net.Mail;
@@ -70,7 +71,7 @@ namespace SchoolSocialMediaApp.Core.Services
             var result = new AdminPanelViewModel();
             var posts = await repo.All<Post>().ToListAsync();
             var users = await repo.All<ApplicationUser>().ToListAsync();
-            var schools = await repo.All<School>().Include(s => s.Principal).Select(s => new SchoolManageViewModel
+            var schools = await repo.All<School>().Select( s => new SchoolManageViewModel
             {
                 Description = s.Description,
                 Id = s.Id,
@@ -80,7 +81,14 @@ namespace SchoolSocialMediaApp.Core.Services
                 PrincipalId = s.PrincipalId,
                 ImageFile = null,
                 Principal = s.Principal,
+                //Principal = users.Where(u=>u.Id==s.PrincipalId).FirstOrDefault(),
+                Parents = new List<ApplicationUser>(),
+                Students = new List<ApplicationUser>(),
+                Teachers = new List<ApplicationUser>(),
+                Posts = new List<PostViewModel>(),
             }).ToListAsync();
+
+            schools = schools.DistinctBy(s => s.Id).ToList();
 
             foreach (var school in schools)
             {

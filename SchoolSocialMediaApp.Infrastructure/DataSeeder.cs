@@ -34,10 +34,63 @@ namespace SchoolSocialMediaApp.Infrastructure
                 {
                     await SeedUsers(repo);
                     await SeedSchool(repo);
-                    await FixPrincipal(repo);
+                    await FixRoles(repo);
                     await SeedPosts(repo);
+                    await SeedComments(repo);
+                    await SeedLikes(repo);
                 }
             }
+        }
+
+        private async Task SeedLikes(IRepository repo)
+        {
+            foreach (var like in CreateLikes())
+            {
+                await repo.AddAsync(like);
+            }
+
+            await repo.SaveChangesAsync();
+        }
+
+        private List<PostsLikes> CreateLikes()
+        {
+            var likes = new List<PostsLikes>();
+
+            likes.Add(new PostsLikes
+            {
+                PostId = Guid.Parse("FD1EC410-8A72-45B2-871A-08DB9743B838"),
+                UserId = Guid.Parse("5DBD2E13-B653-41B3-1E13-08DB7BFE5717")
+            });
+
+            return likes;
+        }
+
+        private async Task SeedComments(IRepository repo)
+        {
+            foreach (var comment in CreateComments())
+            {
+                await repo.AddAsync(comment);
+            }
+
+            await repo.SaveChangesAsync();
+        }
+
+        private List<Comment> CreateComments()
+        {
+            var comments = new List<Comment>();
+
+            comments.Add(new Comment
+            {
+                Id = Guid.Parse("CA825E34-7D34-4067-C39D-08DB9750753B"),
+                Content = "Thanks for the support, you are great !",
+                CreatedOn = DateTime.Now,
+                PostId = Guid.Parse("FD1EC410-8A72-45B2-871A-08DB9743B838"),
+                CreatorId = Guid.Parse("5DBD2E13-B653-41B3-1E13-08DB7BFE5717"),
+
+            });
+
+
+            return comments;
         }
 
         private async Task SeedPosts(IRepository repo)
@@ -46,7 +99,7 @@ namespace SchoolSocialMediaApp.Infrastructure
             {
                 await repo.AddAsync(post);
             }
-           await repo.SaveChangesAsync();
+            await repo.SaveChangesAsync();
         }
 
         private List<Post> CreatePosts()
@@ -67,10 +120,10 @@ namespace SchoolSocialMediaApp.Infrastructure
             return posts;
         }
 
-        private async Task FixPrincipal(IRepository repo)
+        private async Task FixRoles(IRepository repo)
         {
 
-            var role = await repo.All<ApplicationRole>().Where(r => r.Name == "User").FirstOrDefaultAsync();
+            //var role = await repo.All<ApplicationRole>().Where(r => r.Name == "User").FirstOrDefaultAsync();
             var principal = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Principal").FirstOrDefaultAsync();
 
             var userRoles = await repo.All<IdentityUserRole<Guid>>().Where(ur => ur.UserId == principal.Id).ToListAsync();
@@ -79,9 +132,25 @@ namespace SchoolSocialMediaApp.Infrastructure
                 repo.Delete(userRole);
             }
 
-            role = await repo.All<ApplicationRole>().Where(r => r.Name == "Principal").FirstOrDefaultAsync();
+            var role = await repo.All<ApplicationRole>().Where(r => r.Name == "Principal").FirstOrDefaultAsync();
 
             await repo.AddAsync<IdentityUserRole<Guid>>(new IdentityUserRole<Guid> { RoleId = role.Id, UserId = principal.Id });
+            principal.IsPrincipal = true;
+            await repo.SaveChangesAsync();
+
+            var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
+
+            var studentRoles = await repo.All<IdentityUserRole<Guid>>().Where(ur => ur.UserId == student.Id).ToListAsync();
+            foreach (var studentRole in studentRoles)
+            {
+                repo.Delete(studentRole);
+            }
+
+            role = await repo.All<ApplicationRole>().Where(r => r.Name == "Student").FirstOrDefaultAsync();
+
+            await repo.AddAsync<IdentityUserRole<Guid>>(new IdentityUserRole<Guid> { RoleId = role.Id, UserId = student.Id });
+            student.IsStudent = true;
+
             await repo.SaveChangesAsync();
         }
 
@@ -94,11 +163,17 @@ namespace SchoolSocialMediaApp.Infrastructure
             {
                 school.PrincipalId = principal.Id;
                 school.Principal = principal;
+
                 principal.School = school;
                 principal.SchoolId = school.Id;
                 principal.IsPrincipal = true;
 
                 await repo.AddAsync(school);
+                await repo.SaveChangesAsync();
+
+                var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
+                student!.SchoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
+
                 await repo.SaveChangesAsync();
             }
         }
@@ -110,7 +185,7 @@ namespace SchoolSocialMediaApp.Infrastructure
                 Id = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A"),
                 Name = "DEMO School",
                 Description = "School used for demo purposes only.",
-                ImageUrl = "/images/defaultSchool.png",
+                ImageUrl = "/images/school-images/demoSchoolProfile.jpg",
                 Location = "Sofia, Bulgaria",
             };
         }
@@ -140,7 +215,7 @@ namespace SchoolSocialMediaApp.Infrastructure
                     await userManager.AddToRoleAsync(user, "User");
                 }
             }
-            await repo.SaveChangesAsync();
+            //await repo.SaveChangesAsync();
         }
 
         private List<ApplicationUser> CreateUsers()
@@ -260,7 +335,8 @@ namespace SchoolSocialMediaApp.Infrastructure
                 LockoutEnd = null,
                 LockoutEnabled = true,
                 AccessFailedCount = 0,
-                ImageUrl = "/images/defaultProfile.png"
+                ImageUrl = "/images/user-images/studentProfile.jpg",
+                //SchoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A"),
             });
 
             return users;

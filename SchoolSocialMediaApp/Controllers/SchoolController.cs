@@ -262,9 +262,11 @@ namespace SchoolSocialMediaApp.Controllers
                 {
                     return RedirectToAction("Manage", "School", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
                 }
-                if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Principal"))
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isPrincipal && isAdmin)
                 {
-                    return RedirectToAction("Manage", "Account", new { message = "You are not Principal", classOfMessage = "text-bg-danger" });
+                    return RedirectToAction("Manage", "Account", new { message = "You are not Principal of the school (use the Admin Panel)", classOfMessage = "text-bg-danger" });
                 }
 
                 var school = await schoolService.GetSchoolByUserIdAsync(userId);
@@ -325,6 +327,15 @@ namespace SchoolSocialMediaApp.Controllers
             }
 
             SchoolManageViewModel? model = await schoolService.GetSchoolManageViewModelBySchoolIdAsync(schoolId);
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> DeleteAsAdmin(Guid schoolId)
+        {
+            var model = new SchoolDeleteViewModel();
 
             return View(model);
         }

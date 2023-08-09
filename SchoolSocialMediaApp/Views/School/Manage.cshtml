@@ -121,7 +121,7 @@ else
     {
         <p>No parents found.</p>
     }
-    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Parent" class="btn btn-primary mb-4">Send Invitation</a>
+    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Parent" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4">Send Invitation</a>
 
     <h2>Students</h2>
     @if (Model.Students.Any())
@@ -158,7 +158,7 @@ else
     {
         <p>No students found.</p>
     }
-    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Student" class="btn btn-primary mb-4">Send Invitation</a>
+    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Student" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4">Send Invitation</a>
 
     <style>
         .school-name {

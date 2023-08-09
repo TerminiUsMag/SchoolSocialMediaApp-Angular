@@ -21,7 +21,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string message, string classOfMessage)
+        public async Task<IActionResult> Index(string message = "", string classOfMessage = "")
         {
             var userId = this.GetUserId();
             if (userId == Guid.Empty)
@@ -80,7 +80,7 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Principal")]
-        public async Task<IActionResult> Send(string role, Guid schoolId, string message)
+        public async Task<IActionResult> Send(string role, Guid schoolId, string message = "")
         {
             var model = new CreateInvitationViewModel();
             model.Role = role;
@@ -114,12 +114,12 @@ namespace SchoolSocialMediaApp.Controllers
                 return View(model);
             }
 
-            return RedirectToAction("Send", "Invitation", new { role = model.Role, message = "Invitation sent successfully" });
+            return RedirectToAction("Send", "Invitation", new { role = model.Role,schoolId = model.SchoolId, message = "Invitation sent successfully" });
         }
 
         [HttpGet]
         [Authorize(Policy = "Principal")]
-        public async Task<IActionResult> ManageSent(Guid schoolId, string message)
+        public async Task<IActionResult> ManageSent(Guid schoolId, string message = "")
         {
             List<InvitationViewModel> invitations = await invitationService.GetSentInvitationsBySchoolIdAsync(schoolId);
             ViewBag.Message = message;

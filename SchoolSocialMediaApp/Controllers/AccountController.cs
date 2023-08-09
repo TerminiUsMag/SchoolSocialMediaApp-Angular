@@ -369,10 +369,28 @@ namespace SchoolSocialMediaApp.Controllers
             return RedirectToAction("Index", "Home", new { message = "You have successfully unsigned from your school!", classOfMessage = "text-bg-success" });
         }
 
+        [HttpGet]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> AdminPanel()
         {
             var userId = this.GetUserId();
             AdminPanelViewModel model = await accountService.GetAdminPanelViewModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            var userId = this.GetUserId();
+
+            if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
+            {
+                return RedirectToAction("AccessDenied", new { msg = "You are not authorized to delete users" });
+            }
+
+            var model = await accountService.GetUserManageViewModelAsync(id.ToString());
+
             return View(model);
         }
 
