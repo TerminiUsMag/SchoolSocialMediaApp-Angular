@@ -210,14 +210,14 @@ namespace SchoolSocialMediaApp.Core.Services
         }
 
 
-        public async Task DeletePostAsync(Guid id, Guid userId)
+        public async Task<Guid> DeletePostAsync(Guid id, Guid userId)
         {
             if (id == Guid.Empty || userId == Guid.Empty)
             {
                 throw new ArgumentException("Id is empty.");
             }
 
-            var post = await repo.All<Post>().Include(p => p.Comments).Include(p=>p.School).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await repo.All<Post>().Include(p => p.Comments).Include(p=>p.School).Include(p=>p.Likes).FirstOrDefaultAsync(p => p.Id == id);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
@@ -241,9 +241,15 @@ namespace SchoolSocialMediaApp.Core.Services
                 repo.DeleteRange(comments);
             }
 
+            if (post.Likes.Any())
+            {
+                var likes = post.Likes.ToList();
+                repo.DeleteRange(likes);
+            }
+
             repo.Delete(post);
             await repo.SaveChangesAsync();
-
+            return post.SchoolId;
         }
 
 

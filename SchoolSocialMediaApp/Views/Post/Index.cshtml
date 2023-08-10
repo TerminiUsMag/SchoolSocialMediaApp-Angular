@@ -110,6 +110,7 @@ else
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form id="deletePostForm" method="post" asp-action="Delete" asp-controller="Post">
                     <input id="deletePostId" name="id" type="hidden" value="" />
+                    <input id="deleteSchoolId" name="schoolId" type="hidden" value="" />
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </div>
@@ -121,10 +122,9 @@ else
     .scrollable-content {
         padding: 15px;
         max-height: 200px;
-        overflow-y: scroll; /* Set to 'scroll' to always show the scrollbar */
+        overflow-y: scroll;
     }
 
-        /* Hide the scrollbar */
         .scrollable-content::-webkit-scrollbar {
             width: 0.001em;
         }

@@ -70,8 +70,8 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             var result = new AdminPanelViewModel();
             var posts = await repo.All<Post>().ToListAsync();
-            var users = await repo.All<ApplicationUser>().ToListAsync();
-            var schools = await repo.All<School>().Select( s => new SchoolManageViewModel
+            var users = await repo.All<ApplicationUser>().Where(u => u.Id != userId).ToListAsync();
+            var schools = await repo.All<School>().Select(s => new SchoolManageViewModel
             {
                 Description = s.Description,
                 Id = s.Id,
@@ -81,7 +81,6 @@ namespace SchoolSocialMediaApp.Core.Services
                 PrincipalId = s.PrincipalId,
                 ImageFile = null,
                 Principal = s.Principal,
-                //Principal = users.Where(u=>u.Id==s.PrincipalId).FirstOrDefault(),
                 Parents = new List<ApplicationUser>(),
                 Students = new List<ApplicationUser>(),
                 Teachers = new List<ApplicationUser>(),

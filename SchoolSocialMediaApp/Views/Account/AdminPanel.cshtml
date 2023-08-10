@@ -3,6 +3,11 @@
     ViewBag.Title = "Admin Panel";
 }
 
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
 <div class="row">
     <h1>Welcome to the @ViewBag.Title</h1>
 </div>
@@ -27,11 +32,11 @@
                         <td>@school.Location</td>
                         <td>@school.Principal.FirstName @school.Principal.LastName</td>
                         <td>
-@*                            <form asp-controller="School" asp-action="Manage" method="post">
-                                <input type="hidden" name="schoolId" value="@teacher.SchoolId" />
-                                <input type="hidden" name="userId" value="@teacher.Id" />
-                                <button type="submit" class="btn btn-primary">Remove from school</button>
-                            </form>*@
+                            @*                            <form asp-controller="School" asp-action="Manage" method="post">
+                    <input type="hidden" name="schoolId" value="@teacher.SchoolId" />
+                    <input type="hidden" name="userId" value="@teacher.Id" />
+                    <button type="submit" class="btn btn-primary">Remove from school</button>
+                    </form>*@
                             <a class="btn btn-primary" asp-action="AdminSchoolManage" asp-controller="School" asp-route-schoolId="@school.Id">Manage</a>
                         </td>
                     </tr>

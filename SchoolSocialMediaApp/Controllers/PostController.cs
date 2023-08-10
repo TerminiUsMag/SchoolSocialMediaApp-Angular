@@ -18,7 +18,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string message = "", string classOfMessage = "")
         {
             var userId = this.GetUserId();
             IEnumerable<PostViewModel>? posts = null;
@@ -28,12 +28,15 @@ namespace SchoolSocialMediaApp.Controllers
                 var school = await schoolService.GetSchoolByIdAsync(schoolId);
                 posts = await postService.GetAllPostsAsync(schoolId, userId);
                 ViewBag.SchoolName = school.Name;
+                ViewBag.Message = message;
+                ViewBag.ClassOfMessage = classOfMessage;
+                return View(posts);
             }
-            catch (ArgumentException ae)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", ae.Message);
+                ModelState.AddModelError("", ex.Message);
+                return RedirectToAction("Index", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
-            return View(posts);
         }
 
         [HttpGet]
@@ -96,18 +99,20 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 var schoolId = await postService.EditPostAsync(model, userId);
                 bool userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                var message = "Post edited successfully";
+                var classOfMessage = "text-bg-success";
                 if (userIsAdmin)
                 {
-                    return RedirectToAction("AdminPostView", new { schoolId = schoolId });
+                    return RedirectToAction("AdminPostView", new { schoolId = schoolId, message = message, classOfMessage = classOfMessage });
                 }
+                return RedirectToAction("Index", new { message = message, classOfMessage = classOfMessage });
             }
-            catch (ArgumentException ae)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", ae.Message);
-                throw;
+                ModelState.AddModelError("", ex.Message);
+                return RedirectToAction("Index","Home", new {message = ex.Message, classOfMessage = "text-bg-danger"});
             }
 
-            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -116,15 +121,18 @@ namespace SchoolSocialMediaApp.Controllers
             var userId = this.GetUserId();
             try
             {
-                await postService.DeletePostAsync(Id, userId);
-            }
-            catch (ArgumentException ae)
-            {
-                ModelState.AddModelError("", ae.Message);
-                throw;
-            }
+                var schoolId = await postService.DeletePostAsync(Id, userId);
+                var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (userIsAdmin)
+                    return RedirectToAction("AdminPostView", "Post", new { schoolId = schoolId, message = "Post deleted successfully", classOfMessage = "text-bg-success" });
 
-            return RedirectToAction("Index");
+                return RedirectToAction("Index", new { message = "Post deleted successfully", classOfMessage = "text-bg-success" });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
         }
 
         [HttpPost]
@@ -198,10 +206,15 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AdminPostView(Guid schoolId)
+        public async Task<IActionResult> AdminPostView(Guid schoolId, string message = "", string classOfMessage = "")
         {
             var userId = this.GetUserId();
             var model = await postService.GetAllPostsAsync(schoolId, userId);
+            var school = await schoolService.GetSchoolByIdAsync(schoolId);
+            var schoolName = school.Name;
+            ViewBag.SchoolName = schoolName;
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
 
             return View("Index", model);
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.User;
@@ -371,11 +372,20 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AdminPanel()
+        public async Task<IActionResult> AdminPanel(string message = "", string classOfMessage = "")
         {
-            var userId = this.GetUserId();
-            AdminPanelViewModel model = await accountService.GetAdminPanelViewModel(userId);
-            return View(model);
+            try
+            {
+                var userId = this.GetUserId();
+                AdminPanelViewModel model = await accountService.GetAdminPanelViewModel(userId);
+                ViewBag.Message = message;
+                ViewBag.ClassOfMessage = classOfMessage;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index","Home", new {message = ex.Message, classOfMessage = "text-bg-danger"});
+            }
         }
 
         [HttpGet]

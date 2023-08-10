@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using System.Data;
 
 namespace SchoolSocialMediaApp.Infrastructure
 {
@@ -34,12 +35,32 @@ namespace SchoolSocialMediaApp.Infrastructure
                 {
                     await SeedUsers(repo);
                     await SeedSchool(repo);
-                    await FixRoles(repo);
+                    await FixPrincipalRole(repo);
+                    //await FixStudentRole(repo);
                     await SeedPosts(repo);
                     await SeedComments(repo);
                     await SeedLikes(repo);
                 }
             }
+        }
+
+        private async Task FixStudentRole(IRepository repo)
+        {
+            var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
+            student!.SchoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
+
+            var studentRoles = await repo.All<IdentityUserRole<Guid>>().Where(ur => ur.UserId == student.Id).ToListAsync();
+            foreach (var studentRole in studentRoles)
+            {
+                repo.Delete(studentRole);
+            }
+
+            var role = await repo.All<ApplicationRole>().Where(r => r.Name == "Student").FirstOrDefaultAsync();
+
+            await repo.AddAsync<IdentityUserRole<Guid>>(new IdentityUserRole<Guid> { RoleId = role.Id, UserId = student.Id });
+            student.IsStudent = true;
+
+            await repo.SaveChangesAsync();
         }
 
         private async Task SeedLikes(IRepository repo)
@@ -120,7 +141,7 @@ namespace SchoolSocialMediaApp.Infrastructure
             return posts;
         }
 
-        private async Task FixRoles(IRepository repo)
+        private async Task FixPrincipalRole(IRepository repo)
         {
 
             //var role = await repo.All<ApplicationRole>().Where(r => r.Name == "User").FirstOrDefaultAsync();
@@ -136,21 +157,6 @@ namespace SchoolSocialMediaApp.Infrastructure
 
             await repo.AddAsync<IdentityUserRole<Guid>>(new IdentityUserRole<Guid> { RoleId = role.Id, UserId = principal.Id });
             principal.IsPrincipal = true;
-            await repo.SaveChangesAsync();
-
-            var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
-
-            var studentRoles = await repo.All<IdentityUserRole<Guid>>().Where(ur => ur.UserId == student.Id).ToListAsync();
-            foreach (var studentRole in studentRoles)
-            {
-                repo.Delete(studentRole);
-            }
-
-            role = await repo.All<ApplicationRole>().Where(r => r.Name == "Student").FirstOrDefaultAsync();
-
-            await repo.AddAsync<IdentityUserRole<Guid>>(new IdentityUserRole<Guid> { RoleId = role.Id, UserId = student.Id });
-            student.IsStudent = true;
-
             await repo.SaveChangesAsync();
         }
 
@@ -169,11 +175,6 @@ namespace SchoolSocialMediaApp.Infrastructure
                 principal.IsPrincipal = true;
 
                 await repo.AddAsync(school);
-                await repo.SaveChangesAsync();
-
-                var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
-                student!.SchoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
-
                 await repo.SaveChangesAsync();
             }
         }

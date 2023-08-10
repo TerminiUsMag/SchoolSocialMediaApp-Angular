@@ -1,4 +1,25 @@
-﻿@model SchoolDeleteViewModel
+﻿@model AdminSchoolDeleteViewModel
 @{
-    ViewBag.Title = "Delete "
+    ViewBag.Title = $"Delete {Model.Name}";
 }
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+<h1>@ViewBag.Title</h1>
+<h2 class="text-bg-danger">If you delete this School all of it's participants will be removed from their roles and won't have a school.</h2>
+<h2 class="text-bg-danger">All of the school's posts and comments will be deleted as well!</h2>
+
+<form method="post" class="col-md-5">
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Confirm Admin Password">
+        <input type="hidden" name="name" value="@Model.Name" />
+        <input type="hidden" name="description" value="@Model.Description" />
+        <input type="hidden" name="id" value="@Model.Id" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button class="btn btn-danger col-md-3">Delete</button>
+</form>
+<a class="btn btn-success col align-self-md-center" asp-controller="School" asp-action="AdminSchoolManage" asp-route-schoolId="@Model.Id">Cancel</a>
+

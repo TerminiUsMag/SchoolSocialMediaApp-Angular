@@ -136,5 +136,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <returns>ManageSchoolViewModel</returns>
         /// <exception cref="ArgumentException"></exception>
         Task<SchoolManageViewModel?> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId);
+        Task<AdminSchoolDeleteViewModel> GetAdminSchoolDeleteViewBySchoolIdAsync(Guid schoolId);
     }
 }

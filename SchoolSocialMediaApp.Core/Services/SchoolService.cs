@@ -13,14 +13,16 @@ namespace SchoolSocialMediaApp.Core.Services
         private readonly IRepository repo;
         private readonly IRoleService roleService;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IWebHostEnvironment env;
 
-        public SchoolService(IRepository _repo, IRoleService _roleService, UserManager<ApplicationUser> _userManager, IWebHostEnvironment _env)
+        public SchoolService(IRepository _repo, IRoleService _roleService, UserManager<ApplicationUser> _userManager, IWebHostEnvironment _env, SignInManager<ApplicationUser> _signInManager)
         {
             this.repo = _repo;
             this.roleService = _roleService;
             this.userManager = _userManager;
             this.env = _env;
+            this.signInManager = _signInManager;
         }
 
         public async Task<SchoolViewModel> CreateSchoolAsync(SchoolViewModel model, Guid userId)
@@ -82,7 +84,7 @@ namespace SchoolSocialMediaApp.Core.Services
         {
 
             //Get the school by its ID
-            var school = await repo.GetByIdAsync<School>(id);
+            var school = await repo.All<School>().Where(s => s.Id == id).Include(s => s.Principal).FirstOrDefaultAsync();
 
             //Check if the school is null
             if (school is null)
@@ -90,14 +92,64 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("School does not exist.");
             }
 
+            var schoolPosts = await repo.All<Post>().Where(p => p.SchoolId == id).Include(p => p.Comments).Include(p => p.Likes).ToListAsync();
+            foreach (var post in schoolPosts)
+            {
+                var comments = post.Comments;
+                if (comments.Any())
+                {
+                    repo.DeleteRange(comments);
+                }
+                var likes = post.Likes;
+                if (likes.Any())
+                {
+                    repo.DeleteRange(likes);
+                }
+                repo.Delete(post);
+            }
+            await repo.SaveChangesAsync();
+            var usersInSchool = await GetAllUsersInSchool(school.Id);
+
+            foreach (var participant in usersInSchool)
+            {
+                if (participant is not null)
+                {
+                    if (participant.IsParent)
+                    {
+                        participant.IsParent = false;
+                        await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Parent");
+                    }
+                    if (participant.IsTeacher)
+                    {
+                        participant.IsTeacher = false;
+                        await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Teacher");
+                    }
+                    if (participant.IsStudent)
+                    {
+                        participant.IsStudent = false;
+                        await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Student");
+                    }
+                    if (participant.IsPrincipal)
+                    {
+                        participant.IsPrincipal = false;
+                        await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Principal");
+                    }
+                    participant.SchoolId = null;
+                    participant.School = null;
+                    await roleService.AddUserToRoleAsync(participant.Id.ToString(), "User");
+                    //await signInManager.RefreshSignInAsync(participant);
+                }
+            }
+            await repo.SaveChangesAsync();
+
             //Get the school's principal ID
-            var principalId = school.PrincipalId;
+            //var principalId = school.PrincipalId;
 
             //Remove the Principal Role from the user which used to be the principal.
-            await roleService.RemoveUserFromRoleAsync(principalId.ToString(), "Principal");
+            //await roleService.RemoveUserFromRoleAsync(principalId.ToString(), "Principal");
 
             //Delete the school from the DB.
-            repo.Delete<School>(school);
+            repo.Delete(school);
 
             //Save changes in the DB.
             await repo.SaveChangesAsync();
@@ -502,6 +554,27 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("No such school exists");
             }
             return await GetSchoolManageViewModelByUserIdAsync(school.PrincipalId);
+        }
+
+        public async Task<AdminSchoolDeleteViewModel> GetAdminSchoolDeleteViewBySchoolIdAsync(Guid schoolId)
+        {
+            if (schoolId == Guid.Empty)
+            {
+                throw new ArgumentException("School Id cannot be null!");
+            }
+            var school = await repo.All<School>().Where(s => s.Id == schoolId).Select(s => new AdminSchoolDeleteViewModel
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+            }).FirstOrDefaultAsync();
+
+            if (school is null)
+            {
+                throw new ArgumentException("There's no school with this id: " + schoolId);
+            }
+
+            return school;
         }
     }
 }

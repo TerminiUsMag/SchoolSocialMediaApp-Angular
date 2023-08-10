@@ -40,7 +40,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        Task DeletePostAsync(Guid id, Guid userId);
+        Task<Guid> DeletePostAsync(Guid id, Guid userId);
 
         /// <summary>
         /// Edits a post.

@@ -276,33 +276,6 @@ namespace SchoolSocialMediaApp.Controllers
                     return RedirectToAction("Manage", "Account", new { message = "You are not Principal anymore(The school is already missing!)", classOfMessage = "text-bg-danger" });
                 }
 
-                var usersInSchool = await schoolService.GetAllUsersInSchool(school.Id);
-
-                foreach (var participant in usersInSchool)
-                {
-                    if (participant is not null)
-                    {
-                        if (participant.IsParent)
-                        {
-                            participant.IsParent = false;
-                            await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Parent");
-                        }
-                        if (participant.IsTeacher)
-                        {
-                            participant.IsTeacher = false;
-                            await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Teacher");
-                        }
-                        if (participant.IsStudent)
-                        {
-                            participant.IsStudent = false;
-                            await roleService.RemoveUserFromRoleAsync(participant.Id.ToString(), "Student");
-                        }
-                        participant.SchoolId = null;
-                        participant.School = null;
-                        await signInManager.RefreshSignInAsync(participant);
-                    }
-                }
-
                 await schoolService.DeleteSchoolAsync(school.Id);
 
             }
@@ -316,28 +289,100 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AdminSchoolManage(Guid schoolId)
+        public async Task<IActionResult> AdminSchoolManage(Guid schoolId, string message = "", string classOfMessage = "")
         {
             var userId = this.GetUserId();
             var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
 
-            if (!userIsAdmin)
+
+            try
             {
-                throw new InvalidOperationException("You are not admin!");
+                if (!userIsAdmin)
+                {
+                    throw new InvalidOperationException("You are not admin!");
+                }
+
+                SchoolManageViewModel? model = await schoolService.GetSchoolManageViewModelBySchoolIdAsync(schoolId);
+                ViewBag.Message = message;
+                ViewBag.ClassOfMessage = classOfMessage;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("AccessDenied", "Account", new { msg = ex.Message });
             }
 
-            SchoolManageViewModel? model = await schoolService.GetSchoolManageViewModelBySchoolIdAsync(schoolId);
-
-            return View(model);
         }
 
         [HttpGet]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> DeleteAsAdmin(Guid schoolId)
+        public async Task<IActionResult> DeleteAsAdmin(Guid schoolId, string message = "", string classOfMessage = "")
         {
-            var model = new SchoolDeleteViewModel();
+            var userId = this.GetUserId();
+            var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
 
-            return View(model);
+            try
+            {
+                if (!userIsAdmin)
+                {
+                    throw new InvalidOperationException("You are not admin!");
+                }
+                AdminSchoolDeleteViewModel model = await schoolService.GetAdminSchoolDeleteViewBySchoolIdAsync(schoolId);
+                ViewBag.Message = message;
+                ViewBag.ClassOfMessage = classOfMessage;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("AccessDenied", "Account", new { msg = ex.Message });
+            }
+
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> DeleteAsAdmin(AdminSchoolDeleteViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
+            }
+
+            try
+            {
+                var userId = GetUserId();
+                var user = await userManager.FindByIdAsync(userId.ToString());
+                if (user is null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
+                if (!correctPassword)
+                {
+                    return RedirectToAction("DeleteAsAdmin", "School", new { schoolId = model.Id, message = "Wrong Password", classOfMessage = "text-bg-danger" });
+                }
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isAdmin)
+                {
+                    return RedirectToAction("Manage", "Account", new { message = "You are not Admin", classOfMessage = "text-bg-danger" });
+                }
+
+                var school = await schoolService.GetSchoolByIdAsync(model.Id);
+                if (school is null)
+                {
+                    return RedirectToAction("AdminPanel", "Account", new { message = $"There's no school with Id: {model.Id}", classOfMessage = "text-bg-danger" });
+                }
+
+                await schoolService.DeleteSchoolAsync(school.Id);
+                await signInManager.RefreshSignInAsync(user);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+            return RedirectToAction("AdminPanel", "Account", new { message = $"{model.Name} Deleted successfully!", classOfMessage = "text-bg-success" });
         }
     }
 }
