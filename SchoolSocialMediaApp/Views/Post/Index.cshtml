@@ -12,6 +12,11 @@
     var isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
 }
 
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
 <h1>@ViewData["Title"]  <i class="fa-sharp fa-solid fa-pen-to-square"></i></h1>
 
 @if (Model is not null)
