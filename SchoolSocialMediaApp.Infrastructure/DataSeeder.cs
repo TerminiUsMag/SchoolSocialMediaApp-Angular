@@ -10,13 +10,10 @@ namespace SchoolSocialMediaApp.Infrastructure
     public class DataSeeder
     {
         private readonly UserManager<ApplicationUser> userManager;
-        //private readonly RoleManager<ApplicationRole> roleManager;
         private readonly IServiceProvider serviceProvider;
-
-        public DataSeeder(UserManager<ApplicationUser> _userManager, RoleManager<ApplicationRole> _roleManager, IServiceProvider _serviceProvider)
+        public DataSeeder(UserManager<ApplicationUser> _userManager,IServiceProvider _serviceProvider)
         {
             this.userManager = _userManager;
-            //this.roleManager = _roleManager;
             this.serviceProvider = _serviceProvider;
         }
 
@@ -37,6 +34,7 @@ namespace SchoolSocialMediaApp.Infrastructure
                     await SeedSchool(repo);
                     await FixPrincipalRole(repo);
                     //await FixStudentRole(repo);
+                    //await FixPrincipalAndStudentSchoolId(repo);
                     await SeedPosts(repo);
                     await SeedComments(repo);
                     await SeedLikes(repo);
@@ -44,11 +42,28 @@ namespace SchoolSocialMediaApp.Infrastructure
             }
         }
 
+        //Cannot seed student because for some reason only one entity can have the school's id.(Only while seeding the db).
+        private async Task FixPrincipalAndStudentSchoolId(IRepository repo)
+        {
+            var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
+            var principal = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Principal").FirstOrDefaultAsync();
+            var schoolIdStudent = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
+            var schoolIdPrincipal = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
+
+            while (student!.SchoolId != schoolIdStudent || principal!.SchoolId != schoolIdPrincipal)
+            {
+                student.SchoolId = schoolIdStudent;
+                principal.SchoolId = schoolIdPrincipal;
+                await repo.SaveChangesAsync();
+
+                student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
+                principal = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Principal").FirstOrDefaultAsync();
+            }
+        }
+
         private async Task FixStudentRole(IRepository repo)
         {
             var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
-            student!.SchoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
-
             var studentRoles = await repo.All<IdentityUserRole<Guid>>().Where(ur => ur.UserId == student.Id).ToListAsync();
             foreach (var studentRole in studentRoles)
             {
@@ -59,6 +74,14 @@ namespace SchoolSocialMediaApp.Infrastructure
 
             await repo.AddAsync<IdentityUserRole<Guid>>(new IdentityUserRole<Guid> { RoleId = role.Id, UserId = student.Id });
             student.IsStudent = true;
+
+
+            var schoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
+            var school = await repo.All<School>().Where(s => s.Id == schoolId).FirstOrDefaultAsync();
+
+            student.School = school;
+            student.SchoolId = school.Id;
+
 
             await repo.SaveChangesAsync();
         }

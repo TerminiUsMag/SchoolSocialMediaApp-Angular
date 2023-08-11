@@ -89,5 +89,8 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task UpdateAsync(Guid userId, UserManageViewModel model);
         Task<AdminPanelViewModel> GetAdminPanelViewModel(Guid userId);
         Task<AdminUserDeletionViewModel> GetAdminUserDeletionViewModelAsync(Guid userId);
+        Task<bool> PhoneNumberIsFree(string phoneNumber, Guid userId);
+        Task<bool> EmailIsFree(string email, Guid userId);
+        Task<bool> UsernameIsFree(string username, Guid userId);
     }
 }

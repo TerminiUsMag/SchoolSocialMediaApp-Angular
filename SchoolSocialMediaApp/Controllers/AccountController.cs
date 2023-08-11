@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.User;
@@ -152,23 +151,11 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "CanBePrincipal")]
-        public IActionResult BecomePrincipal(string errorMsg)
+        public IActionResult BecomePrincipal(string message = "", string classOfMessage = "")
         {
-            ViewBag.ErrorMsg = errorMsg;
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
             return View();
-        }
-
-        [HttpGet]
-        [Authorize(Policy = "CanBePrincipal")]
-        public IActionResult PrincipalCreate()
-        {
-            var userId = this.GetUserId();
-            if (userId != Guid.Empty)
-            {
-                return RedirectToAction(nameof(SchoolController.Register), "School");
-            }
-
-            return RedirectToAction(nameof(BecomePrincipal), new { errorMsg = "Something went wrong" });
         }
 
         [HttpGet]
@@ -208,39 +195,39 @@ namespace SchoolSocialMediaApp.Controllers
             if (!accountService.PhoneNumberIsValid(model.PhoneNumber))
             {
                 ModelState.AddModelError("", "Invalid Phone Number");
-                return View(model);
+                return RedirectToAction("Manage", "Account", new { message = $"Invalid phone number: {model.PhoneNumber}", classOfMessage = "text-bg-danger" });
             }
-            if (!await accountService.PhoneNumberIsFree(model.PhoneNumber))
+            if (!await accountService.PhoneNumberIsFree(model.PhoneNumber, userId))
             {
                 ModelState.AddModelError("", "Phone Number is already taken");
-                return View(model);
+                return RedirectToAction("Manage", "Account", new { message = $"Phone number is already taken: {model.PhoneNumber}", classOfMessage = "text-bg-danger" });
             }
 
             //Email Validation and Verification
             if (!accountService.EmailIsValid(model.Email))
             {
                 ModelState.AddModelError("", "Invalid Email");
-                return View(model);
+                return RedirectToAction("Manage", "Account", new { message = $"Invalid Email: {model.Email}", classOfMessage = "text-bg-danger" });
             }
-            if (!await accountService.EmailIsFree(model.Email))
+            if (!await accountService.EmailIsFree(model.Email, userId))
             {
                 ModelState.AddModelError("", "Email is already taken");
-                return View(model);
+                return RedirectToAction("Manage", "Account", new { message = $"Email is already taken: {model.Email}", classOfMessage = "text-bg-danger" });
             }
 
             //Username Validation and Verification
             var username = $"{model.FirstName}.{model.LastName}".ToLower();
-            if (!await accountService.UsernameIsFree(username))
+            if (!await accountService.UsernameIsFree(username, userId))
             {
                 ModelState.AddModelError("", $"Username '{username}' is already taken");
-                return View(model);
+                return RedirectToAction("Manage", "Account", new { message = $"Username '{username}' is already taken", classOfMessage = "text-bg-danger" });
             }
 
             //Model Validation
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong");
-                return View(model);
+                return RedirectToAction("Manage", "Account", new { message = "Something went wrong", classOfMessage = "text-bg-danger" });
             }
 
             try
@@ -250,16 +237,10 @@ namespace SchoolSocialMediaApp.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Something went wrong");
-                return View(model);
+                return RedirectToAction("Manage", "Account", new { message = "Something went wrong", classOfMessage = "text-bg-danger" });
             }
 
-            return RedirectToAction("AccountChangesSuccess");
-        }
-
-        [HttpGet]
-        public IActionResult AccountChangesSuccess()
-        {
-            return View();
+            return RedirectToAction("Manage", "Account", new { message = "Changes saved successfully", classOfMessage = "text-bg-success" });
         }
 
         [HttpGet]
@@ -384,7 +365,7 @@ namespace SchoolSocialMediaApp.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index","Home", new {message = ex.Message, classOfMessage = "text-bg-danger"});
+                return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
         }
 

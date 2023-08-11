@@ -40,6 +40,13 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("Already exists school with that name");
             }
 
+            //Removes the user from all roles.
+            var roles = await roleService.GetUserRolesAsync(userId);
+            foreach (var role in roles)
+            {
+                await roleService.RemoveUserFromRoleAsync(userId.ToString(), role);
+            }
+
             //Adds user to the "Principal" role
             var userAddedToRole = await roleService.AddUserToRoleAsync(userId.ToString(), "Principal");
             if (!userAddedToRole)
@@ -493,8 +500,15 @@ namespace SchoolSocialMediaApp.Core.Services
             await UpdateSchoolAsync(school);
         }
 
-        public async Task UpdateSchoolAsync(SchoolManageViewModel model)
+        public async Task UpdateSchoolAsync(SchoolManageViewModel model, Guid userId)
         {
+            //Checks if the user has permission to update a school.
+            var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+            var userIsPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+            if (!userIsAdmin && !userIsPrincipal)
+            {
+                throw new ArgumentException("You'are not authorized for this action");
+            }
             //Gets the school to update and checks if it exists.
             var school = await repo.All<School>().Where(s => s.Id == model.Id).FirstOrDefaultAsync();
             if (school is null)
@@ -523,7 +537,7 @@ namespace SchoolSocialMediaApp.Core.Services
                         await file!.CopyToAsync(stream);
                     }
 
-                    model.ImageUrl = $"images/school-images/{fileName}";
+                    model.ImageUrl = $"/images/school-images/{fileName}";
                 }
 
                 //Map the school to the model's properties.

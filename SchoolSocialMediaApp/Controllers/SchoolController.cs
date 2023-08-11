@@ -43,9 +43,11 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "CanBePrincipal")]
-        public IActionResult Register()
+        public IActionResult Register(string message = "", string classOfMessage = "")
         {
             var model = new SchoolViewModel();
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
 
             return View(model);
         }
@@ -57,7 +59,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Invalid school data.");
-                return View(model);
+                return RedirectToAction("Register", new { message = "Invalid school data", classOfMessage = "text-bg-danger" });
             }
 
             var userId = this.GetUserId();
@@ -73,7 +75,7 @@ namespace SchoolSocialMediaApp.Controllers
             catch (Exception e)
             {
                 ModelState.AddModelError("", e.Message);
-                return View(model);
+                return RedirectToAction("Register", new { message = e.Message, classOfMessage = "text-bg-danger" });
             }
 
             return RedirectToAction("Success", model);
@@ -134,17 +136,17 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong");
-                return View(model);
+                return RedirectToAction("Manage", "School", new { message = "Something went wrong", classOfMessage = "text-bg-danger" });
             }
 
             try
             {
-                await schoolService.UpdateSchoolAsync(model);
+                await schoolService.UpdateSchoolAsync(model, userId);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                return View(model);
+                return RedirectToAction("Manage", "School", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
 
             return RedirectToAction("Manage", "School", new { message = "Updated successfully", classOfMessage = "text-bg-success" });
@@ -158,16 +160,29 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 return RedirectToAction("Manage", new { message = "Invalid user or school id." });
             }
+            var thisUserId = this.GetUserId();
+            var user = await userManager.FindByIdAsync(thisUserId.ToString());
+            var userIsAdmin = await roleService.UserIsInRoleAsync(thisUserId.ToString(), "Admin");
+            var userIsPrincipal = await roleService.UserIsInRoleAsync(thisUserId.ToString(), "Principal");
+
+            if (!userIsAdmin && !userIsPrincipal)
+            {
+                return RedirectToAction("Index", "Home", new { message = "You are not authorized to remove users from this school", classOfMessage = "text-bg-danger" });
+            }
 
             try
             {
                 await schoolService.RemoveUserFromSchoolAsync(userId, schoolId);
+                await signInManager.RefreshSignInAsync(user);
             }
             catch (Exception e)
             {
                 return RedirectToAction("Manage", new { message = e.Message });
             }
-
+            if (userIsAdmin)
+            {
+                return RedirectToAction("AdminSchoolManage", new { schoolId = schoolId, message = "User removed from school successfully", classOfMessage = "text-bg-success" });
+            }
             return RedirectToAction("Manage", new { message = "User removed successfully.", classOfMessage = "text-bg-success" });
         }
 
@@ -186,48 +201,6 @@ namespace SchoolSocialMediaApp.Controllers
                 return Json(new { success = false, errorMsg = ex.Message });
             }
 
-        }
-
-        [HttpPost]
-        [Authorize(Policy = "Principal")]
-        public async Task<IActionResult> UploadPicture()
-        {
-            try
-            {
-                // Get the uploaded file from the request
-                var file = Request.Form.Files[0];
-                var fileExtension = Path.GetExtension(file.FileName);
-
-                // Check if a file was uploaded
-                if (file == null || file.Length == 0 || (fileExtension != ".jpg" && fileExtension != ".png"))
-                {
-                    return BadRequest("No file uploaded.");
-                }
-
-                // Create a unique file name to save the uploaded image
-                var fileName = Guid.NewGuid().ToString() + fileExtension;
-
-                // Specify the directory where the image will be saved
-                var imagePath = Path.Combine("wwwroot", "images", "school-images", fileName);
-
-                // Save the file to the specified path
-                using (var stream = new FileStream(imagePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                //Change the Image url in the database
-                var userId = this.GetUserId();
-
-                await schoolService.ChangeSchoolPicture(userId, $"images/school-images/{fileName}");
-
-                return Ok(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                // Handle any exceptions that occur during the upload process
-                return StatusCode(500, new { success = false, message = ex.Message });
-            }
         }
 
         [HttpGet]
@@ -314,6 +287,35 @@ namespace SchoolSocialMediaApp.Controllers
 
         }
 
+        [HttpPost]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> AdminSchoolManage(SchoolManageViewModel model)
+        {
+            var userId = this.GetUserId();
+            if (userId == Guid.Empty)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = "Something went wrong", classOfMessage = "text-bg-danger" });
+            }
+
+            try
+            {
+                await schoolService.UpdateSchoolAsync(model, userId);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+            return RedirectToAction("AdminSchoolManage", new { schoolId = model.Id, message = "Updated successfully", classOfMessage = "text-bg-success" });
+        }
+
         [HttpGet]
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteAsAdmin(Guid schoolId, string message = "", string classOfMessage = "")
@@ -346,7 +348,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong");
-                return View(model);
+                return RedirectToAction("DeleteAsAdmin", "School", new { message = "Something went wrong", classOfMessage = "text-bg-danger" });
             }
 
             try

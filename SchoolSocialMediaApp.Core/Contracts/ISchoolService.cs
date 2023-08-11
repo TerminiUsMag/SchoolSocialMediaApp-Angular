@@ -120,7 +120,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="model"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        Task UpdateSchoolAsync(SchoolManageViewModel model);
+        Task UpdateSchoolAsync(SchoolManageViewModel model, Guid userId);
         
         /// <summary>
         /// Returns a List of users which are registered in the school.

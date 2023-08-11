@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "Register a new School";
 }
+
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
 <div style="margin-bottom:30px">
     <h1 style="text-align:center">@ViewData["Title"]</h1>
 </div>

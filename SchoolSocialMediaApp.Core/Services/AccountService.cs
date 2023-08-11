@@ -47,6 +47,16 @@ namespace SchoolSocialMediaApp.Core.Services
             return false;
         }
 
+        public async Task<bool> EmailIsFree(string email, Guid userId)
+        {
+            var result = await repo.All<ApplicationUser>().Where(u => u.Id != userId).FirstOrDefaultAsync(u => u.NormalizedEmail == email.ToUpper());
+
+            if (result is null)
+            {
+                return true;
+            }
+            return false;
+        }
 
         public bool EmailIsValid(string email)
         {
@@ -211,6 +221,16 @@ namespace SchoolSocialMediaApp.Core.Services
             return false;
         }
 
+        public async Task<bool> PhoneNumberIsFree(string phoneNumber, Guid userId)
+        {
+            var result = await repo.AllReadonly<ApplicationUser>().Where(u => u.Id != userId).FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
+
+            if (result is null)
+            {
+                return true;
+            }
+            return false;
+        }
 
         public bool PhoneNumberIsValid(string phoneNumber)
         {
@@ -270,7 +290,7 @@ namespace SchoolSocialMediaApp.Core.Services
                         await file!.CopyToAsync(stream);
                     }
 
-                    model.ImageUrl = $"images/user-images/{fileName}";
+                    model.ImageUrl = $"/images/user-images/{fileName}";
                 }
 
             }
@@ -306,6 +326,17 @@ namespace SchoolSocialMediaApp.Core.Services
         public async Task<bool> UsernameIsFree(string username)
         {
             var result = await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.NormalizedUserName == username.ToUpper());
+
+            if (result is null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> UsernameIsFree(string username, Guid userId)
+        {
+            var result = await repo.AllReadonly<ApplicationUser>().Where(u => u.Id != userId).FirstOrDefaultAsync(x => x.NormalizedUserName == username.ToUpper());
 
             if (result is null)
             {
