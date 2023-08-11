@@ -123,6 +123,32 @@ namespace SchoolSocialMediaApp.Core.Services
             return result;
         }
 
+        public async Task<AdminUserDeletionViewModel> GetAdminUserDeletionViewModelAsync(Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                throw new ArgumentException("User id cannot be empty");
+            }
+            var user = await repo.All<ApplicationUser>().Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                throw new ArgumentException("No user found with Id: " + userId);
+            }
+
+            return new AdminUserDeletionViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Id = user.Id,
+                Email = user.Email,
+                ImageUrl = user.ImageUrl,
+                Username = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+            };
+
+        }
+
         public async Task<UserManageViewModel> GetUserManageViewModelAsync(string userId)
         {
             if (userId is null || userId == Guid.Empty.ToString())
@@ -137,7 +163,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("User does not exist");
             }
 
-            var model = new UserManageViewModel
+            return new UserManageViewModel
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
@@ -148,7 +174,6 @@ namespace SchoolSocialMediaApp.Core.Services
                 ImageUrl = user.ImageUrl,
             };
 
-            return model;
         }
 
 
