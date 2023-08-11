@@ -1,39 +1,79 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+
 <h1 class="@ViewBag.ClassOfMessage badge">@ViewBag.Message</h1>
 
-<div class="container">
-    <div class="header">
-        <h1>Welcome to School Social Media</h1>
-        <p>Connecting students, teachers, and parents.</p>
+<div class="container" >
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome to School Social Media</h1>
+        <p class="lead">Connecting students, teachers, and parents.</p>
     </div>
 
-    <div class="container mt-4">
+    <div class="mt-4">
         <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="~/images/home-page/b.jpg" class="d-block w-100" alt="...">
+                    <img src="~/images/home-page/a.jpg" class="d-block w-100 custom-image rounded" alt="...">
                 </div>
                 <div class="carousel-item">
-                    <img src="~/images/home-page/c.jpg" class="d-block w-100" alt="...">
+                    <img src="~/images/home-page/b.jpg" class="d-block w-100 custom-image rounded" alt="...">
                 </div>
                 <div class="carousel-item">
-                    <img src="~/images/home-page/d.jpg" class="d-block w-100" alt="...">
+                    <img src="~/images/home-page/c.jpg" class="d-block w-100 custom-image rounded" alt="...">
                 </div>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+            <button class="carousel-control-next custom-image" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body" style="background-color: #235391; color: #ffffff;">
+                    <h5 class="card-title">Student Engagement</h5>
+                    <p class="card-text">Our platform promotes active engagement and collaboration among students.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body" style="background-color: #57cc02; color: #ffffff;">
+                    <h5 class="card-title">Teacher Communication</h5>
+                    <p class="card-text">Teachers can easily share resources, assignments, and announcements.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body" style="background-color: #bcbcbc; color: #ffffff;">
+                    <h5 class="card-title">Parent Involvement</h5>
+                    <p class="card-text">Parents stay informed about their child's education and school activities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .custom-image {
+        height: 600px;
+        max-width: auto;
+    }
+
+    .custom-text {
+        font-size: 18px;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>

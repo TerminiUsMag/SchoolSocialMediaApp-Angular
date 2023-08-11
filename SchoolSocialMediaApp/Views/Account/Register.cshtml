@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "Register";
 }
+
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
 <div style="margin-bottom:30px">
     <h1 style="text-align:center">@ViewData["Title"]</h1>
     <h2 style="text-align:center">Create a new account.</h2>
@@ -11,7 +17,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-5 col-md-3" @*style="background-color:blue;color: white;*@">
+    <div class="col-sm-5 col-md-3">
         <h3>The password must contain:</h3>
         <ul>
             <li>At least one lowercase letter</li>
@@ -22,7 +28,7 @@
             <hr />
         </ul>
     </div>
-    <div class="col-sm-5 col-md-6 col-md-offset-0" @*style="background-color:orange;color: white;*@">
+    <div class="col-sm-5 col-md-6 col-md-offset-0">
         <form id="registerForm" method="post">
 
             <div class="col-md-10 offset-1">
@@ -61,7 +67,6 @@
                 </div>
                 <div>
                     <p></p>
-                    @*<p>By clicking Register, you agree to our <a href="/Home/Privacy">Privacy Policy</a>.</p>*@
                     <p></p>
                     <a class="row-md-5" asp-action="Login" asp-controller="Account">Already have an account? Login here.</a>
                     <p></p>
@@ -76,4 +81,3 @@
     <partial name="_ValidationScriptsPartial" />
 }
 
-@*asp-route-returnUrl="@Model.ReturnUrl"*@

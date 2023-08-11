@@ -34,55 +34,81 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register()
+        public IActionResult Register(string message = "", string classOfMessage = "")
         {
             var model = new RegisterViewModel();
-
-            return View(model);
+            try
+            {
+                var userId = this.GetUserId();
+                if (userId != Guid.Empty)
+                {
+                    return RedirectToAction("Index", "Home", new { message = "You're already logged in", classOfMessage = "text-bg-danger" });
+                }
+                ViewBag.Message = message;
+                ViewBag.ClassOfMessage = classOfMessage;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Home", new { message = "You're already logged in - " + ex.Message, classOfMessage = "text-bg-danger" });
+            }
         }
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            //Check if the user is logged in.
+            var userId = this.GetUserId();
+            if (userId != Guid.Empty)
+            {
+                return RedirectToAction("Index", "Home", new { message = "You're already logged in", classOfMessage = "text-bg-danger" });
+            }
+
             //Username Validation and Verification
             var username = $"{model.FirstName}.{model.LastName}".ToLower();
 
             if (!await accountService.UsernameIsFree(username))
             {
-                ModelState.AddModelError("", $"Username '{username}' is already taken");
-                return View(model);
+                var message = $"Username '{username}' is already taken";
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
 
             //Phone Number Validation and Verification
             if (!accountService.PhoneNumberIsValid(model.PhoneNumber))
             {
-                ModelState.AddModelError("", "Invalid Phone Number");
-                return View(model);
+                var message = "Invalid Phone Number: " + model.PhoneNumber;
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
             if (!await accountService.PhoneNumberIsFree(model.PhoneNumber))
             {
-                ModelState.AddModelError("", "Phone Number is already taken");
-                return View(model);
+                var message = "Phone Number is already taken: " + model.PhoneNumber;
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
 
             //Email Validation and Verification
             if (!accountService.EmailIsValid(model.Email))
             {
-                ModelState.AddModelError("", "Invalid Email");
-                return View(model);
+                var message = "Invalid Email: " + model.Email;
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
             if (!await accountService.EmailIsFree(model.Email))
             {
-                ModelState.AddModelError("", "Email is already taken");
-                return View(model);
+                var message = "Email is already taken: " + model.Email;
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
 
             //Model Validation
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Something went wrong");
-                return View(model);
+                var message = "Something went wrong";
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
 
             //User Creation
@@ -100,8 +126,9 @@ namespace SchoolSocialMediaApp.Controllers
             //User Registration and Password Hashing
             if (!await accountService.RegisterAsync(user, model.Password))
             {
-                ModelState.AddModelError("", "Something went wrong");
-                return View(model);
+                var message = "Something went wrong";
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
@@ -110,6 +137,13 @@ namespace SchoolSocialMediaApp.Controllers
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = "/")
         {
+            //Check if the user is logged in.
+            var userId = this.GetUserId();
+            if (userId != Guid.Empty)
+            {
+                return RedirectToAction("Index", "Home", new { message = "You're already logged in", classOfMessage = "text-bg-danger" });
+            }
+
             var model = new LoginViewModel()
             {
                 ReturnUrl = returnUrl
@@ -122,18 +156,28 @@ namespace SchoolSocialMediaApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            //Check if the user is logged in.
+            var userId = this.GetUserId();
+            if (userId != Guid.Empty)
+            {
+                return RedirectToAction("Index", "Home", new { message = "You're already logged in", classOfMessage = "text-bg-danger" });
+            }
+
+            //Model Validation
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Something went wrong");
-                return View(model);
+                var message = "Something went wrong";
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Login", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
 
             var result = await accountService.LoginAsync(model.Email, model.Password, model.RememberMe = false);
 
             if (!result)
             {
-                ModelState.AddModelError("", "Something went wrong");
-                return View(model);
+                var message = "Something went wrong";
+                ModelState.AddModelError("", message);
+                return RedirectToAction("Login", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
 
             //return RedirectToAction(nameof(HomeController.Index), "Home");
