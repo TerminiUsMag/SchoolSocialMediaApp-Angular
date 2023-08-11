@@ -7,11 +7,14 @@ using System.Data;
 
 namespace SchoolSocialMediaApp.Infrastructure
 {
+    /// <summary>
+    /// Database Data seeder class!
+    /// </summary>
     public class DataSeeder
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IServiceProvider serviceProvider;
-        public DataSeeder(UserManager<ApplicationUser> _userManager,IServiceProvider _serviceProvider)
+        public DataSeeder(UserManager<ApplicationUser> _userManager, IServiceProvider _serviceProvider)
         {
             this.userManager = _userManager;
             this.serviceProvider = _serviceProvider;
@@ -33,8 +36,7 @@ namespace SchoolSocialMediaApp.Infrastructure
                     await SeedUsers(repo);
                     await SeedSchool(repo);
                     await FixPrincipalRole(repo);
-                    //await FixStudentRole(repo);
-                    //await FixPrincipalAndStudentSchoolId(repo);
+                    await SeedInvitation(repo);
                     await SeedPosts(repo);
                     await SeedComments(repo);
                     await SeedLikes(repo);
@@ -42,48 +44,32 @@ namespace SchoolSocialMediaApp.Infrastructure
             }
         }
 
-        //Cannot seed student because for some reason only one entity can have the school's id.(Only while seeding the db).
-        private async Task FixPrincipalAndStudentSchoolId(IRepository repo)
+        private async Task SeedInvitation(IRepository repo)
         {
-            var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
-            var principal = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Principal").FirstOrDefaultAsync();
-            var schoolIdStudent = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
-            var schoolIdPrincipal = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
-
-            while (student!.SchoolId != schoolIdStudent || principal!.SchoolId != schoolIdPrincipal)
+            foreach (var invitation in CreateInvitations())
             {
-                student.SchoolId = schoolIdStudent;
-                principal.SchoolId = schoolIdPrincipal;
-                await repo.SaveChangesAsync();
-
-                student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
-                principal = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Principal").FirstOrDefaultAsync();
+                await repo.AddAsync(invitation);
             }
+            await repo.SaveChangesAsync();
         }
 
-        private async Task FixStudentRole(IRepository repo)
+        private List<Invitation> CreateInvitations()
         {
-            var student = await repo.All<ApplicationUser>().Where(u => u.FirstName == "Student").FirstOrDefaultAsync();
-            var studentRoles = await repo.All<IdentityUserRole<Guid>>().Where(ur => ur.UserId == student.Id).ToListAsync();
-            foreach (var studentRole in studentRoles)
+            var result = new List<Invitation>();
+
+            result.Add(new Invitation
             {
-                repo.Delete(studentRole);
-            }
-
-            var role = await repo.All<ApplicationRole>().Where(r => r.Name == "Student").FirstOrDefaultAsync();
-
-            await repo.AddAsync<IdentityUserRole<Guid>>(new IdentityUserRole<Guid> { RoleId = role.Id, UserId = student.Id });
-            student.IsStudent = true;
-
-
-            var schoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A");
-            var school = await repo.All<School>().Where(s => s.Id == schoolId).FirstOrDefaultAsync();
-
-            student.School = school;
-            student.SchoolId = school.Id;
+                Id = Guid.Parse("608B088D-5B8D-4EA2-B272-451E8FAB872A"),
+                SenderId = Guid.Parse("A40FC683-6F20-49F8-1E10-08DB7BFE5717"),
+                ReceiverId = Guid.Parse("5DBD2E13-B653-41B3-1E13-08DB7BFE5717"),
+                SchoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A"),
+                Role = "Student",
+                IsPending = true,
+                CreatedOn = DateTime.Now,
+            });
 
 
-            await repo.SaveChangesAsync();
+            return result;
         }
 
         private async Task SeedLikes(IRepository repo)
@@ -360,7 +346,6 @@ namespace SchoolSocialMediaApp.Infrastructure
                 LockoutEnabled = true,
                 AccessFailedCount = 0,
                 ImageUrl = "/images/user-images/studentProfile.jpg",
-                //SchoolId = Guid.Parse("F45DBD82-704F-4715-BB70-60CD2F73036A"),
             });
 
             return users;
