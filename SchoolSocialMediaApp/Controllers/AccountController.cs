@@ -315,7 +315,8 @@ namespace SchoolSocialMediaApp.Controllers
                     return RedirectToAction("Manage", "School", new { message = "Delete your school first", classOfMessage = "text-bg-danger" });
                 }
 
-                await userManager.DeleteAsync(user);
+                await accountService.DeleteAsync(userId);
+                //await userManager.DeleteAsync(user);
             }
             catch (Exception ex)
             {

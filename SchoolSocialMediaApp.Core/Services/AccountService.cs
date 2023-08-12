@@ -38,6 +38,38 @@ namespace SchoolSocialMediaApp.Core.Services
             this.schoolService = schoolService;
         }
 
+        public async Task DeleteAsync(Guid userId)
+        {
+            var user = await repo.All<ApplicationUser>().Where(u => u.Id == userId).Include(u => u.Posts).Include(u => u.Comments).Include(u => u.LikedPosts).Include(u=>u.Invitations).FirstOrDefaultAsync();
+
+            if (user == null) throw new ArgumentNullException("User is empty");
+
+            var posts = user.Posts;
+            var comments = user.Comments;
+            var postLikes = user.LikedPosts;
+            var invitations = user.Invitations;
+
+            if (comments.Any())
+            {
+                repo.DeleteRange(comments);
+            }
+            if (postLikes.Any())
+            {
+                repo.DeleteRange(postLikes);
+            }
+            if (posts.Any())
+            {
+                repo.DeleteRange(posts);
+            }
+            if (invitations.Any())
+            {
+                repo.DeleteRange(invitations);
+            }
+            await repo.SaveChangesAsync();
+
+            await userManager.DeleteAsync(user);
+            await signInManager.SignOutAsync();
+        }
 
         public async Task<bool> EmailIsFree(string email)
         {

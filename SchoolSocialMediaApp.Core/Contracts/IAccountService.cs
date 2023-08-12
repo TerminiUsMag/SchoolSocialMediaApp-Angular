@@ -133,5 +133,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <returns></returns>
         Task<MakeUserAdminViewModel> GetMakeUserAdminViewModelAsync(Guid userId);
         Task MakeAdmin(ApplicationUser userToMakeAdmin);
+        Task DeleteAsync(Guid userId);
     }
 }

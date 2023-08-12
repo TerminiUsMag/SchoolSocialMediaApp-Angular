@@ -9,11 +9,15 @@
 <div class="row mt-5">
     <form method="post" class="col-md-5">
         <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Confirm Password">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" class="form-control" placeholder="Confirm ADMIN Password">
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
         <button class="btn btn-danger col-md-3">Quit</button>
     </form>
     <a class="btn btn-success col align-self-md-center" asp-controller="Account" asp-action="Manage">Cancel</a>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

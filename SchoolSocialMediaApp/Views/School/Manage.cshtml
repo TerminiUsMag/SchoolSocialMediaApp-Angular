@@ -18,26 +18,31 @@ else
 {
     <form method="post" enctype="multipart/form-data" class="mb-4">
         <div class="form-group">
-            <label for="name">School Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="@Model.Name">
+            <label asp-for="Name">School Name</label>
+            <input asp-for="Name" type="text" class="form-control" id="name" name="name" value="@Model.Name">
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="location">Location</label>
-            <input type="text" class="form-control" id="location" name="location" value="@Model.Location">
+            <label asp-for="Location">Location</label>
+            <input asp-for="Location" type="text" class="form-control" id="location" name="location" value="@Model.Location">
+            <span asp-validation-for="Location" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="principal">School's Principal'</label>
-            <input type="text" class="form-control" id="principal" name="principal" value="@Model.Principal.FirstName @Model.Principal.LastName" readonly>
+            <label asp-for="Principal">School's Principal'</label>
+            <input asp-for="Principal" type="text" class="form-control" id="principal" name="principal" value="@Model.Principal.FirstName @Model.Principal.LastName" readonly>
+            <span asp-validation-for="Principal" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label for="description">Description</label>
-            <input type="text" class="form-control" id="description" name="description" value="@Model.Description">
+            <label asp-for="Description">Description</label>
+            <input asp-for="Description" type="text" class="form-control" id="description" name="description" value="@Model.Description">
+            <span asp-validation-for="Description" class="text-danger"></span>
         </div>
-        <input type="hidden" name="id" value="@Model.Id">
-        <input type="hidden" name="imageUrl" value="@Model.ImageUrl">
+        <input asp-for="Id" type="hidden" name="id" value="@Model.Id">
+        <input asp-for="ImageUrl"  type="hidden" name="imageUrl" value="@Model.ImageUrl">
         <div class="form-group">
-            <label for="imageFile">Upload New Profile Picture( Only .jpg and .png are accepted! )</label>
-            <input type="file" class="form-control" id="imageFile" name="imageFile">
+            <label asp-for="ImageFile">Upload New Profile Picture( Only .jpg and .png are accepted! )</label>
+            <input asp-for="ImageFile" type="file" class="form-control" id="imageFile" name="imageFile">
+            <span asp-validation-for="ImageFile" class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
@@ -84,7 +89,7 @@ else
     {
         <p>No teachers found.</p>
     }
-    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Teacher" asp-route-schoolId ="@Model.Id" class="btn btn-primary mb-4">Send Invitation</a>
+    <a asp-controller="Invitation" asp-action="Send" asp-route-role="Teacher" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4">Send Invitation</a>
 
     <h2>Parents</h2>
     @if (Model.Parents.Any())
@@ -177,104 +182,9 @@ else
             max-width: 200px; /* Adjust the width as needed */
         }
     </style>
-
-    <script>
-        $(document).ready(function () {
-            $(".rename-button").click(function () {
-                var renameGroup = $(this).siblings(".rename-group");
-                var schoolNameElement = $(this).siblings(".school-name");
-
-                // Toggle the visibility of the rename input group
-                renameGroup.toggle();
-                schoolNameElement.toggle();
-
-                // Set the input box value to the current school name and focus on it
-                var schoolName = schoolNameElement.text().trim().replace("School Name: ", "");
-                renameGroup.find(".school-name-input").val(schoolName).focus();
-
-                // Hide the "Rename" button after it's clicked
-                $(this).hide();
-            });
-
-            $(".save-button").click(function () {
-                var renameGroup = $(this).closest(".rename-group");
-                var schoolNameElement = renameGroup.siblings(".school-name");
-                var schoolName = renameGroup.find(".school-name-input").val();
-
-                // Send an AJAX request to update the school name
-                $.ajax({
-                    type: "POST",
-                    url: "/School/Rename",
-                    data: { schoolId: "@Model.Id", schoolName: schoolName },
-                    success: function (response) {
-                        if (response.success) {
-                            // If renaming is successful, update the school name in the UI
-                            schoolNameElement.text(schoolName);
-                        } else {
-                            console.log("Failed to rename the school.");
-                        }
-
-                        // Toggle the visibility of the rename input group
-                        renameGroup.toggle();
-                        schoolNameElement.toggle();
-
-                        // Show the "Rename" button again
-                        renameGroup.siblings(".rename-button").show();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.log("Error: " + errorThrown);
-
-                        // Toggle the visibility of the rename input group
-                        renameGroup.toggle();
-                        schoolNameElement.toggle();
-
-                        // Show the "Rename" button again
-                        renameGroup.siblings(".rename-button").show();
-                    }
-                });
-            });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-
-            $(".custom-file-input").on("change", function () {
-                var fileName = $(this).val().split("\\").pop();
-                $(this).next(".custom-file-label").text(fileName);
-            });
-
-            $(".btn-success").on("click", function () {
-                // Get the selected image file
-                var fileInput = $(".custom-file-input")[0];
-                var file = fileInput.files[0];
-
-                // Create a FormData object to send the file
-                var formData = new FormData();
-                formData.append("image", file);
-
-                // Send the AJAX request to upload the file
-                $.ajax({
-                    type: "POST",
-                    url: "/School/UploadPicture",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        if (response.success) {
-                            // If the upload is successful, update the UI or display a success message
-                            console.log("Image uploaded successfully.");
-                        } else {
-                            console.log("Failed to upload the image.");
-                        }
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.log("Error: " + errorThrown);
-                    }
-                });
-            });
-        });
-    </script>
 }
 
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

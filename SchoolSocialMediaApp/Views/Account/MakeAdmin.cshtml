@@ -26,16 +26,16 @@
 </div>
 <form method="post" class="col-md-5">
     <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Confirm ADMIN Password">
-        <input type="hidden" name="id" value="@Model.Id" />
-        <input type="hidden" name="firstName" value="@Model.FirstName" />
-        <input type="hidden" name="lastName" value="@Model.LastName" />
-        <input type="hidden" name="username" value="@Model.Username" />
-        <input type="hidden" name="email" value="@Model.Email" />
-        <input type="hidden" name="phonenumber" value="@Model.PhoneNumber" />
-        <input type="hidden" name="imageUrl" value="@Model.ImageUrl" />
+        <label asp-for="Password">Password</label>
+        <input asp-for="Password" type="password" class="form-control" placeholder="Confirm ADMIN Password">
         <span asp-validation-for="Password" class="text-danger"></span>
+        <input asp-for="Id" type="hidden" value="@Model.Id" />
+        <input asp-for="FirstName" type="hidden" value="@Model.FirstName" />
+        <input asp-for="LastName" type="hidden" value="@Model.LastName" />
+        <input asp-for="Username" type="hidden" value="@Model.Username" />
+        <input asp-for="Email" type="hidden" value="@Model.Email" />
+        <input asp-for="PhoneNumber" type="hidden" value="@Model.PhoneNumber" />
+        <input asp-for="ImageUrl" type="hidden" value="@Model.ImageUrl" />
     </div>
     <button class="btn btn-danger col-md-3">Delete</button>
 </form>
@@ -51,3 +51,7 @@
         font-size: 18px;
     }
 </style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

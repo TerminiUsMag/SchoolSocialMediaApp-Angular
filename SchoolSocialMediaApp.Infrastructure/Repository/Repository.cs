@@ -149,12 +149,16 @@ namespace SchoolSocialMediaApp.Infrastructure.Common
         /// <returns>Single record</returns>
         public async Task<T> GetByIdAsync<T>(object id) where T : class
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return await DbSet<T>().FindAsync(id);
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public async Task<T> GetByIdsAsync<T>(object[] id) where T : class
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return await DbSet<T>().FindAsync(id);
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         /// <summary>

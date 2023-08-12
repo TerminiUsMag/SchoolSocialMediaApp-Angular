@@ -12,14 +12,17 @@
 
 <form method="post" class="col-md-5">
     <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Confirm ADMIN Password">
-        <input type="hidden" name="name" value="@Model.Name" />
-        <input type="hidden" name="description" value="@Model.Description" />
-        <input type="hidden" name="id" value="@Model.Id" />
+        <label asp-for="Password">Password</label>
+        <input asp-for="Password" type="password" class="form-control" id="password" name="password" placeholder="Confirm ADMIN Password">
         <span asp-validation-for="Password" class="text-danger"></span>
+        <input asp-for="Name" type="hidden" name="name" value="@Model.Name" />
+        <input asp-for="Description" type="hidden" name="description" value="@Model.Description" />
+        <input asp-for="Id" type="hidden" name="id" value="@Model.Id" />
     </div>
     <button class="btn btn-danger col-md-3">Delete</button>
 </form>
 <a class="btn btn-success col align-self-md-center" asp-controller="School" asp-action="AdminSchoolManage" asp-route-schoolId="@Model.Id">Cancel</a>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
