@@ -58,6 +58,14 @@ namespace SchoolSocialMediaApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            //Model Validation
+            if (!ModelState.IsValid)
+            {
+                var message = "Something went wrong";
+                ModelState.AddModelError("", message);
+                return View(model);
+            }
+
             //Check if the user is logged in.
             var userId = this.GetUserId();
             if (userId != Guid.Empty)
@@ -103,13 +111,6 @@ namespace SchoolSocialMediaApp.Controllers
                 return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
 
-            //Model Validation
-            if (!ModelState.IsValid)
-            {
-                var message = "Something went wrong";
-                ModelState.AddModelError("", message);
-                return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
-            }
 
             //User Creation
             var user = new ApplicationUser()
@@ -156,19 +157,19 @@ namespace SchoolSocialMediaApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            //Check if the user is logged in.
-            var userId = this.GetUserId();
-            if (userId != Guid.Empty)
-            {
-                return RedirectToAction("Index", "Home", new { message = "You're already logged in", classOfMessage = "text-bg-danger" });
-            }
-
             //Model Validation
             if (!ModelState.IsValid)
             {
                 var message = "Something went wrong";
                 ModelState.AddModelError("", message);
-                return RedirectToAction("Login", "Account", new { message = message, classOfMessage = "text-bg-danger" });
+                return View(model);
+            }
+
+            //Check if the user is logged in.
+            var userId = this.GetUserId();
+            if (userId != Guid.Empty)
+            {
+                return RedirectToAction("Index", "Home", new { message = "You're already logged in", classOfMessage = "text-bg-danger" });
             }
 
             var result = await accountService.LoginAsync(model.Email, model.Password, model.RememberMe = false);
@@ -228,6 +229,13 @@ namespace SchoolSocialMediaApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Manage(UserManageViewModel model)
         {
+            //Model Validation
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
+            }
+
             var userId = this.GetUserId();
             if (userId == Guid.Empty)
             {
@@ -267,21 +275,13 @@ namespace SchoolSocialMediaApp.Controllers
                 return RedirectToAction("Manage", "Account", new { message = $"Username '{username}' is already taken", classOfMessage = "text-bg-danger" });
             }
 
-            //Model Validation
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Something went wrong");
-                return RedirectToAction("Manage", "Account", new { message = "Something went wrong", classOfMessage = "text-bg-danger" });
-            }
-
             try
             {
                 await accountService.UpdateAsync(userId, model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Something went wrong");
-                return RedirectToAction("Manage", "Account", new { message = "Something went wrong", classOfMessage = "text-bg-danger" });
+                return RedirectToAction("Manage", "Account", new { message = "Something went wrong: " + ex.Message, classOfMessage = "text-bg-danger" });
             }
 
             return RedirectToAction("Manage", "Account", new { message = "Changes saved successfully", classOfMessage = "text-bg-success" });
@@ -301,7 +301,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong!");
-                return View();
+                return View(model);
             }
 
 
@@ -358,7 +358,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong!");
-                return View();
+                return View(model);
             }
 
 
@@ -439,7 +439,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong!");
-                return RedirectToAction("DeleteUser", "Account", new { id = model.Id, message = "Something went wrong !", classOfMessage = "text-bg-danger" });
+                return View(model);
             }
 
 
@@ -477,7 +477,7 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> MakeAdmin(Guid id, string message ="", string classOfMessage = "")
+        public async Task<IActionResult> MakeAdmin(Guid id, string message = "", string classOfMessage = "")
         {
             var userId = this.GetUserId();
 
@@ -501,7 +501,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong!");
-                return RedirectToAction("MakeAdmin", "Account", new { id = model.Id, message = "Something went wrong !", classOfMessage = "text-bg-danger" });
+                return View(model);
             }
 
 

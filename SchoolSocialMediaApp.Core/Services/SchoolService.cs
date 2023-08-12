@@ -411,7 +411,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task RemoveUserFromSchoolAsync(Guid userId, Guid schoolId)
         {
-            //Checks if the give user and school ID's are not empty.
+            //Checks if the given user and school ID's are not empty.
             if (userId == Guid.Empty)
             {
                 throw new ArgumentException("User id cannot be empty.");

@@ -69,10 +69,10 @@ else
                         <td>@user.FirstName @user.LastName</td>
                         <td>@user.UserName</td>
                         <td>
-                            <a class="btn btn-primary" asp-action="DeleteUser" asp-controller="Account" asp-route-id="@user.Id">Delete</a>
+                            <a class="btn btn-warning btn-sm" asp-action="MakeAdmin" asp-controller="Account" asp-route-id="@user.Id">Make Admin</a>
                         </td>
                         <td>
-                            <a class="btn btn-warning" asp-action="MakeAdmin" asp-controller="Account" asp-route-id="@user.Id">Make Admin</a>
+                            <a class="btn btn-primary" asp-action="DeleteUser" asp-controller="Account" asp-route-id="@user.Id">Delete</a>
                         </td>
                     </tr>
                 }

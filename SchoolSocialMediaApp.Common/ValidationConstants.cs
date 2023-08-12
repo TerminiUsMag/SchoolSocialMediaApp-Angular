@@ -104,9 +104,12 @@
         public const string RequiredPasswordDeleteViewModel = "Password is required for account deletion.";
 
         //School Deletion
-        public const string RequiredPasswordDeleteSchoolViewModel = "Password is required for school deletion";
+        public const string RequiredPasswordDeleteSchoolViewModel = "Password is required for school deletion.";
 
         //User Quit School
         public const string RequiredPasswordQuitViewModel = "Password is required to Quit school.";
+
+        //Make User Admin
+        public const string RequiredPasswordMakeAdmin = "Admin password confirmation is required to give admin permissions.";
     }
 }

@@ -19,12 +19,8 @@ namespace SchoolSocialMediaApp.Controllers
 
 
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string message, string classOfMessage)
+        public IActionResult Index(string message, string classOfMessage)
         {
-            //if (this.User?.Identity?.IsAuthenticated ?? false)
-            //{
-            //    return RedirectToAction("Feed", "Home");
-            //}
             ViewBag.Message = message;
             ViewBag.ClassOfMessage = classOfMessage;
             return View();

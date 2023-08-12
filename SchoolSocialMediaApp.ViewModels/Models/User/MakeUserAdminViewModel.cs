@@ -41,7 +41,7 @@ namespace SchoolSocialMediaApp.ViewModels.Models.User
         public string PhoneNumber { get; set; } = null!;
 
         [Comment("The password of the admin user.")]
-        [Required(ErrorMessage = validation.RequiredPasswordDeleteViewModel)]
+        [Required(ErrorMessage = validation.RequiredPasswordMakeAdmin)]
         [StringLength(validation.MaxPasswordLength, MinimumLength = validation.MinPasswordLength, ErrorMessage = validation.InvalidPassword)]
         [DataType(DataType.Password)]
         public string Password { get; set; } = null!;

@@ -21,18 +21,21 @@ namespace SchoolSocialMediaApp.Core.Services
         private readonly IWebHostEnvironment env;
         private readonly IRoleService roleService;
         private readonly IRepository repo;
+        private readonly ISchoolService schoolService;
         public AccountService(
             UserManager<ApplicationUser> _userManager,
             SignInManager<ApplicationUser> _signInManager,
             IRepository _repo,
             IRoleService _roleService,
-            IWebHostEnvironment _env)
+            IWebHostEnvironment _env,
+            ISchoolService schoolService)
         {
             this.userManager = _userManager;
             this.signInManager = _signInManager;
             this.roleService = _roleService;
             this.repo = _repo;
             this.env = _env;
+            this.schoolService = schoolService;
         }
 
 
@@ -238,7 +241,12 @@ namespace SchoolSocialMediaApp.Core.Services
         {
             if (user.SchoolId is not null)
             {
-                throw new ArgumentException("Principals cannot be admins");
+                if (user.IsPrincipal)
+                {
+                    throw new ArgumentException("Principals cannot be admins");
+                }
+                Guid schoolId = (Guid)user.SchoolId;
+                await schoolService.RemoveUserFromSchoolAsync(user.Id, schoolId);
             }
 
             var roles = await roleService.GetUserRolesAsync(user.Id);

@@ -59,7 +59,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Invalid school data.");
-                return RedirectToAction("Register", new { message = "Invalid school data", classOfMessage = "text-bg-danger" });
+                return View(model);
             }
 
             var userId = this.GetUserId();
@@ -136,7 +136,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong");
-                return RedirectToAction("Manage", "School", new { message = "Something went wrong", classOfMessage = "text-bg-danger" });
+                return View(model);
             }
 
             try
@@ -300,7 +300,8 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong");
-                return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = "Something went wrong", classOfMessage = "text-bg-danger" });
+                return View(model);
+                //return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = "Something went wrong", classOfMessage = "text-bg-danger" });
             }
 
             try
@@ -348,7 +349,8 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong");
-                return RedirectToAction("DeleteAsAdmin", "School", new { message = "Something went wrong", classOfMessage = "text-bg-danger" });
+                return View(model);
+                //return RedirectToAction("DeleteAsAdmin", "School", new {schoolId = model.Id, message = "Something went wrong", classOfMessage = "text-bg-danger" });
             }
 
             try
