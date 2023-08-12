@@ -63,7 +63,8 @@ Main Functionalities:
 
 <h2>Posts Page (from a student's view): </h2>
 
-![Screenshot (59)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/e9cdc3f2-25c4-435d-9ba0-878ca72769db)
+![Screenshot (61)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/8c2e9ca8-13e5-42d9-811e-f277c87aaac6)
+
 
 <h2>Admin Panel: </h2>
 
