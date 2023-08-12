@@ -20,8 +20,14 @@ namespace SchoolSocialMediaApp.Tests.UnitTests
             var mockUserManager = new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
             var mockRoleService = new Mock<IRoleService>();
             var mockSchoolService = new Mock<ISchoolService>();
+            var mockSignInManager = new Mock<SignInManager<ApplicationUser>>(
+                mockUserManager.Object,
+                Mock.Of<IHttpContextAccessor>(),
+                Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(),
+                null, null, null, null
+            );
 
-            var controller = new AccountController(mockAccountService.Object, mockUserManager.Object, mockRoleService.Object, mockSchoolService.Object);
+            var controller = new AccountController(mockAccountService.Object, mockUserManager.Object, mockRoleService.Object, mockSchoolService.Object,mockSignInManager.Object);
 
             // Act
             var result = controller.Register();
@@ -45,8 +51,15 @@ namespace SchoolSocialMediaApp.Tests.UnitTests
             var mockUserManager = new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
             var mockRoleService = new Mock<IRoleService>();
             var mockSchoolService = new Mock<ISchoolService>();
+            var mockSignInManager = new Mock<SignInManager<ApplicationUser>>(
+                mockUserManager.Object,
+                Mock.Of<IHttpContextAccessor>(),
+                Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(),
+                null, null, null, null
+            );
 
-            var controller = new AccountController(mockAccountService.Object, mockUserManager.Object, mockRoleService.Object, mockSchoolService.Object);
+
+            var controller = new AccountController(mockAccountService.Object, mockUserManager.Object, mockRoleService.Object, mockSchoolService.Object,mockSignInManager.Object);
             var model = new RegisterViewModel();
 
             // Act
@@ -83,7 +96,7 @@ namespace SchoolSocialMediaApp.Tests.UnitTests
             mockUserManager.Setup(manager => manager.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
 
-            var controller = new AccountController(mockAccountService.Object, mockUserManager.Object, mockRoleService.Object, mockSchoolService.Object);
+            var controller = new AccountController(mockAccountService.Object, mockUserManager.Object, mockRoleService.Object, mockSchoolService.Object,mockSignInManager.Object);
             var model = new LoginViewModel();
 
             // Act
@@ -114,7 +127,7 @@ namespace SchoolSocialMediaApp.Tests.UnitTests
             mockSignInManager.Setup(manager => manager.SignOutAsync())
                 .Returns(Task.CompletedTask);
 
-            var controller = new AccountController(mockAccountService.Object, mockUserManager.Object, mockRoleService.Object, mockSchoolService.Object);
+            var controller = new AccountController(mockAccountService.Object, mockUserManager.Object, mockRoleService.Object, mockSchoolService.Object, mockSignInManager.Object);
 
             // Act
             var result = await controller.Logout();
