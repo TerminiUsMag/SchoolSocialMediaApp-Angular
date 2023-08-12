@@ -1,0 +1,52 @@
+﻿@model MakeUserAdminViewModel
+@{
+    ViewBag.Title = "Make user admin";
+}
+
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
+<h1 class="text-danger">@ViewBag.Title</h1>
+<div class="row">
+    <div class="col-md-6">
+        <img class="img-thumbnail rounded-circle custom-image" src="@Model.ImageUrl" />
+        <h3>Name: @Model.FirstName @Model.LastName</h3>
+        <h3>Username: @Model.Username</h3>
+        <h3>Email: @Model.Email</h3>
+        <h3>Phonenumber: @Model.PhoneNumber</h3>
+    </div>
+    <div class="col-md-6">
+        <h2 class="text-bg-danger">Are you sure you want to give administration permissions to this user.</h2>
+        <h2 class="text-bg-danger">If the user is principal you have to delete the school and then give the permissions.</h2>
+    </div>
+
+</div>
+<form method="post" class="col-md-5">
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Confirm ADMIN Password">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="firstName" value="@Model.FirstName" />
+        <input type="hidden" name="lastName" value="@Model.LastName" />
+        <input type="hidden" name="username" value="@Model.Username" />
+        <input type="hidden" name="email" value="@Model.Email" />
+        <input type="hidden" name="phonenumber" value="@Model.PhoneNumber" />
+        <input type="hidden" name="imageUrl" value="@Model.ImageUrl" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button class="btn btn-danger col-md-3">Delete</button>
+</form>
+<a class="btn btn-success col align-self-md-center" asp-controller="Account" asp-action="AdminPanel">Cancel</a>
+
+<style>
+    .custom-image {
+        max-width: 250px;
+        height: auto;
+    }
+
+    .custom-text {
+        font-size: 18px;
+    }
+</style>

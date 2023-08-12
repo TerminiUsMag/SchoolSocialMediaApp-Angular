@@ -159,6 +159,31 @@ namespace SchoolSocialMediaApp.Core.Services
 
         }
 
+        public async Task<MakeUserAdminViewModel> GetMakeUserAdminViewModelAsync(Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                throw new ArgumentException("User id cannot be empty");
+            }
+            var user = await repo.All<ApplicationUser>().Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                throw new ArgumentException("No user found with Id: " + userId);
+            }
+
+            return new MakeUserAdminViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Id = user.Id,
+                Email = user.Email,
+                ImageUrl = user.ImageUrl,
+                Username = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+            };
+        }
+
         public async Task<UserManageViewModel> GetUserManageViewModelAsync(string userId)
         {
             if (userId is null || userId == Guid.Empty.ToString())
@@ -209,6 +234,21 @@ namespace SchoolSocialMediaApp.Core.Services
             await signInManager.SignOutAsync();
         }
 
+        public async Task MakeAdmin(ApplicationUser user)
+        {
+            if (user.SchoolId is not null)
+            {
+                throw new ArgumentException("Principals cannot be admins");
+            }
+
+            var roles = await roleService.GetUserRolesAsync(user.Id);
+            foreach (var role in roles)
+            {
+                await roleService.RemoveUserFromRoleAsync(user.Id.ToString(), role);
+            }
+            await repo.SaveChangesAsync();
+            await roleService.AddUserToRoleAsync(user.Id.ToString(), "Admin");
+        }
 
         public async Task<bool> PhoneNumberIsFree(string phoneNumber)
         {

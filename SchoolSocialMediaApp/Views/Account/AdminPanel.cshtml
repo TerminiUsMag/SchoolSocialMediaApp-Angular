@@ -59,6 +59,7 @@ else
                     <th>Name</th>
                     <th>Username</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -68,12 +69,10 @@ else
                         <td>@user.FirstName @user.LastName</td>
                         <td>@user.UserName</td>
                         <td>
-                            @*                            <form asp-controller="School" asp-action="Manage" method="post">
-                    <input type="hidden" name="schoolId" value="@teacher.SchoolId" />
-                    <input type="hidden" name="userId" value="@teacher.Id" />
-                    <button type="submit" class="btn btn-primary">Remove from school</button>
-                    </form>*@
                             <a class="btn btn-primary" asp-action="DeleteUser" asp-controller="Account" asp-route-id="@user.Id">Delete</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-warning" asp-action="MakeAdmin" asp-controller="Account" asp-route-id="@user.Id">Make Admin</a>
                         </td>
                     </tr>
                 }

@@ -415,7 +415,7 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(Guid id, string message = "", string classOfMessage = "")
         {
             var userId = this.GetUserId();
 
@@ -425,6 +425,9 @@ namespace SchoolSocialMediaApp.Controllers
             }
 
             AdminUserDeletionViewModel model = await accountService.GetAdminUserDeletionViewModelAsync(id);
+
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
 
             return View(model);
         }
@@ -436,7 +439,7 @@ namespace SchoolSocialMediaApp.Controllers
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Something went wrong!");
-                return View(model);
+                return RedirectToAction("DeleteUser", "Account", new { id = model.Id, message = "Something went wrong !", classOfMessage = "text-bg-danger" });
             }
 
 
@@ -470,6 +473,68 @@ namespace SchoolSocialMediaApp.Controllers
             }
 
             return RedirectToAction("AdminPanel", "Account", new { message = "Successfully deleted account !", classOfMessage = "text-bg-success" });
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> MakeAdmin(Guid id, string message ="", string classOfMessage = "")
+        {
+            var userId = this.GetUserId();
+
+            if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
+            {
+                return RedirectToAction("AccessDenied", new { msg = "You are not authorized to delete users" });
+            }
+
+            MakeUserAdminViewModel model = await accountService.GetMakeUserAdminViewModelAsync(id);
+
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> MakeAdmin(MakeUserAdminViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Something went wrong!");
+                return RedirectToAction("MakeAdmin", "Account", new { id = model.Id, message = "Something went wrong !", classOfMessage = "text-bg-danger" });
+            }
+
+
+            try
+            {
+                var userId = GetUserId();
+                var user = await userManager.FindByIdAsync(userId.ToString());
+                if (user is null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
+                if (!correctPassword)
+                {
+                    return RedirectToAction("AdminPanel", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
+                }
+                if (await roleService.UserIsInRoleAsync(model.Id.ToString(), "Principal"))
+                {
+                    return RedirectToAction("AdminPanel", "Account", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
+                }
+                if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
+                {
+                    return RedirectToAction("Index", "Home", new { message = "You are not authorized to give admin permissions :) !", classOfMessage = "text-bg-danger" });
+                }
+                var userToMakeAdmin = await userManager.FindByIdAsync(model.Id.ToString());
+                await accountService.MakeAdmin(userToMakeAdmin);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("AdminPanel", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+            return RedirectToAction("AdminPanel", "Account", new { message = "Successfully given administrator permissions !", classOfMessage = "text-bg-success" });
         }
 
     }

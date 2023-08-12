@@ -3,6 +3,11 @@
     ViewBag.Title = "Delete user account";
 }
 
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
 <h1 class="text-danger">@ViewBag.Title</h1>
 <div class="row">
     <div class="col-md-6">
