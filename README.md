@@ -68,6 +68,4 @@ Main Functionalities:
 
 <h2>Admin Panel: </h2>
 
-![Screenshot (60)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/3c34b43b-ca85-4bad-b4b8-ec13c64104b9)
-
-
+![Screenshot (62)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/5dfdeb77-910a-4ac2-bd65-7524be0813b4)
