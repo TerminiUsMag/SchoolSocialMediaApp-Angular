@@ -99,7 +99,7 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Principal")]
-        public async Task<IActionResult> Manage(string message, string classOfMessage = "text-bg-danger")
+        public async Task<IActionResult> Manage(string message = "", string classOfMessage = "text-bg-danger")
         {
             var userId = this.GetUserId();
             if (userId == Guid.Empty)

@@ -6,8 +6,6 @@ using SchoolSocialMediaApp.Controllers;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.User;
-using System.Security.Claims;
-using System.Security.Principal;
 
 namespace SchoolSocialMediaApp.Tests.UnitTests
 {
