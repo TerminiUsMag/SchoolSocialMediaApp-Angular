@@ -15,6 +15,15 @@ On the first run the application will seed:
   <li>Parent User: Can be added to the school as parent.  </li>
   <li>Teacher User: Can be added to the school as teacher. </li>
 </ul>
+
+Seeded users login information:
+<ul>
+  <li>email: admin@admins.com | password: "None123"</li>
+  <li>email: principal@principals.com | password: "None123"</li>
+  <li>email: teacher@teachers.com | password: "None123"</li>
+  <li>email: parent@parents.com | password: "None123"</li>
+  <li>email: student@students.com | password: "None123"</li>
+</ul>
  
 Main Functionalities:
 <ol>
