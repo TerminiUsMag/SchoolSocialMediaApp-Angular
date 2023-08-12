@@ -250,6 +250,7 @@ namespace SchoolSocialMediaApp.Controllers
                 }
 
                 await schoolService.DeleteSchoolAsync(school.Id);
+                await signInManager.RefreshSignInAsync(user);
 
             }
             catch (Exception ex)

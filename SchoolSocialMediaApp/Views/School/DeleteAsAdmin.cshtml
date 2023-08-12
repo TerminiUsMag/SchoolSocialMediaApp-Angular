@@ -15,9 +15,9 @@
         <label asp-for="Password">Password</label>
         <input asp-for="Password" type="password" class="form-control" placeholder="Confirm ADMIN Password">
         <span asp-validation-for="Password" class="text-danger"></span>
-        <input asp-for="Name" type="hidden" name="name" value="@Model.Name" />
-        <input asp-for="Description" type="hidden" name="description" value="@Model.Description" />
-        <input asp-for="Id" type="hidden" name="id" value="@Model.Id" />
+        <input asp-for="Name" type="hidden" value="@Model.Name" />
+        <input asp-for="Description" type="hidden" value="@Model.Description" />
+        <input asp-for="Id" type="hidden" value="@Model.Id" />
     </div>
     <button class="btn btn-danger col-md-3">Delete</button>
 </form>

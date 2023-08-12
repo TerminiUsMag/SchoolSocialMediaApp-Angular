@@ -19,29 +19,29 @@ else
     <form method="post" enctype="multipart/form-data" class="mb-4">
         <div class="form-group">
             <label asp-for="Name">School Name</label>
-            <input asp-for="Name" type="text" class="form-control" id="name" name="name" value="@Model.Name">
+            <input asp-for="Name" type="text" class="form-control" value="@Model.Name">
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Location">Location</label>
-            <input asp-for="Location" type="text" class="form-control" id="location" name="location" value="@Model.Location">
+            <input asp-for="Location" type="text" class="form-control" value="@Model.Location">
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Principal">School's Principal'</label>
-            <input asp-for="Principal" type="text" class="form-control" id="principal" name="principal" value="@Model.Principal.FirstName @Model.Principal.LastName" readonly>
+            <input asp-for="Principal" type="text" class="form-control" value="@Model.Principal.FirstName @Model.Principal.LastName" readonly>
             <span asp-validation-for="Principal" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Description">Description</label>
-            <input asp-for="Description" type="text" class="form-control" id="description" name="description" value="@Model.Description">
+            <input asp-for="Description" type="text" class="form-control" value="@Model.Description">
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <input asp-for="Id" type="hidden" name="id" value="@Model.Id">
-        <input asp-for="ImageUrl"  type="hidden" name="imageUrl" value="@Model.ImageUrl">
+        <input asp-for="ImageUrl"  type="hidden" value="@Model.ImageUrl">
         <div class="form-group">
             <label asp-for="ImageFile">Upload New Profile Picture( Only .jpg and .png are accepted! )</label>
-            <input asp-for="ImageFile" type="file" class="form-control" id="imageFile" name="imageFile">
+            <input asp-for="ImageFile" type="file" class="form-control" >
             <span asp-validation-for="ImageFile" class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-primary">Save Changes</button>
