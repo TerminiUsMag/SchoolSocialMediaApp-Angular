@@ -34,3 +34,39 @@ Main Functionalities:
   <li>As admin you can do everything the principal can for every registered school.(Excluding: Post Creation).</li>
   <li>The admin can delete users.</li>
 </ol>
+<h1>Project Overview</h1>
+
+<h2>Home Page: </h2>
+
+![Screenshot (53)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/223690da-c999-4f6a-aa16-f023ee6ea821)
+
+
+<h2>Schools Page: </h2>
+
+![Screenshot (54)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/ad9d38d5-94ad-402b-b403-021d7474e1e5)
+
+<h2>Manage School Page: </h2>
+
+![Screenshot (55)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/9ef0cc24-881e-4c37-a412-e8489cb024ba)
+
+<h2>Manage Account Page: </h2>
+
+![Screenshot (56)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/c021b8e5-8031-43cc-89d9-d4d1a78beb05)
+
+<h2>Posts Page (from principal's view): </h2>
+
+![Screenshot (57)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/66b6a8d3-db18-49e3-8b40-dae8861be61c)
+
+<h2>Pending Invitations Page: </h2>
+
+![Screenshot (58)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/0d28be21-c60b-4ab8-bd4a-a78c6a84406a)
+
+<h2>Posts Page (from a student's view): </h2>
+
+![Screenshot (59)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/e9cdc3f2-25c4-435d-9ba0-878ca72769db)
+
+<h2>Admin Panel: </h2>
+
+![Screenshot (60)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/3c34b43b-ca85-4bad-b4b8-ec13c64104b9)
+
+
