@@ -115,6 +115,15 @@ namespace SchoolSocialMediaApp.Core.Services
                 repo.Delete(post);
             }
             await repo.SaveChangesAsync();
+
+            var schoolInvitations = await repo.All<Invitation>().Where(i => i.SchoolId == id).ToListAsync();
+
+            if (schoolInvitations.Any())
+            {
+                repo.DeleteRange(schoolInvitations);
+            }
+            await repo.SaveChangesAsync();
+
             var usersInSchool = await GetAllUsersInSchool(school.Id);
 
             foreach (var participant in usersInSchool)
