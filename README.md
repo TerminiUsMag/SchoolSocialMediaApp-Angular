@@ -6,13 +6,13 @@ This is a school social media web application I'm developing for SoftUni's "ASP.
 ---------------------------------------------------------------------------------------------------------------------
 Requirements for the project are added in folder "Project Requirements".
 
-First Run:
-On the first run the application will seed:
-Admin User: Can Manage the whole application (Delete users, manage schools, send invitations, delete and edit posts, delete comments, change school pictures and more).
-Principal User: Has demo school and a post in the school. Can Manage the whole school.(Send invitations, remove users from school, manage posts and comments).
-Student User: Has invitation from the principal to join the demo school as a student, commented and liked the Principal's post. Can post and comment in the school which he is part of, can quit the school and can receive invitations from principals and admins to join schools as a concreate role.
-Parent User: Can be added to the school as parent. 
-Teacher User: Can be added to the school as teacher.
+First Run:  
+On the first run the application will seed:   
+Admin User: Can Manage the whole application (Delete users, manage schools, send invitations, delete and edit posts, delete comments, change school pictures and more).  
+Principal User: Has demo school and a post in the school. Can Manage the whole school.(Send invitations, remove users from school, manage posts and comments).  
+Student User: Has invitation from the principal to join the demo school as a student, commented and liked the Principal's post. Can post and comment in the school which he is part of, can quit the school and can receive invitations from principals and admins to join schools as a concreate role.  
+Parent User: Can be added to the school as parent.   
+Teacher User: Can be added to the school as teacher.  
 
 Main Functionalities:
 1. Users Login and Register.
