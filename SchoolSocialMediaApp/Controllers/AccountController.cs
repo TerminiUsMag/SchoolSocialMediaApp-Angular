@@ -9,28 +9,20 @@ namespace SchoolSocialMediaApp.Controllers
 {
     public class AccountController : BaseController
     {
+        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IAccountService accountService;
         private readonly IRoleService roleService;
         private readonly ISchoolService schoolService;
 
-        public AccountController(IAccountService _accountService, UserManager<ApplicationUser> _userManager, IRoleService _roleService, ISchoolService _schoolService)
+        public AccountController(IAccountService _accountService, UserManager<ApplicationUser> _userManager, IRoleService _roleService, ISchoolService _schoolService,SignInManager<ApplicationUser> _signInManager)
         {
             this.accountService = _accountService;
             this.userManager = _userManager;
             this.roleService = _roleService;
             this.schoolService = _schoolService;
+            this.signInManager = _signInManager;
         }
-        //private readonly UserManager<ApplicationUser> userManager;
-        //private readonly SignInManager<ApplicationUser> signInManager;
-
-        //public AccountController(
-        //    UserManager<ApplicationUser> _userManager,
-        //    SignInManager<ApplicationUser> _signInManager)
-        //{
-        //    this.userManager = _userManager;
-        //    this.signInManager = _signInManager;
-        //}
 
         [HttpGet]
         [AllowAnonymous]
@@ -528,6 +520,7 @@ namespace SchoolSocialMediaApp.Controllers
                 }
                 var userToMakeAdmin = await userManager.FindByIdAsync(model.Id.ToString());
                 await accountService.MakeAdmin(userToMakeAdmin);
+                await signInManager.RefreshSignInAsync(user);
             }
             catch (Exception ex)
             {

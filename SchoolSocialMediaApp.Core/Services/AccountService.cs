@@ -83,7 +83,8 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             var result = new AdminPanelViewModel();
             var posts = await repo.All<Post>().ToListAsync();
-            var users = await repo.All<ApplicationUser>().Where(u => u.Id != userId).ToListAsync();
+            var users = await repo.All<ApplicationUser>().Where(u => u.Id != userId && u.IsAdmin == false).ToListAsync();
+            var admins = await repo.All<ApplicationUser>().Where(u => u.Id != userId && u.IsAdmin == true).ToListAsync();
             var schools = await repo.All<School>().Select(s => new SchoolManageViewModel
             {
                 Description = s.Description,
@@ -133,6 +134,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
             result.Schools = schools;
             result.Users = users;
+            result.Admins = admins;
             return result;
         }
 
