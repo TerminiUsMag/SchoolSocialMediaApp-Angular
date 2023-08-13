@@ -26,12 +26,17 @@ namespace SchoolSocialMediaApp.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
             IEnumerable<SchoolViewModel>? schools = null;
             try
             {
                 schools = await schoolService.GetAllSchoolsAsync();
+                if(!string.IsNullOrEmpty(searchString))
+                {
+                    schools = schools.Where(s=>s.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+                    ViewBag.SearchString = searchString;
+                }
             }
             catch (ArgumentException)
             {
