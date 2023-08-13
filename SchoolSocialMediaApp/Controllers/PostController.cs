@@ -27,7 +27,7 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 var schoolId = await schoolService.GetSchoolIdByUserIdAsync(userId);
                 var school = await schoolService.GetSchoolByIdAsync(schoolId);
-                int pageSize = 5;
+                int pageSize = 3;
                 int pageNumber = page ?? 1;
                 posts = await postService.GetAllPostsAsync(schoolId, userId);
                 var pagedPosts = posts.ToPagedList(pageNumber, pageSize);
