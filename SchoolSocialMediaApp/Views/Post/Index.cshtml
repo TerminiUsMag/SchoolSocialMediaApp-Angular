@@ -1,9 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using SchoolSocialMediaApp.Infrastructure.Data.Models;
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common;
 
 @inject UserManager<ApplicationUser> UserManager;
 
-@model List<PostViewModel>
+@model X.PagedList.IPagedList<PostViewModel>;
 @{
     ViewData["Title"] = $"Posts Index for {ViewBag.SchoolName}";
     var user = await UserManager.GetUserAsync(User);
@@ -89,6 +91,28 @@
                 </div>
             </div>
         }
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+        {
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        LinkToFirstPageFormat = "<<",
+        LinkToLastPageFormat = ">>",
+        LinkToPreviousPageFormat = "<",
+        LinkToNextPageFormat = ">",
+        DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+        MaximumPageNumbersToDisplay = 5,
+        EllipsesFormat = "...",
+        ContainerDivClasses = new[] { "pagination-container" },
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+        })
+            </div>
+        </div>
     }
     else
     {
@@ -122,6 +146,59 @@ else
         </div>
     </div>
 </div>
+
+<style>
+    .pagination-container {
+        margin-top: 20px;
+    }
+
+    /* Pagination UL styles */
+    .pagination {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Pagination LI styles */
+    .page-item {
+        display: inline;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    /* Pagination link styles */
+    .page-link {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 2px;
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+        .page-link:hover {
+            background-color: #ddd;
+        }
+
+    /* Active page link styles */
+    .page-item.active .page-link {
+        background-color: #337ab7;
+        border-color: #337ab7;
+        color: #fff;
+    }
+
+    /* Disabled page link styles */
+    .page-item.disabled .page-link {
+        background-color: #f5f5f5;
+        border-color: #ddd;
+        color: #ccc;
+        cursor: not-allowed;
+    }
+</style>
 
 <style>
     .scrollable-content {

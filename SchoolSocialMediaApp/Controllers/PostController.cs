@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using X.PagedList;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.ViewModels.Models.Post;
 
@@ -18,7 +19,7 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string message = "", string classOfMessage = "")
+        public async Task<IActionResult> Index(int? page, string message = "", string classOfMessage = "")
         {
             var userId = this.GetUserId();
             IEnumerable<PostViewModel>? posts = null;
@@ -26,11 +27,14 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 var schoolId = await schoolService.GetSchoolIdByUserIdAsync(userId);
                 var school = await schoolService.GetSchoolByIdAsync(schoolId);
+                int pageSize = 5;
+                int pageNumber = page ?? 1;
                 posts = await postService.GetAllPostsAsync(schoolId, userId);
+                var pagedPosts = posts.ToPagedList(pageNumber, pageSize);
                 ViewBag.SchoolName = school.Name;
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
-                return View(posts);
+                return View(pagedPosts);
             }
             catch (Exception ex)
             {
@@ -110,7 +114,7 @@ namespace SchoolSocialMediaApp.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                return RedirectToAction("Index","Home", new {message = ex.Message, classOfMessage = "text-bg-danger"});
+                return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
 
         }
