@@ -266,134 +266,134 @@ namespace SchoolSocialMediaApp.Controllers
             return RedirectToAction("Index", "Home", new { message = "School deleted successfully !", classOfMessage = "text-bg-success" });
         }
 
-        [HttpGet]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AdminSchoolManage(Guid schoolId, string message = "", string classOfMessage = "")
-        {
-            var userId = this.GetUserId();
-            var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+        //[HttpGet]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> AdminSchoolManage(Guid schoolId, string message = "", string classOfMessage = "")
+        //{
+        //    var userId = this.GetUserId();
+        //    var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
 
 
-            try
-            {
-                if (!userIsAdmin)
-                {
-                    throw new InvalidOperationException("You are not admin!");
-                }
+        //    try
+        //    {
+        //        if (!userIsAdmin)
+        //        {
+        //            throw new InvalidOperationException("You are not admin!");
+        //        }
 
-                SchoolManageViewModel? model = await schoolService.GetSchoolManageViewModelBySchoolIdAsync(schoolId);
-                ViewBag.Message = message;
-                ViewBag.ClassOfMessage = classOfMessage;
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("AccessDenied", "Account", new { msg = ex.Message });
-            }
+        //        SchoolManageViewModel? model = await schoolService.GetSchoolManageViewModelBySchoolIdAsync(schoolId);
+        //        ViewBag.Message = message;
+        //        ViewBag.ClassOfMessage = classOfMessage;
+        //        return View(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return RedirectToAction("AccessDenied", "Account", new { msg = ex.Message });
+        //    }
 
-        }
+        //}
 
-        [HttpPost]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AdminSchoolManage(SchoolManageViewModel model)
-        {
-            var userId = this.GetUserId();
-            if (userId == Guid.Empty)
-            {
-                return RedirectToAction("Login", "Account");
-            }
+        //[HttpPost]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> AdminSchoolManage(SchoolManageViewModel model)
+        //{
+        //    var userId = this.GetUserId();
+        //    if (userId == Guid.Empty)
+        //    {
+        //        return RedirectToAction("Login", "Account");
+        //    }
 
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Something went wrong");
-                return View(model);
-                //return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = "Something went wrong", classOfMessage = "text-bg-danger" });
-            }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ModelState.AddModelError("", "Something went wrong");
+        //        return View(model);
+        //        //return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = "Something went wrong", classOfMessage = "text-bg-danger" });
+        //    }
 
-            try
-            {
-                await schoolService.UpdateSchoolAsync(model, userId);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
-            }
+        //    try
+        //    {
+        //        await schoolService.UpdateSchoolAsync(model, userId);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ModelState.AddModelError("", ex.Message);
+        //        return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
+        //    }
 
-            return RedirectToAction("AdminSchoolManage", new { schoolId = model.Id, message = "Updated successfully", classOfMessage = "text-bg-success" });
-        }
+        //    return RedirectToAction("AdminSchoolManage", new { schoolId = model.Id, message = "Updated successfully", classOfMessage = "text-bg-success" });
+        //}
 
-        [HttpGet]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> DeleteAsAdmin(Guid schoolId, string message = "", string classOfMessage = "")
-        {
-            var userId = this.GetUserId();
-            var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+        //[HttpGet]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> DeleteAsAdmin(Guid schoolId, string message = "", string classOfMessage = "")
+        //{
+        //    var userId = this.GetUserId();
+        //    var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
 
-            try
-            {
-                if (!userIsAdmin)
-                {
-                    throw new InvalidOperationException("You are not admin!");
-                }
-                AdminSchoolDeleteViewModel model = await schoolService.GetAdminSchoolDeleteViewBySchoolIdAsync(schoolId);
-                ViewBag.Message = message;
-                ViewBag.ClassOfMessage = classOfMessage;
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("AccessDenied", "Account", new { msg = ex.Message });
-            }
+        //    try
+        //    {
+        //        if (!userIsAdmin)
+        //        {
+        //            throw new InvalidOperationException("You are not admin!");
+        //        }
+        //        AdminSchoolDeleteViewModel model = await schoolService.GetAdminSchoolDeleteViewBySchoolIdAsync(schoolId);
+        //        ViewBag.Message = message;
+        //        ViewBag.ClassOfMessage = classOfMessage;
+        //        return View(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return RedirectToAction("AccessDenied", "Account", new { msg = ex.Message });
+        //    }
 
-        }
+        //}
 
-        [HttpPost]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> DeleteAsAdmin(AdminSchoolDeleteViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Something went wrong");
-                return View(model);
-                //return RedirectToAction("DeleteAsAdmin", "School", new {schoolId = model.Id, message = "Something went wrong", classOfMessage = "text-bg-danger" });
-            }
+        //[HttpPost]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> DeleteAsAdmin(AdminSchoolDeleteViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ModelState.AddModelError("", "Something went wrong");
+        //        return View(model);
+        //        //return RedirectToAction("DeleteAsAdmin", "School", new {schoolId = model.Id, message = "Something went wrong", classOfMessage = "text-bg-danger" });
+        //    }
 
-            try
-            {
-                var userId = GetUserId();
-                var user = await userManager.FindByIdAsync(userId.ToString());
-                if (user is null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-                var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
-                if (!correctPassword)
-                {
-                    return RedirectToAction("DeleteAsAdmin", "School", new { schoolId = model.Id, message = "Wrong Password", classOfMessage = "text-bg-danger" });
-                }
-                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
-                if (!isAdmin)
-                {
-                    return RedirectToAction("Manage", "Account", new { message = "You are not Admin", classOfMessage = "text-bg-danger" });
-                }
+        //    try
+        //    {
+        //        var userId = GetUserId();
+        //        var user = await userManager.FindByIdAsync(userId.ToString());
+        //        if (user is null)
+        //        {
+        //            return RedirectToAction("Login", "Account");
+        //        }
+        //        var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
+        //        if (!correctPassword)
+        //        {
+        //            return RedirectToAction("DeleteAsAdmin", "School", new { schoolId = model.Id, message = "Wrong Password", classOfMessage = "text-bg-danger" });
+        //        }
+        //        var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+        //        if (!isAdmin)
+        //        {
+        //            return RedirectToAction("Manage", "Account", new { message = "You are not Admin", classOfMessage = "text-bg-danger" });
+        //        }
 
-                var school = await schoolService.GetSchoolByIdAsync(model.Id);
-                if (school is null)
-                {
-                    return RedirectToAction("AdminPanel", "Account", new { message = $"There's no school with Id: {model.Id}", classOfMessage = "text-bg-danger" });
-                }
+        //        var school = await schoolService.GetSchoolByIdAsync(model.Id);
+        //        if (school is null)
+        //        {
+        //            return RedirectToAction("AdminPanel", "Account", new { message = $"There's no school with Id: {model.Id}", classOfMessage = "text-bg-danger" });
+        //        }
 
-                await schoolService.DeleteSchoolAsync(school.Id);
-                await signInManager.RefreshSignInAsync(user);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
-            }
+        //        await schoolService.DeleteSchoolAsync(school.Id);
+        //        await signInManager.RefreshSignInAsync(user);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
+        //    }
 
-            return RedirectToAction("AdminPanel", "Account", new { message = $"{model.Name} Deleted successfully!", classOfMessage = "text-bg-success" });
-        }
+        //    return RedirectToAction("AdminPanel", "Account", new { message = $"{model.Name} Deleted successfully!", classOfMessage = "text-bg-success" });
+        //}
     }
 }
 

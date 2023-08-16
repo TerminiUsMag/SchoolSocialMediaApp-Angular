@@ -388,148 +388,148 @@ namespace SchoolSocialMediaApp.Controllers
             return RedirectToAction("Index", "Home", new { message = "You have successfully unsigned from your school!", classOfMessage = "text-bg-success" });
         }
 
-        [HttpGet]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AdminPanel(string message = "", string classOfMessage = "")
-        {
-            try
-            {
-                var userId = this.GetUserId();
-                AdminPanelViewModel model = await accountService.GetAdminPanelViewModel(userId);
-                ViewBag.Message = message;
-                ViewBag.ClassOfMessage = classOfMessage;
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
-            }
-        }
+        //[HttpGet]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> AdminPanel(string message = "", string classOfMessage = "")
+        //{
+        //    try
+        //    {
+        //        var userId = this.GetUserId();
+        //        AdminPanelViewModel model = await accountService.GetAdminPanelViewModel(userId);
+        //        ViewBag.Message = message;
+        //        ViewBag.ClassOfMessage = classOfMessage;
+        //        return View(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+        //    }
+        //}
 
-        [HttpGet]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> DeleteUser(Guid id, string message = "", string classOfMessage = "")
-        {
-            var userId = this.GetUserId();
+        //[HttpGet]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> DeleteUser(Guid id, string message = "", string classOfMessage = "")
+        //{
+        //    var userId = this.GetUserId();
 
-            if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
-            {
-                return RedirectToAction("AccessDenied", new { msg = "You are not authorized to delete users" });
-            }
+        //    if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
+        //    {
+        //        return RedirectToAction("AccessDenied", new { msg = "You are not authorized to delete users" });
+        //    }
 
-            AdminUserDeletionViewModel model = await accountService.GetAdminUserDeletionViewModelAsync(id);
+        //    AdminUserDeletionViewModel model = await accountService.GetAdminUserDeletionViewModelAsync(id);
 
-            ViewBag.Message = message;
-            ViewBag.ClassOfMessage = classOfMessage;
+        //    ViewBag.Message = message;
+        //    ViewBag.ClassOfMessage = classOfMessage;
 
-            return View(model);
-        }
+        //    return View(model);
+        //}
 
-        [HttpPost]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> DeleteUser(AdminUserDeletionViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Something went wrong!");
-                return View(model);
-            }
-
-
-            try
-            {
-                var userId = GetUserId();
-                var user = await userManager.FindByIdAsync(userId.ToString());
-                if (user is null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-                var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
-                if (!correctPassword)
-                {
-                    return RedirectToAction("AdminPanel", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
-                }
-                if (await roleService.UserIsInRoleAsync(model.Id.ToString(), "Principal"))
-                {
-                    return RedirectToAction("AdminPanel", "Account", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
-                }
-                if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
-                {
-                    return RedirectToAction("Index", "Home", new { message = "You are not authorized to delete accounts :) !", classOfMessage = "text-bg-danger" });
-                }
-                var userToDelete = await userManager.FindByIdAsync(model.Id.ToString());
-                await userManager.DeleteAsync(userToDelete);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("AdminPanel", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
-            }
-
-            return RedirectToAction("AdminPanel", "Account", new { message = "Successfully deleted account !", classOfMessage = "text-bg-success" });
-        }
-
-        [HttpGet]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> MakeAdmin(Guid id, string message = "", string classOfMessage = "")
-        {
-            var userId = this.GetUserId();
-
-            if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
-            {
-                return RedirectToAction("AccessDenied", new { msg = "You are not authorized to delete users" });
-            }
-
-            MakeUserAdminViewModel model = await accountService.GetMakeUserAdminViewModelAsync(id);
-
-            ViewBag.Message = message;
-            ViewBag.ClassOfMessage = classOfMessage;
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> MakeAdmin(MakeUserAdminViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Something went wrong!");
-                return View(model);
-            }
+        //[HttpPost]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> DeleteUser(AdminUserDeletionViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ModelState.AddModelError("", "Something went wrong!");
+        //        return View(model);
+        //    }
 
 
-            try
-            {
-                var userId = GetUserId();
-                var user = await userManager.FindByIdAsync(userId.ToString());
-                if (user is null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-                var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
-                if (!correctPassword)
-                {
-                    return RedirectToAction("AdminPanel", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
-                }
-                if (await roleService.UserIsInRoleAsync(model.Id.ToString(), "Principal"))
-                {
-                    return RedirectToAction("AdminPanel", "Account", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
-                }
-                if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
-                {
-                    return RedirectToAction("Index", "Home", new { message = "You are not authorized to give admin permissions :) !", classOfMessage = "text-bg-danger" });
-                }
-                var userToMakeAdmin = await userManager.FindByIdAsync(model.Id.ToString());
-                await accountService.MakeAdmin(userToMakeAdmin);
-                await signInManager.RefreshSignInAsync(user);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("AdminPanel", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
-            }
+        //    try
+        //    {
+        //        var userId = GetUserId();
+        //        var user = await userManager.FindByIdAsync(userId.ToString());
+        //        if (user is null)
+        //        {
+        //            return RedirectToAction("Login", "Account");
+        //        }
+        //        var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
+        //        if (!correctPassword)
+        //        {
+        //            return RedirectToAction("AdminPanel", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
+        //        }
+        //        if (await roleService.UserIsInRoleAsync(model.Id.ToString(), "Principal"))
+        //        {
+        //            return RedirectToAction("AdminPanel", "Account", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
+        //        }
+        //        if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
+        //        {
+        //            return RedirectToAction("Index", "Home", new { message = "You are not authorized to delete accounts :) !", classOfMessage = "text-bg-danger" });
+        //        }
+        //        var userToDelete = await userManager.FindByIdAsync(model.Id.ToString());
+        //        await userManager.DeleteAsync(userToDelete);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return RedirectToAction("AdminPanel", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+        //    }
 
-            return RedirectToAction("AdminPanel", "Account", new { message = "Successfully given administrator permissions !", classOfMessage = "text-bg-success" });
-        }
+        //    return RedirectToAction("AdminPanel", "Account", new { message = "Successfully deleted account !", classOfMessage = "text-bg-success" });
+        //}
+
+        //[HttpGet]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> MakeAdmin(Guid id, string message = "", string classOfMessage = "")
+        //{
+        //    var userId = this.GetUserId();
+
+        //    if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
+        //    {
+        //        return RedirectToAction("AccessDenied", new { msg = "You are not authorized to delete users" });
+        //    }
+
+        //    MakeUserAdminViewModel model = await accountService.GetMakeUserAdminViewModelAsync(id);
+
+        //    ViewBag.Message = message;
+        //    ViewBag.ClassOfMessage = classOfMessage;
+
+        //    return View(model);
+        //}
+
+        //[HttpPost]
+        //[Authorize(Policy = "Admin")]
+        //public async Task<IActionResult> MakeAdmin(MakeUserAdminViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ModelState.AddModelError("", "Something went wrong!");
+        //        return View(model);
+        //    }
+
+
+        //    try
+        //    {
+        //        var userId = GetUserId();
+        //        var user = await userManager.FindByIdAsync(userId.ToString());
+        //        if (user is null)
+        //        {
+        //            return RedirectToAction("Login", "Account");
+        //        }
+        //        var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
+        //        if (!correctPassword)
+        //        {
+        //            return RedirectToAction("AdminPanel", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
+        //        }
+        //        if (await roleService.UserIsInRoleAsync(model.Id.ToString(), "Principal"))
+        //        {
+        //            return RedirectToAction("AdminPanel", "Account", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
+        //        }
+        //        if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
+        //        {
+        //            return RedirectToAction("Index", "Home", new { message = "You are not authorized to give admin permissions :) !", classOfMessage = "text-bg-danger" });
+        //        }
+        //        var userToMakeAdmin = await userManager.FindByIdAsync(model.Id.ToString());
+        //        await accountService.MakeAdmin(userToMakeAdmin);
+        //        await signInManager.RefreshSignInAsync(user);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return RedirectToAction("AdminPanel", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+        //    }
+
+        //    return RedirectToAction("AdminPanel", "Account", new { message = "Successfully given administrator permissions !", classOfMessage = "text-bg-success" });
+        //}
 
     }
 }
