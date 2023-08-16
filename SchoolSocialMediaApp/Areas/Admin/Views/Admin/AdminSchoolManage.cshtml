@@ -73,7 +73,7 @@ else
                             <td>@teacher.FirstName @teacher.LastName </td>
                             <td>@teacher.Email</td>
                             <td>
-                                <form asp-area="Admin" asp-controller="Admin" asp-action="Remove" method="post">
+                                <form asp-area="" asp-area="Admin" asp-controller="Admin" asp-action="Remove" method="post">
                                     <input type="hidden" name="schoolId" value="@teacher.SchoolId" />
                                     <input type="hidden" name="userId" value="@teacher.Id" />
                                     <button type="submit" class="btn btn-primary">Remove from school</button>
@@ -110,7 +110,7 @@ else
                             <td>@parent.FirstName @parent.LastName </td>
                             <td>@parent.Email</td>
                             <td>
-                                <form asp-controller="School" asp-action="Remove" method="post">
+                                <form asp-area="" asp-controller="School" asp-action="Remove" method="post">
                                     <input type="hidden" name="schoolId" value="@parent.SchoolId" />
                                     <input type="hidden" name="userId" value="@parent.Id" />
                                     <button type="submit" class="btn btn-primary">Remove from school</button>
@@ -147,7 +147,7 @@ else
                             <td>@student.FirstName @student.LastName </td>
                             <td>@student.Email</td>
                             <td>
-                                <form asp-controller="School" asp-action="Remove" method="post">
+                                <form asp-area="" asp-controller="School" asp-action="Remove" method="post">
                                     <input type="hidden" name="schoolId" value="@student.SchoolId" />
                                     <input type="hidden" name="userId" value="@student.Id" />
                                     <button type="submit" class="btn btn-primary">Remove from school</button>

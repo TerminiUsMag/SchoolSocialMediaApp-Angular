@@ -21,7 +21,7 @@
     </div>
     <button class="btn btn-danger col-md-3">Delete</button>
 </form>
-<a class="btn btn-success col align-self-md-center" asp-controller="School" asp-action="AdminSchoolManage" asp-route-schoolId="@Model.Id">Cancel</a>
+<a class="btn btn-success col align-self-md-center" asp-area="Admin" asp-controller="Admin" asp-action="AdminSchoolManage" asp-route-schoolId="@Model.Id">Cancel</a>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
