@@ -34,10 +34,18 @@
                     <label asp-for="Description"></label>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
-                <div class="form-floating">
-                    <input asp-for="Location" class="form-control" placeholder="Enter school's location" aria-required="true" />
-                    <label asp-for="Location"></label>
-                    <span asp-validation-for="Location" class="text-danger"></span>
+                <div class="form-group">
+
+                    <div class="form-floating input-group ">
+                        <input id="Location" asp-for="Location" class="form-control" placeholder="Enter school's location" aria-required="true" />
+                        <label asp-for="Location"></label>
+                        <button id="getLocationButton" type="button" class="btn btn-secondary input-group-text">
+                            <i class="fa-sharp fa-solid fa-location-dot"></i>
+                        </button>
+                        <div class="container-fluid">
+                            <span asp-validation-for="Location" class="input-group-sm text-danger"></span>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <p></p>
@@ -52,3 +60,43 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+<style>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            console.log("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                var address = response.display_name;
+                var locationInput = document.getElementById("Location");
+                locationInput.value = address;
+            }
+        };
+        xhr.send();
+    }
+
+    // Call the getLocation function when the button is clicked
+    document.getElementById("getLocationButton").addEventListener("click", function () {
+        getLocation();
+    });
+</script>
+
