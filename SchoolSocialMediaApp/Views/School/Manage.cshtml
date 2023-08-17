@@ -23,9 +23,16 @@ else
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Location">Location</label>
-            <input asp-for="Location" type="text" class="form-control" value="@Model.Location">
-            <span asp-validation-for="Location" class="text-danger"></span>
+            <label asp-for="Location"></label>
+            <div class="input-group ">
+                <input id="Location" asp-for="Location" class="form-control" placeholder="Enter school's location" aria-required="true" />
+                <button id="getLocationButton" type="button" class="btn btn-secondary input-group-text">
+                    <i class="fa-sharp fa-solid fa-location-dot"></i>
+                </button>
+                <div class="container-fluid">
+                    <span asp-validation-for="Location" class="input-group-sm text-danger"></span>
+                </div>
+            </div>
         </div>
         <div class="form-group">
             <label asp-for="Principal">School's Principal'</label>
@@ -38,10 +45,10 @@ else
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <input asp-for="Id" type="hidden" name="id" value="@Model.Id">
-        <input asp-for="ImageUrl"  type="hidden" value="@Model.ImageUrl">
+        <input asp-for="ImageUrl" type="hidden" value="@Model.ImageUrl">
         <div class="form-group">
             <label asp-for="ImageFile">Upload New Profile Picture( Only .jpg and .png are accepted! )</label>
-            <input asp-for="ImageFile" type="file" class="form-control" >
+            <input asp-for="ImageFile" type="file" class="form-control">
             <span asp-validation-for="ImageFile" class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -188,3 +195,35 @@ else
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            console.log("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                var address = response.display_name;
+                var locationInput = document.getElementById("Location");
+                locationInput.value = address;
+            }
+        };
+        xhr.send();
+    }
+
+    // Call the getLocation function when the button is clicked
+    document.getElementById("getLocationButton").addEventListener("click", function () {
+        getLocation();
+    });
+</script>
