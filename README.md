@@ -27,12 +27,16 @@ Seeded users login information:
  
 Main Functionalities:
 <ol>
+  <li>Not registered users have access to registered schools page.</li>
+  <li>Registered schools page has seach by name functionality.</li>
   <li>Users Login and Register.</li>
   <li>After registration you can register your school (You become the "principal" of the school).</li>
+  <li>When registering your school you have the option to use your current location for the school's location field.</li>
   <li>The Principal can send invitations to Non-Principal users to be teachers, parents or students in his school.</li>
   <li>Invited Users receive the principal's invitation and can choose to accept or decline the invitation.</li>
   <li>At any time the user can quit the school he is part of.</li>
   <li>As a part of school you have access to all posts related to the school you are part of.</li>
+  <li>Pagination for school's posts page.</li>
   <li>As a part of school you can like and comment each post related to your school.</li>
   <li>If you are the creator of a post you can edit and delete it.</li>
   <li>If you are the principal of a school you can edit and delete every post related to the school.</li>
