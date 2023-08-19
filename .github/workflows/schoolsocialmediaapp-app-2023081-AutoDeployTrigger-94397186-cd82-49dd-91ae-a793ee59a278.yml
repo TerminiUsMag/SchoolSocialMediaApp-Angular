@@ -1,0 +1,42 @@
+name: Trigger auto deployment for schoolsocialmediaapp-app-2023081
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ master ]
+    paths:
+    - '**'
+    - '.github/workflows/schoolsocialmediaapp-app-2023081-AutoDeployTrigger-94397186-cd82-49dd-91ae-a793ee59a278.yml'
+
+  # Allow mannually trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SCHOOLSOCIALMEDIAAPPAPP2023081_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: schoolsocialmediaapp20230819125032.azurecr.io
+          registryUsername: ${{ secrets.SCHOOLSOCIALMEDIAAPPAPP2023081_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.SCHOOLSOCIALMEDIAAPPAPP2023081_REGISTRY_PASSWORD }}
+          containerAppName: schoolsocialmediaapp-app-2023081
+          resourceGroup: schoolsocialmediaapp-app-2023081ResourceGroup
+          imageToBuild: schoolsocialmediaapp20230819125032.azurecr.io/schoolsocialmediaapp-app-2023081:${{ github.sha }}
+          
+
+     
+
