@@ -54,7 +54,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
 
             if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
             {
-                return RedirectToAction("AccessDenied", new { msg = "You are not authorized to delete users" });
+                return RedirectToAction("AccessDenied","Account", new { msg = "You are not authorized to delete users" });
             }
 
             AdminUserDeletionViewModel model = await accountService.GetAdminUserDeletionViewModelAsync(id);
@@ -88,25 +88,26 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
                 var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
                 if (!correctPassword)
                 {
-                    return RedirectToAction("AdminPanel", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
+                    return RedirectToAction("AdminPanel", "Admin", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
                 }
                 if (await roleService.UserIsInRoleAsync(model.Id.ToString(), "Principal"))
                 {
-                    return RedirectToAction("AdminPanel", "Account", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
+                    return RedirectToAction("AdminPanel", "Admin", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
                 }
                 if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
                 {
                     return RedirectToAction("Index", "Home", new { message = "You are not authorized to delete accounts :) !", classOfMessage = "text-bg-danger" });
                 }
                 var userToDelete = await userManager.FindByIdAsync(model.Id.ToString());
-                await userManager.DeleteAsync(userToDelete);
+                await accountService.DeleteAsync(userToDelete.Id);
+                await signInManager.RefreshSignInAsync(user);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("AdminPanel", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+                return RedirectToAction("AdminPanel", "Admin", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
 
-            return RedirectToAction("AdminPanel", "Account", new { message = "Successfully deleted account !", classOfMessage = "text-bg-success" });
+            return RedirectToAction("AdminPanel", "Admin", new { message = "Successfully deleted account !", classOfMessage = "text-bg-success" });
         }
 
         [HttpGet]
@@ -118,7 +119,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
 
             if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
             {
-                return RedirectToAction("AccessDenied", new { msg = "You are not authorized to delete users" });
+                return RedirectToAction("AccessDenied", "Account", new { msg = "You are not authorized to delete users" });
             }
 
             MakeUserAdminViewModel model = await accountService.GetMakeUserAdminViewModelAsync(id);
@@ -152,11 +153,11 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
                 var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
                 if (!correctPassword)
                 {
-                    return RedirectToAction("AdminPanel", "Account", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
+                    return RedirectToAction("AdminPanel", "Admin", new { message = "Wrong Password", classOfMessage = "text-bg-danger" });
                 }
                 if (await roleService.UserIsInRoleAsync(model.Id.ToString(), "Principal"))
                 {
-                    return RedirectToAction("AdminPanel", "Account", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
+                    return RedirectToAction("AdminPanel", "Admin", new { message = "Delete school first", classOfMessage = "text-bg-danger" });
                 }
                 if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
                 {
@@ -168,10 +169,10 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("AdminPanel", "Account", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+                return RedirectToAction("AdminPanel", "Admin", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
 
-            return RedirectToAction("AdminPanel", "Account", new { message = "Successfully given administrator permissions !", classOfMessage = "text-bg-success" });
+            return RedirectToAction("AdminPanel", "Admin", new { message = "Successfully given administrator permissions !", classOfMessage = "text-bg-success" });
         }
 
 
@@ -230,10 +231,10 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
+                return RedirectToAction("AdminSchoolManage", "Admin", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
             }
 
-            return RedirectToAction("AdminSchoolManage", new { schoolId = model.Id, message = "Updated successfully", classOfMessage = "text-bg-success" });
+            return RedirectToAction("AdminSchoolManage", "Admin", new { schoolId = model.Id, message = "Updated successfully", classOfMessage = "text-bg-success" });
         }
 
         [HttpGet]
@@ -285,7 +286,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
                 var correctPassword = await userManager.CheckPasswordAsync(user, model.Password);
                 if (!correctPassword)
                 {
-                    return RedirectToAction("DeleteAsAdmin", "School", new { schoolId = model.Id, message = "Wrong Password", classOfMessage = "text-bg-danger" });
+                    return RedirectToAction("DeleteAsAdmin", "Admin", new { schoolId = model.Id, message = "Wrong Password", classOfMessage = "text-bg-danger" });
                 }
                 var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
                 if (!isAdmin)
@@ -296,7 +297,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
                 var school = await schoolService.GetSchoolByIdAsync(model.Id);
                 if (school is null)
                 {
-                    return RedirectToAction("AdminPanel", "Account", new { message = $"There's no school with Id: {model.Id}", classOfMessage = "text-bg-danger" });
+                    return RedirectToAction("AdminPanel", "Admin", new { message = $"There's no school with Id: {model.Id}", classOfMessage = "text-bg-danger" });
                 }
 
                 await schoolService.DeleteSchoolAsync(school.Id);
@@ -304,10 +305,10 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("AdminSchoolManage", "School", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
+                return RedirectToAction("AdminSchoolManage", "Admin", new { schoolId = model.Id, message = ex.Message, classOfMessage = "text-bg-danger" });
             }
 
-            return RedirectToAction("AdminPanel", "Account", new { message = $"{model.Name} Deleted successfully!", classOfMessage = "text-bg-success" });
+            return RedirectToAction("AdminPanel", "Admin", new { message = $"{model.Name} Deleted successfully!", classOfMessage = "text-bg-success" });
         }
     }
 }

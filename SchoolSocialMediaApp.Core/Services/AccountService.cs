@@ -117,7 +117,7 @@ namespace SchoolSocialMediaApp.Core.Services
             var posts = await repo.All<Post>().ToListAsync();
             var users = await repo.All<ApplicationUser>().Where(u => u.Id != userId && u.IsAdmin == false).ToListAsync();
             var admins = await repo.All<ApplicationUser>().Where(u => u.Id != userId && u.IsAdmin == true).ToListAsync();
-            var schools = await repo.All<School>().Select(s => new SchoolManageViewModel
+            var schools = await repo.All<School>().Include(s=>s.Principal).Select(s => new SchoolManageViewModel
             {
                 Description = s.Description,
                 Id = s.Id,
