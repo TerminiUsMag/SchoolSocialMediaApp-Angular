@@ -5,6 +5,7 @@ using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.School;
 using SchoolSocialMediaApp.ViewModels.Models.User;
+using X.PagedList;
 
 namespace SchoolSocialMediaApp.Areas.Admin.Controllers
 {
@@ -15,14 +16,16 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
         private readonly IAccountService accountService;
         private readonly IRoleService roleService;
         private readonly ISchoolService schoolService;
+        private readonly IPostService postService;
 
-        public AdminController(IAccountService _accountService, UserManager<ApplicationUser> _userManager, IRoleService _roleService, ISchoolService _schoolService, SignInManager<ApplicationUser> _signInManager)
+        public AdminController(SignInManager<ApplicationUser> _signInManager, UserManager<ApplicationUser> _userManager, IRoleService _roleService, ISchoolService _schoolService, IAccountService _accountService, IPostService _postService)
         {
             this.accountService = _accountService;
             this.userManager = _userManager;
             this.roleService = _roleService;
             this.schoolService = _schoolService;
             this.signInManager = _signInManager;
+            this.postService = _postService;
         }
 
 
@@ -54,7 +57,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
 
             if (!await roleService.UserIsInRoleAsync(userId.ToString(), "Admin"))
             {
-                return RedirectToAction("AccessDenied","Account", new { msg = "You are not authorized to delete users" });
+                return RedirectToAction("AccessDenied", "Account", new { msg = "You are not authorized to delete users" });
             }
 
             AdminUserDeletionViewModel model = await accountService.GetAdminUserDeletionViewModelAsync(id);
@@ -309,6 +312,28 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             }
 
             return RedirectToAction("AdminPanel", "Admin", new { message = $"{model.Name} Deleted successfully!", classOfMessage = "text-bg-success" });
+        }
+
+        //PostController Actions
+
+        [HttpGet]
+        [Area("Admin")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> AdminPostView(Guid schoolId, int? page, string message = "", string classOfMessage = "")
+        {
+            var userId = this.GetUserId();
+            var model = await postService.GetAllPostsAsync(schoolId, userId);
+            var school = await schoolService.GetSchoolByIdAsync(schoolId);
+            var schoolName = school.Name;
+            ViewBag.SchoolName = schoolName;
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
+            ViewBag.SchoolId = schoolId;
+            int pageSize = 3;
+            int pageNumber = page ?? 1;
+            var pagedPosts = model.ToPagedList(pageNumber, pageSize);
+
+            return View(pagedPosts);
         }
     }
 }

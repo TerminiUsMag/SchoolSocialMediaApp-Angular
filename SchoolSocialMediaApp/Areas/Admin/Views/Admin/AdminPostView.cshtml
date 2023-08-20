@@ -1,0 +1,349 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using SchoolSocialMediaApp.Infrastructure.Data.Models;
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common;
+
+@inject UserManager<ApplicationUser> UserManager;
+
+@model X.PagedList.IPagedList<PostViewModel>;
+@{
+    ViewData["Title"] = $"Posts Index for {ViewBag.SchoolName}";
+    var user = await UserManager.GetUserAsync(User);
+    var userId = user.Id;
+    var isPrincipal = await UserManager.IsInRoleAsync(user, "Principal");
+    var isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+}
+
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
+<h1>@ViewData["Title"]  <i class="fa-sharp fa-solid fa-pen-to-square"></i></h1>
+
+@if (Model is not null)
+{
+    if (!isAdmin)
+    {
+        <a class="btn btn-success mb-4" asp-controller="Post" asp-action="Create">Create New Post</a>
+    }
+    @if (Model.Count > 0)
+    {
+        foreach (var post in Model)
+        {
+            <div class="container mt-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex align-items-center">
+                                    <img src="@post.Creator.ImageUrl" alt="Profile Picture" class="rounded-circle mr-3" style="width: 40px; height: 40px;">
+                                    <h5 class="mb-0 m-2">@post.Creator.Username</h5>
+                                    @if (userId == post.CreatorId || isAdmin || isPrincipal)
+                                    {
+                                        <div class="col-md-5">
+                                        </div>
+                                        <div class="container-fluid mb-0">
+                                            <a asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id" class="btn btn-success mr-2">Edit</a>
+                                            <a data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeletePostId('@post.Id')" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">@post.Content</p>
+                                <div>
+                                    <p class="card-text text-muted">
+                                        @if (post.IsEdited)
+                                        {
+                                            <span>Posted on @post.CreatedOn <i class="fa-solid fa-pen"></i> </span>
+                                        }
+                                        else
+                                        {
+                                            <span>Posted on @post.CreatedOn</span>
+                                        }
+                                    </p>
+
+                                </div>
+                                <p class="card-text text-muted">Likes: <span class="likes-count">@post.Likes.Count()</span></p>
+                                @if (post.IsLikedByCurrentUser)
+                                {
+                                    <button style="border:none; background:none" class=" mr-2 like-button" data-post-id="@post.Id" data-liked="true"> <i class="fa-solid fa-heart fa-2xl" style="color: #ff0000;"></i></button>
+                                }
+                                else
+                                {
+                                    <button style="border:none; background:none" class=" mr-2 like-button" data-post-id="@post.Id" data-liked="false"> <i class="fa-regular fa-heart fa-2xl" style="color: #ff0000;"></i></button>
+                                }
+                                <button style="border:none; background:none" class="mr-2 comment-button" data-visible="false"><i class="fa-regular fa-comment fa-2xl"></i></button>
+                                <form class="comment-form mb-2 mt-3" style="display:none">
+                                    <input type="hidden" class="post-id" value="@post.Id" />
+                                    <textarea class="comment-text container rounded-pill scrollable-content" style="padding:15px;background:white" rows="2" placeholder="Write your comment here" required></textarea>
+                                    <button type="submit" class="btn btn-secondary">Comment</button>
+                                </form>
+
+                                <div class="comments-container mt-4 scrollable-content rounded-5 " style="background: #c4c4c4;">
+                                    @Html.Partial("_CommentsPartial", post.Comments)
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center">
+                @Html.PagedListPager(Model, page => Url.Action("AdminPostView", new { page, schoolId = ViewBag.SchoolId }), new PagedListRenderOptions
+        {
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        LinkToFirstPageFormat = "<<",
+        LinkToLastPageFormat = ">>",
+        LinkToPreviousPageFormat = "<",
+        LinkToNextPageFormat = ">",
+        DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+        MaximumPageNumbersToDisplay = 5,
+        EllipsesFormat = "...",
+        ContainerDivClasses = new[] { "pagination-container" },
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+        })
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>No posts to display.</p>
+    }
+}
+else
+{
+    <p class="badge text-bg-danger">You are not registered in any school</p>
+}
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this post?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deletePostForm" method="post" asp-action="Delete" asp-controller="Post">
+                    <input id="deletePostId" name="id" type="hidden" value="" />
+                    <input id="deleteSchoolId" name="schoolId" type="hidden" value="" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pagination-container {
+        margin-top: 20px;
+    }
+
+    /* Pagination UL styles */
+    .pagination {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Pagination LI styles */
+    .page-item {
+        display: inline;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    /* Pagination link styles */
+    .page-link {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 2px;
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+        .page-link:hover {
+            background-color: #ddd;
+        }
+
+    /* Active page link styles */
+    .page-item.active .page-link {
+        background-color: #337ab7;
+        border-color: #337ab7;
+        color: #fff;
+    }
+
+    /* Disabled page link styles */
+    .page-item.disabled .page-link {
+        background-color: #f5f5f5;
+        border-color: #ddd;
+        color: #ccc;
+        cursor: not-allowed;
+    }
+</style>
+
+<style>
+    .scrollable-content {
+        padding: 15px;
+        max-height: 200px;
+        overflow-y: scroll;
+    }
+
+        .scrollable-content::-webkit-scrollbar {
+            width: 0.001em;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: #c4c4c4;
+        }
+</style>
+
+
+<script>
+    function setDeletePostId(postId) {
+        document.getElementById("deletePostId").value = postId;
+    }
+</script>
+<script>
+    //comment form visibility button
+    $(document).ready(function () {
+        $(".comment-button").click(function () {
+            var commentForm = $(this).closest(".card").find(".comment-form");
+            commentForm.toggle();
+
+            var isVisible = commentForm.is(":visible");
+            var iconClass = isVisible ? "fa-solid fa-comment" : "fa-comment";
+            $(this).find("i").removeClass("fa-comment fa-solid").addClass(iconClass);
+        });
+    });
+</script>
+<script>
+    //like/unlike button
+    $(document).ready(function () {
+        $(".like-button").click(function () {
+            var postId = $(this).data("post-id");
+            var liked = $(this).data("liked");
+
+            $.ajax({
+                type: "POST",
+                url: "/Post/Like",
+                data: { postId: postId, liked: liked },
+                success: function (response) {
+                    if (response.success) {
+                        var likeButton = $(".like-button[data-post-id='" + postId + "']");
+                        var likesCountElement = likeButton.closest(".card-body").find(".likes-count");
+
+                        if (liked) {
+                            likeButton.html(' <i class="fa-regular fa-heart fa-2xl" style="color: #ff0000;"></i>');
+                            likesCountElement.text(parseInt(likesCountElement.text()) - 1);
+                        } else {
+                            likeButton.html(' <i class="fa-solid fa-heart fa-2xl" style="color: #ff0000;"></i>');
+                            likesCountElement.text(parseInt(likesCountElement.text()) + 1);
+                        }
+
+                        likeButton.data("liked", !liked);
+                    } else {
+                        console.log("Failed to like/dislike the post.");
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error: " + errorThrown);
+                }
+            });
+        });
+    });
+</script>
+<script>
+    // Comment button
+    $(document).ready(function () {
+        $(".comment-form").submit(function (event) {
+            event.preventDefault();
+            var form = $(this);
+            var postId = form.find(".post-id").val();
+            var commentText = form.find(".comment-text").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/Post/AddComment",
+                data: { postId: postId, commentText: commentText },
+                success: function (response) {
+                    // Clear the comment text area
+                    form.find(".comment-text").val("");
+
+                    // Fetch the updated comments for the specific post
+                    $.ajax({
+                        type: "GET",
+                        url: "/Post/GetComments",
+                        data: { postId: postId },
+                        success: function (commentsResponse) {
+                            // Replace the content of the comments container with the updated comments
+                            form.siblings(".comments-container").html(commentsResponse);
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error fetching comments: " + errorThrown);
+                        }
+                    });
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log("Error adding comment: " + errorThrown);
+                }
+            });
+        });
+    });
+</script>
+<script>
+
+    // JavaScript code to handle comment deletion
+    $(document).on("click", ".comment-delete", function () {
+        var commentId = $(this).data("comment-id");
+
+        // Get the postId from the nearest form element or any other element that contains the postId data attribute.
+        var postId = $(this).data("post-id");
+
+        $.ajax({
+            type: "POST",
+            url: "/Post/CommentDelete",
+            data: { commentId: commentId },
+            success: function (response) {
+                // If deletion is successful, remove the deleted comment element from the DOM
+                if (response.success) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Post/GetComments",
+                        data: { postId: postId },
+                        success: function (commentsResponse) {
+                            // Replace the content of the comments container with the updated comments
+                            $(".comments-container").html(commentsResponse);
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error fetching comments: " + errorThrown);
+                        }
+                    });
+                } else {
+                    console.log("Failed to delete the comment.");
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log("Error: " + errorThrown);
+            }
+        });
+    });
+</script>

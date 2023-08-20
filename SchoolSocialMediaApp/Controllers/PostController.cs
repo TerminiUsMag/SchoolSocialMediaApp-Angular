@@ -208,19 +208,5 @@ namespace SchoolSocialMediaApp.Controllers
                 return Json(new { success = false, error = ex.Message });
             }
         }
-
-        [HttpGet]
-        public async Task<IActionResult> AdminPostView(Guid schoolId, string message = "", string classOfMessage = "")
-        {
-            var userId = this.GetUserId();
-            var model = await postService.GetAllPostsAsync(schoolId, userId);
-            var school = await schoolService.GetSchoolByIdAsync(schoolId);
-            var schoolName = school.Name;
-            ViewBag.SchoolName = schoolName;
-            ViewBag.Message = message;
-            ViewBag.ClassOfMessage = classOfMessage;
-
-            return View("Index", model);
-        }
     }
 }
