@@ -56,7 +56,7 @@ Main Functionalities:
 
 <h2>Schools Page: </h2>
 
-![Screenshot (54)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/ad9d38d5-94ad-402b-b403-021d7474e1e5)
+![image](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/c66e5398-5767-49a0-801c-60b32de0558c)
 
 <h2>Manage School Page: </h2>
 
