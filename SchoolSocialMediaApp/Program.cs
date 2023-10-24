@@ -10,18 +10,21 @@ using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+// <<----- Default Connection String settings ----->>
+//string sqlServerName = Environment.GetEnvironmentVariable("SQL_SERVER_NAME");
+//string sqlDbName = Environment.GetEnvironmentVariable("SQL_DB_NAME");
+//string sqlPassword = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
+
+//// Replace the placeholder in the ConnectionStrings section
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+//    .Replace("{SQL_SERVER_NAME}", sqlServerName)
+//    .Replace("{SQL_DB_NAME}", sqlDbName)
+//    .Replace("{SQL_SERVER_PASSWORD}", sqlPassword);
+
+// <<----- Developer Connection String settings ----->>
+var connectionString = builder.Configuration.GetConnectionString("DevConnection");
 
 // Add services to the container.
-string sqlServerName = Environment.GetEnvironmentVariable("SQL_SERVER_NAME");
-string sqlDbName = Environment.GetEnvironmentVariable("SQL_DB_NAME");
-string sqlPassword = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
-
-// Replace the placeholder in the ConnectionStrings section
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    .Replace("{SQL_SERVER_NAME}", sqlServerName)
-    .Replace("{SQL_DB_NAME}", sqlDbName)
-    .Replace("{SQL_SERVER_PASSWORD}", sqlPassword);
-
 builder.Services.AddDbContext<SchoolSocialMediaDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
