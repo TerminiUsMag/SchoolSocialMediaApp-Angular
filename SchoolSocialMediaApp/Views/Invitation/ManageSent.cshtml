@@ -15,6 +15,7 @@
                     <th>Receiver</th>
                     <th>Role</th>
                     <th>Is Pending</th>
+                    <th>Sent Date & Time</th>
                     <th></th>
                 </tr>
             </thead>
@@ -26,6 +27,7 @@
                         <td>@invitation.Receiver.FirstName @invitation.Receiver.LastName</td>
                         <td>@invitation.Role</td>
                         <td>@invitation.IsPending</td>
+                        <td>@invitation.CreatedOn</td>
                         <td>
                             <form asp-controller="Invitation" asp-action="Delete" method="post">
                                 <input type="hidden" name="id" value="@invitation.Id" />

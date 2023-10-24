@@ -22,7 +22,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     .Replace("{SQL_DB_NAME}", sqlDbName)
     .Replace("{SQL_SERVER_PASSWORD}", sqlPassword);
 
-// <<----- Developer Connection String settings ----->>
+//// <<----- Developer Connection String settings ----->>
 //var connectionString = builder.Configuration.GetConnectionString("DevConnection");
 
 // Add services to the container.
