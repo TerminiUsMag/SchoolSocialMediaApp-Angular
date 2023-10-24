@@ -56,7 +56,7 @@ Main Functionalities:
 
 <h2>Schools Page: </h2>
 
-![Screenshot (54)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/ad9d38d5-94ad-402b-b403-021d7474e1e5)
+![image](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/c66e5398-5767-49a0-801c-60b32de0558c)
 
 <h2>Manage School Page: </h2>
 
@@ -81,4 +81,7 @@ Main Functionalities:
 
 <h2>Admin Panel: </h2>
 
-![Screenshot (62)](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/5dfdeb77-910a-4ac2-bd65-7524be0813b4)
+![image](https://github.com/TerminiUsMag/SchoolSocialMediaApp/assets/59938500/e434447c-b2ae-4ed8-95b4-3864a0eb24eb)
+
+
+
