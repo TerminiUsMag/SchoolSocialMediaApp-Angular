@@ -12,7 +12,16 @@ using SchoolSocialMediaApp.Infrastructure.Data.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string sqlServerName = Environment.GetEnvironmentVariable("SQL_SERVER_NAME");
+string sqlDbName = Environment.GetEnvironmentVariable("SQL_DB_NAME");
+string sqlPassword = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
+
+// Replace the placeholder in the ConnectionStrings section
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    .Replace("{SQL_SERVER_NAME}", sqlServerName)
+    .Replace("{SQL_DB_NAME}", sqlDbName)
+    .Replace("{SQL_SERVER_PASSWORD}", sqlPassword);
+
 builder.Services.AddDbContext<SchoolSocialMediaDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -30,7 +39,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
-
 
 builder.Services.AddAuthorization(options =>
 {

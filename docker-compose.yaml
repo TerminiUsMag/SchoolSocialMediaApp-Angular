@@ -1,0 +1,25 @@
+version: '3.3'
+services:
+    mssql:
+        environment:
+            - ACCEPT_EULA=Y
+            - MSSQL_SA_PASSWORD=None124578
+        container_name: sqlserver
+        network_mode: school
+        ports:
+            - '1433:1433'
+        image: 'mcr.microsoft.com/mssql/server:2022-latest'
+    schoolsocialmediaapp:
+        build:
+            dockerfile: .\SchoolSocialMediaApp\Dockerfile
+        environment:
+            - SQL_SERVER_NAME=sqlserver
+            - SQL_DB_NAME=SchoolSocialMedia_Prod
+            - SQL_SERVER_PASSWORD=None124578
+        container_name: SchoolSocialMedia
+        ports:
+            - '8080:80'
+        network_mode: school
+        image: terminiusmag/schoolsocialmediaapp
+        depends_on:
+          - mssql
