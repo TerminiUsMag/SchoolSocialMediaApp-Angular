@@ -49,6 +49,11 @@ namespace SchoolSocialMediaApp.Infrastructure
             foreach (var invitation in CreateInvitations())
             {
                 await repo.AddAsync(invitation);
+                var invitedUser = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == invitation.ReceiverId);
+                if (invitedUser is not null)
+                {
+                    invitedUser.IsInvited = true;
+                }
             }
             await repo.SaveChangesAsync();
         }
