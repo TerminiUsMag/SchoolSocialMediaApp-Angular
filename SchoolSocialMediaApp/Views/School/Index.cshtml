@@ -62,8 +62,12 @@ else
                     </div>
                     <div class="card-body text-center">
                         <h5 class="card-title">@school.Name</h5>
-                        <img class="card-img-top img" src="@school.ImageUrl" alt="School image">
-                        <p class="card-text">Location: @school.Location</p>
+                        <div class="image-container" style="height: 250px; overflow: hidden;">
+                            <img class="card-img-top img" src="@school.ImageUrl" alt="School image" style="height: 100%;">
+                        </div>
+                        <p class="card-text" style="max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            Location: @school.Location
+                        </p>
                         <a asp-controller="School" asp-action="Details" asp-route-id="@school.Id" class="btn btn-primary">Details</a>
                         @if (userIsAdmin)
                         {
