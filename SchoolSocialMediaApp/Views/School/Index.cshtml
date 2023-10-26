@@ -1,6 +1,18 @@
-﻿@model IEnumerable<SchoolViewModel>
+﻿@using Microsoft.AspNetCore.Identity;
+@using SchoolSocialMediaApp.Core.Contracts;
+@using SchoolSocialMediaApp.Infrastructure.Data.Models;
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IRoleService RoleService
+@model IEnumerable<SchoolViewModel>
+
 @{
     ViewBag.Title = "Registered Schools";
+
+    var user = await UserManager.GetUserAsync(User);
+    var userIsPartOfSchool = RoleService.IsUserPartOfSchool(await UserManager.GetUserAsync(User));
+    var userIsAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+
 }
 
 <h1>@ViewBag.Title</h1>
@@ -53,6 +65,10 @@ else
                         <img class="card-img-top img" src="@school.ImageUrl" alt="School image">
                         <p class="card-text">Location: @school.Location</p>
                         <a asp-controller="School" asp-action="Details" asp-route-id="@school.Id" class="btn btn-primary">Details</a>
+                        @if (userIsAdmin)
+                        {
+                            <a asp-area="Admin" asp-controller="Admin" asp-action="AdminPostView" asp-route-schoolId="@school.Id" class="btn btn-primary">Manage Posts</a>
+                        }
                     </div>
                 </div>
             </div>

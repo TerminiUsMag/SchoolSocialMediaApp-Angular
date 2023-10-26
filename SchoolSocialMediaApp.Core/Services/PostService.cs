@@ -82,9 +82,16 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<ICollection<PostViewModel>> GetAllPostsAsync(Guid schoolId, Guid userId)
         {
-            var posts = await repo.All<Post>().Where(p => p.SchoolId == schoolId).Include(p => p.Likes).OrderByDescending(p => p.CreatedOn).Select(p => new PostViewModel
-            {
-                Comments = p.Comments.Select(c => new CommentViewModel
+            var posts = await repo
+                .All<Post>()
+                .Where(p => p.SchoolId == schoolId)
+                .Include(p => p.Likes)
+                .OrderByDescending(p => p.CreatedOn)
+                .Select(p => new PostViewModel
+                {
+                    Comments = p.Comments
+                .OrderByDescending(c => c.CreatedOn)
+                .Select(c => new CommentViewModel
                 {
                     Id = c.Id,
                     Content = c.Content,
@@ -97,24 +104,24 @@ namespace SchoolSocialMediaApp.Core.Services
                     CreatedOn = c.CreatedOn,
                     PostId = c.PostId,
                 }).ToList(),
-                Creator = new UserViewModel
-                {
-                    Id = p.Creator.Id,
-                    ImageUrl = p.Creator.ImageUrl,
-                    Username = p.Creator.UserName
-                },
-                CreatedOn = p.CreatedOn,
-                Id = p.Id,
-                Likes = p.Likes.Select(l => new PostLikesViewModel
-                {
-                    LikerId = l.UserId,
-                    PostId = l.PostId,
-                }).ToList(),
-                Content = p.Content,
-                CreatorId = p.CreatorId,
-                IsEdited = p.IsEdited,
-                IsLikedByCurrentUser = p.Likes.Any(l => l.UserId == userId),
-            }).ToListAsync();
+                    Creator = new UserViewModel
+                    {
+                        Id = p.Creator.Id,
+                        ImageUrl = p.Creator.ImageUrl,
+                        Username = p.Creator.UserName
+                    },
+                    CreatedOn = p.CreatedOn,
+                    Id = p.Id,
+                    Likes = p.Likes.Select(l => new PostLikesViewModel
+                    {
+                        LikerId = l.UserId,
+                        PostId = l.PostId,
+                    }).ToList(),
+                    Content = p.Content,
+                    CreatorId = p.CreatorId,
+                    IsEdited = p.IsEdited,
+                    IsLikedByCurrentUser = p.Likes.Any(l => l.UserId == userId),
+                }).ToListAsync();
 
             return posts;
         }
@@ -169,7 +176,13 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<PostViewModel> GetPostByIdAsync(Guid id)
         {
-            var post = await repo.All<Post>().Where(p => p.Id == id).Include(p => p.Creator).Include(p => p.Comments).ThenInclude(p => p.Creator).FirstOrDefaultAsync();
+            var post = await repo
+                .All<Post>()
+                .Where(p => p.Id == id)
+                .Include(p => p.Creator)
+                .Include(p => p.Comments)
+                .ThenInclude(p => p.Creator)
+                .FirstOrDefaultAsync();
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
@@ -187,7 +200,9 @@ namespace SchoolSocialMediaApp.Core.Services
                     ImageUrl = post.Creator.ImageUrl,
                     Username = post.Creator.UserName
                 },
-                Comments = post.Comments.Select(c => new CommentViewModel
+                Comments = post.Comments
+                .OrderByDescending(c => c.CreatedOn)
+                .Select(c => new CommentViewModel
                 {
                     Content = c.Content,
                     CreatedOn = c.CreatedOn,
@@ -198,7 +213,8 @@ namespace SchoolSocialMediaApp.Core.Services
                         Username = c.Creator.UserName
                     }
                 }).ToList(),
-                Likes = post.Likes.Select(l => new PostLikesViewModel
+                Likes = post.Likes
+                .Select(l => new PostLikesViewModel
                 {
                     LikerId = l.UserId,
                     PostId = l.PostId,
@@ -217,7 +233,12 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("Id is empty.");
             }
 
-            var post = await repo.All<Post>().Include(p => p.Comments).Include(p=>p.School).Include(p=>p.Likes).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await repo
+                .All<Post>()
+                .Include(p => p.Comments)
+                .Include(p => p.School)
+                .Include(p => p.Likes)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
@@ -228,7 +249,9 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("You are not the creator of this post.");
             }
 
-            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await repo
+                .All<ApplicationUser>()
+                .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user is null)
             {
@@ -255,12 +278,16 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task LikePostAsync(Guid postId, Guid userId)
         {
-            var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == postId);
+            var post = await repo
+                .All<Post>()
+                .FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
-            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await repo
+                .All<ApplicationUser>()
+                .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
             {
                 throw new ArgumentException("User does not exist.");
@@ -277,17 +304,23 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task UnlikePostAsync(Guid postId, Guid userId)
         {
-            var post = await repo.All<Post>().Include(p => p.Likes).FirstOrDefaultAsync(p => p.Id == postId);
+            var post = await repo
+                .All<Post>()
+                .Include(p => p.Likes)
+                .FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
-            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await repo
+                .All<ApplicationUser>()
+                .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
             {
                 throw new ArgumentException("User does not exist.");
             }
-            var like = post.Likes.FirstOrDefault(l => l.PostId == postId && l.UserId == userId);
+            var like = post.Likes
+                .FirstOrDefault(l => l.PostId == postId && l.UserId == userId);
             if (like is null)
             {
                 throw new ArgumentException("You have not liked this post.");
@@ -300,12 +333,16 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task AddCommentAsync(Guid postId, Guid userId, string commentText)
         {
-            var post = await repo.All<Post>().FirstOrDefaultAsync(p => p.Id == postId);
+            var post = await repo
+                .All<Post>()
+                .FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
-            var user = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await repo
+                .All<ApplicationUser>()
+                .FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
             {
                 throw new ArgumentException("User does not exist.");
@@ -326,12 +363,18 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<List<CommentViewModel>> GetCommentsByPostIdAsync(Guid postId)
         {
-            var post = await repo.All<Post>().Include(p => p.Comments).ThenInclude(c => c.Creator).FirstOrDefaultAsync(p => p.Id == postId);
+            var post = await repo
+                .All<Post>()
+                .Include(p => p.Comments)
+                .ThenInclude(c => c.Creator)
+                .FirstOrDefaultAsync(p => p.Id == postId);
             if (post is null)
             {
                 throw new ArgumentException("Post does not exist.");
             }
-            var comments = post.Comments.OrderByDescending(c => c.CreatedOn).Select(c => new CommentViewModel
+            var comments = post.Comments
+                .OrderByDescending(c => c.CreatedOn)
+                .Select(c => new CommentViewModel
             {
                 Content = c.Content,
                 CreatedOn = c.CreatedOn,
@@ -352,7 +395,11 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task DeleteCommentAsync(Guid commentId)
         {
-            var comment = await repo.All<Comment>().Include(c => c.Post).Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            var comment = await repo
+                .All<Comment>()
+                .Include(c => c.Post)
+                .Where(c => c.Id == commentId)
+                .FirstOrDefaultAsync();
             if (comment is null)
             {
                 throw new ArgumentException("The comment does not exist.");
