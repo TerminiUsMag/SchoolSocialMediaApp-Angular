@@ -2,7 +2,7 @@
 {
     public class ValidationConstants
     {
-        //INFRASTRUCTURE Validation Constants
+                                                       //INFRASTRUCTURE Validation Constants
 
         //Post Validation Constants
         public const int MaxPostLength = 2000;
@@ -36,7 +36,18 @@
         public const int MaxRoleLength = 10;
         public const int MinRoleLength = 2;
 
-        //CORE Validation Constants
+        //School Subject Validation Constants
+        public const int MaxSubjectNameLength = 100;
+        public const int MinSubjectNameLength = 2;
+
+        //School Class Validation Constants
+        public const int MaxSchoolClassName = 20;
+        public const int MinSchoolClassName = 1;
+        public const int MaxSchoolClassGrade = 12;
+        public const int MinSchoolClassGrade = 1;
+
+
+                                                         //CORE Validation Constants
 
         //Login and Register Validation Constants
         public const string PhoneNumberRegEx = @"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$";
