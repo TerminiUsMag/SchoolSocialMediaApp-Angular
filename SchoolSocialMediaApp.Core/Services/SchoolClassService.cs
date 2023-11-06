@@ -25,12 +25,15 @@ namespace SchoolSocialMediaApp.Core.Services
             try
             {
                 Guid schoolId;
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                if (!isPrincipal)
+                    return false;
 
                 var school = await schoolService.GetSchoolByUserIdAsync(userId);
                 schoolId = school.Id;
                 var duplicate = await repo
                     .AllReadonly<SchoolClass>()
-                    .AnyAsync(sc => sc.Name == schoolClassCreateModel.Name && sc.Grade == schoolClassCreateModel.Grade);
+                    .AnyAsync(sc => sc.Name == schoolClassCreateModel.Name && sc.Grade == schoolClassCreateModel.Grade && sc.SchoolId == schoolId);
                 if (duplicate)
                 {
                     throw new ArgumentException("The class you're trying to create already exists !");
