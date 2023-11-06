@@ -41,10 +41,12 @@
         public const int MinSubjectNameLength = 2;
 
         //School Class Validation Constants
-        public const int MaxSchoolClassName = 20;
-        public const int MinSchoolClassName = 1;
+        public const int MaxSchoolClassNameLength = 20;
+        public const int MinSchoolClassNameLength = 1;
         public const int MaxSchoolClassGrade = 12;
         public const int MinSchoolClassGrade = 1;
+        public const string SchoolClassNameRequired = "School class name is required.";
+        public const string SchoolClassGradeRequired = "School class grade is required.";
 
 
                                                          //CORE Validation Constants

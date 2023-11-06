@@ -1,0 +1,12 @@
+﻿@model SchoolClassViewModel;
+
+@{
+    ViewBag.Title = $"Manage {Model.Grade} {Model.Name}";
+}
+
+<h1>@ViewBag.Title</h1>
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+

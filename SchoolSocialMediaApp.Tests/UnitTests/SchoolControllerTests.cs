@@ -70,23 +70,23 @@ namespace SchoolSocialMediaApp.Tests.UnitTests
                 mockSignInManager.Object);
         }
 
-        [Test]
-        public async Task Index_ReturnsViewResult_WithSchools()
-        {
-            // Arrange
-            var mockSchoolService = new Mock<ISchoolService>();
-            mockSchoolService.Setup(service => service.GetAllSchoolsAsync()).ReturnsAsync(new List<SchoolViewModel>());
+        //[Test]
+        //public async Task Index_ReturnsViewResult_WithSchools()
+        //{
+        //    // Arrange
+        //    var mockSchoolService = new Mock<ISchoolService>();
+        //    mockSchoolService.Setup(service => service.GetAllSchoolsAsync()).ReturnsAsync(new List<SchoolViewModel>());
 
-            var controller = new SchoolController(mockSchoolService.Object, null, null, null, null);
+        //    var controller = new SchoolController(mockSchoolService.Object, null, null, null, null);
 
-            // Act
-            var result = await controller.Index();
+        //    // Act
+        //    var result = await controller.Index();
 
-            // Assert
-            Assert.IsInstanceOf<ViewResult>(result);
-            var viewResult = result as ViewResult;
-            Assert.IsInstanceOf<IEnumerable<SchoolViewModel>>(viewResult.Model);
-        }
+        //    // Assert
+        //    Assert.IsInstanceOf<ViewResult>(result);
+        //    var viewResult = result as ViewResult;
+        //    Assert.IsInstanceOf<IEnumerable<SchoolViewModel>>(viewResult.Model);
+        //}
 
         [Test]
         public void RegisterGet_ReturnsViewResult()

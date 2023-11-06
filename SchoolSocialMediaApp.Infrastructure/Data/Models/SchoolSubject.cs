@@ -24,5 +24,17 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("The id of the teacher")]
         public Guid? TeacherId { get; set; }
 
+        [Comment("The school which the subject is part of")]
+        [Required]
+        [ForeignKey(nameof(SchoolId))]
+        public School School { get; set; } = null!;
+
+        [Comment("The school's id")]
+        public Guid SchoolId { get; set; }
+
+        [Comment("The date and time the subject was created")]
+        [Required]
+        public DateTime CreatedOn { get; set; }
+
     }
 }
