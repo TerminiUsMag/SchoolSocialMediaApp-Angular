@@ -23,12 +23,12 @@ namespace SchoolSocialMediaApp.Data
         }
 
         public DbSet<Comment> Comments { get; set; } = null!;
-
         public DbSet<Post> Posts { get; set; } = null!;
         public DbSet<PostsLikes> PostsLikes { get; set; } = null!;
-
         public DbSet<School> Schools { get; set; } = null!;
         public DbSet<Invitation> Invitations { get; set; } = null!;
+        public DbSet<SchoolClass> Classes { get; set; } = null!;
+        public DbSet<SchoolSubject> Subjects { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)

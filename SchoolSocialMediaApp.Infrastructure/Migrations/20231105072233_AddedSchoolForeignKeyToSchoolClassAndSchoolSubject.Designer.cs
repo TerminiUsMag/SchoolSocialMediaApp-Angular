@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSocialMediaApp.Data;
 
@@ -11,9 +12,10 @@ using SchoolSocialMediaApp.Data;
 namespace SchoolSocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(SchoolSocialMediaDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231105072233_AddedSchoolForeignKeyToSchoolClassAndSchoolSubject")]
+    partial class AddedSchoolForeignKeyToSchoolClassAndSchoolSubject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -473,10 +475,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("The unique identifier of the school class");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2")
-                        .HasComment("Date and time the class was created");
-
                     b.Property<int>("Grade")
                         .HasColumnType("int")
                         .HasComment("The grade of the school class");
@@ -506,10 +504,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasComment("The unique identifier of the subject");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2")
-                        .HasComment("The date and time the subject was created");
 
                     b.Property<string>("Name")
                         .IsRequired()

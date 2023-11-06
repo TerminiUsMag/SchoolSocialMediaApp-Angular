@@ -375,19 +375,19 @@ namespace SchoolSocialMediaApp.Core.Services
             var comments = post.Comments
                 .OrderByDescending(c => c.CreatedOn)
                 .Select(c => new CommentViewModel
-            {
-                Content = c.Content,
-                CreatedOn = c.CreatedOn,
-                Creator = new UserViewModel
                 {
-                    Id = c.Creator.Id,
-                    ImageUrl = c.Creator.ImageUrl,
-                    Username = c.Creator.UserName
-                },
-                CreatorId = c.CreatorId,
-                PostId = c.PostId,
-                Id = c.Id
-            }).ToList();
+                    Content = c.Content,
+                    CreatedOn = c.CreatedOn,
+                    Creator = new UserViewModel
+                    {
+                        Id = c.Creator.Id,
+                        ImageUrl = c.Creator.ImageUrl,
+                        Username = c.Creator.UserName
+                    },
+                    CreatorId = c.CreatorId,
+                    PostId = c.PostId,
+                    Id = c.Id
+                }).ToList();
 
             return comments;
         }

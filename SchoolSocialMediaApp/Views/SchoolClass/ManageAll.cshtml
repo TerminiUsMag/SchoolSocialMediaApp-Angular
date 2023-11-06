@@ -1,0 +1,67 @@
+﻿@model List<SchoolClassViewModel>;
+
+@{
+    ViewBag.Title = "Manage all school classes";
+}
+
+<h1>@ViewBag.Title</h1>
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
+@if (Model.Any())
+{
+    <div class="row container-fluid">
+        <table class="table table-striped table-hover table-responsive-md">
+            <thead>
+                <tr>
+                    <th>Grade</th>
+                    <th>Name</th>
+                    <th>Number Of Students</th>
+                    <th>Number Of Subjects</th>
+                    <th>Created Date & Time</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var schoolClass in Model)
+                {
+                    <tr>
+                        <td>@schoolClass.Grade</td>
+                        <td>@schoolClass.Name</td>
+                        <td>@schoolClass.Students.Count</td>
+                        <td>@schoolClass.Subjects.Count</td>
+                        <td>@schoolClass.CreatedOn</td>
+                        <td>
+                            <form asp-controller="SchoolClass" asp-action="Manage" method="get">
+                                <input type="hidden" name="classId" value="@schoolClass.Id" />
+                                <button type="submit" class="btn btn-primary">Manage</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form asp-controller="SchoolClass" asp-action="Delete" method="post">
+                                <input type="hidden" name="classId" value="@schoolClass.Id" />
+                                <button type="submit" class="btn btn-secondary">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+            @* <a class="btn btn-primary container-fluid" asp-controller="Invitation" asp-action="DeleteAll" asp-route-schoolId="@Model.FirstOrDefault()?.SchoolId">Delete All</a> *@
+            <a class="btn btn-primary container-fluid" asp-controller="SchoolClass" asp-action="Create" asp-route-schoolId="@Model.FirstOrDefault()?.SchoolId">Create New Class</a>
+        </div>
+    </div>
+}
+else
+{
+    <h2>No school classes found.</h2>
+    <a class="btn btn-primary container-fluid" asp-controller="SchoolClass" asp-action="Create" asp-route-schoolId="@Model.FirstOrDefault()?.SchoolId">Create new class</a>
+}
