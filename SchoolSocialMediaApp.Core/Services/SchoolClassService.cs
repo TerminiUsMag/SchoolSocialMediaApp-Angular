@@ -20,13 +20,34 @@ namespace SchoolSocialMediaApp.Core.Services
             this.roleService = _roleService;
         }
 
+        public async Task AddStudentToClassAsync(Guid studentId, Guid classId)
+        {
+            var schoolClass = await repo.All<SchoolClass>().FirstOrDefaultAsync(sc => sc.Id == classId);
+
+            if (schoolClass == null)
+            {
+                throw new ArgumentException("No school with this ID");
+            }
+
+            var student = await repo.All<ApplicationUser>().FirstOrDefaultAsync(s => s.Id == studentId);
+            if (student == null)
+            {
+                throw new ArgumentException("No user with this ID");
+            }
+
+            schoolClass.Students.Add(student);
+            student.ClassId = classId;
+            await repo.SaveChangesAsync();
+        }
+
         public async Task<bool> CreateSchoolClassAsync(SchoolClassCreateModel schoolClassCreateModel, Guid userId)
         {
             try
             {
                 Guid schoolId;
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
                 var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
-                if (!isPrincipal)
+                if (!isPrincipal && !isAdmin)
                     return false;
 
                 var school = await schoolService.GetSchoolByUserIdAsync(userId);
@@ -64,7 +85,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return true;
         }
 
-        public async Task<bool> DeleteClass(Guid classId, Guid userId)
+        public async Task<bool> DeleteClassAsync(Guid classId, Guid userId)
         {
             bool userHasPermission = false;
 
@@ -81,7 +102,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 var schoolClass = await repo.All<SchoolClass>().FirstOrDefaultAsync(sc => sc.Id == classId);
                 try
                 {
-                    if (schoolClass is not null)
+                    if (schoolClass is not null && !schoolClass.Students.Any() && !schoolClass.Subjects.Any())
                     {
                         repo.Delete(schoolClass);
                         await repo.SaveChangesAsync();
@@ -98,7 +119,6 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<ICollection<SchoolClassViewModel>> GetAllClassesAsync(Guid schoolId, Guid userId)
         {
-
             if (userId == Guid.Empty && schoolId == Guid.Empty)
             {
                 throw new ArgumentException("Both arguments are empty!");
@@ -107,6 +127,21 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 schoolId = (await schoolService.GetSchoolByUserIdAsync(userId)).Id;
             }
+            bool hasPermission = false;
+
+            var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+            var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+
+            if (isPrincipal || isAdmin)
+            {
+                hasPermission = true;
+            }
+
+            if (!hasPermission)
+            {
+                throw new ArgumentException("User doesn't have the required permissions! ");
+            }
+
             var classes = await repo
                  .All<SchoolClass>()
                  .Where(sc => sc.SchoolId == schoolId)
@@ -125,8 +160,38 @@ namespace SchoolSocialMediaApp.Core.Services
             return classes;
         }
 
-        public async Task<SchoolClassViewModel> GetClassByIdAsync(Guid classId)
+        public async Task<List<ApplicationUser>> GetAllFreeStudentsAsync(Guid schoolId)
         {
+            var usersInSchool = await schoolService.GetAllUsersInSchool(schoolId);
+            var students = new List<ApplicationUser>();
+
+            foreach (var user in usersInSchool)
+            {
+                if (await roleService.UserIsInRoleAsync(user.Id.ToString(), "Student") && user.ClassId is null)
+                {
+                    students.Add(user);
+                }
+            }
+            return students;
+        }
+
+        public async Task<SchoolClassViewModel> GetClassByIdAsync(Guid classId, Guid userId)
+        {
+            bool hasPermission = false;
+
+            var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+            var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+
+            if (isPrincipal || isAdmin)
+            {
+                hasPermission = true;
+            }
+
+            if (!hasPermission)
+            {
+                throw new ArgumentException("User doesn't have the required permissions! ");
+            }
+
             var schoolClass = await repo
                 .All<SchoolClass>()
                 .Where(sc => sc.Id == classId)
@@ -148,6 +213,45 @@ namespace SchoolSocialMediaApp.Core.Services
             }
 
             return schoolClass;
+        }
+
+        public async Task RemoveAllStudentsFromClassAsync(Guid classId)
+        {
+            var schoolClass = await repo.All<SchoolClass>().Include(sc=>sc.Students).FirstOrDefaultAsync(sc => sc.Id == classId);
+            if (schoolClass is null)
+            {
+                throw new ArgumentException("No such class");
+            }
+            foreach (var student in schoolClass.Students)
+            {
+                student.ClassId = null;
+            }
+            schoolClass.Students.Clear();
+            await repo.SaveChangesAsync();
+        }
+
+        public async Task RemoveStudentFromClassAsync(Guid studentId, Guid classId)
+        {
+            var student = await repo.All<ApplicationUser>().FirstOrDefaultAsync(s => s.Id == studentId);
+            if (student is null)
+            {
+                throw new ArgumentException("No such student");
+            }
+            var schoolClass = await repo.All<SchoolClass>().FirstOrDefaultAsync(sc => sc.Id == classId);
+            if (schoolClass is null)
+            {
+                throw new ArgumentException("No such class");
+            }
+            if (student.ClassId == classId && schoolClass.Students.Any(s => s.Id == studentId))
+            {
+                schoolClass.Students.Remove(student);
+                student.ClassId = null;
+                await repo.SaveChangesAsync();
+            }
+            else
+            {
+                throw new ArgumentException("The user is not part of this class");
+            }
         }
     }
 }

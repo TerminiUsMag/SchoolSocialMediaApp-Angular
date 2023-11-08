@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
+using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolClass;
 
 namespace SchoolSocialMediaApp.Controllers
@@ -16,6 +17,8 @@ namespace SchoolSocialMediaApp.Controllers
         public async Task<IActionResult> ManageAll(Guid schoolId, Guid userId, string message = "", string classOfMessage = "")
         {
             ICollection<SchoolClassViewModel>? classes;
+            if (userId == Guid.Empty)
+                userId = this.GetUserId();
             try
             {
                 classes = await schoolClassService.GetAllClassesAsync(schoolId, userId);
@@ -25,12 +28,18 @@ namespace SchoolSocialMediaApp.Controllers
                 return RedirectToAction(nameof(HomeController.Index), new { message = "Something went wrong, try again", classOfMessage = "text-bg-danger" });
             }
 
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
+
             return View(classes);
         }
         [HttpGet]
-        public async Task<IActionResult> Manage(Guid classId)
+        public async Task<IActionResult> Manage(Guid classId, Guid schoolId, string message = "", string classOfMessage = "")
         {
-            var schoolClass = await schoolClassService.GetClassByIdAsync(classId);
+            var schoolClass = await schoolClassService.GetClassByIdAsync(classId, this.GetUserId());
+
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
 
             return View(schoolClass);
         }
@@ -68,9 +77,60 @@ namespace SchoolSocialMediaApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid classId)
         {
-            await schoolClassService.DeleteClass(classId, this.GetUserId());
+            try
+            {
+                await schoolClassService.RemoveAllStudentsFromClassAsync(classId);
+                await schoolClassService.DeleteClassAsync(classId, this.GetUserId());
+                return RedirectToAction(nameof(ManageAll), new { userId = this.GetUserId(), message = "Class deleted successfully", classOfMessage = "text-bg-success" });
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(ManageAll), new { userId = this.GetUserId(), message = "An error occurred while deleting class", classOfMessage = "text-bg-danger" });
+            }
 
-            return RedirectToAction(nameof(ManageAll), new { userId = this.GetUserId(), message = "Class deleted successfully", classOfMessage = "text-bg-success" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddStudentsToClass(Guid schoolId, Guid classId, string message = "", string classOfMessage = "")
+        {
+            var students = new List<ApplicationUser>();
+            students = await schoolClassService.GetAllFreeStudentsAsync(schoolId);
+
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
+            ViewBag.ClassId = classId;
+
+            return View(students);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddStudentToClass(Guid studentId, Guid classId, Guid schoolId)
+        {
+            try
+            {
+                await schoolClassService.AddStudentToClassAsync(studentId, classId);
+                return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = "Student added successfully!", classOfMessage = "text-bg-success" });
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to add the student to the class", classOfMessage = "text-bg-danger" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveStudentFromClass(Guid studentId, Guid classId, Guid schoolId)
+        {
+            try
+            {
+                await schoolClassService.RemoveStudentFromClassAsync(studentId, classId);
+                return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "Student removed from class successfully!", classOfMessage = "text-bg-success" });
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to remove student from class", classOfMessage = "text-bg-danger" });
+            }
+
         }
     }
 }
