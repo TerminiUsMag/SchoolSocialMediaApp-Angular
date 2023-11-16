@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using System.Reflection.Emit;
 
 namespace SchoolSocialMediaApp.Data
 {
@@ -29,6 +30,7 @@ namespace SchoolSocialMediaApp.Data
         public DbSet<Invitation> Invitations { get; set; } = null!;
         public DbSet<SchoolClass> Classes { get; set; } = null!;
         public DbSet<SchoolSubject> Subjects { get; set; } = null!;
+        public DbSet<ClassesAndSubjects> ClassesAndSubjects { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -95,6 +97,21 @@ namespace SchoolSocialMediaApp.Data
                 .HasOne(i => i.Sender)
                 .WithMany(s => s.SentInvitations)
                 .HasForeignKey(i => i.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<ClassesAndSubjects>()
+                .HasKey(scs => new { scs.SchoolClassId, scs.SchoolSubjectId });
+
+            builder.Entity<ClassesAndSubjects>()
+                .HasOne(scs => scs.SchoolClass)
+                .WithMany(sc => sc.SchoolSubjects)
+                .HasForeignKey(scs => scs.SchoolClassId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<ClassesAndSubjects>()
+                .HasOne(cas => cas.SchoolSubject)
+                .WithMany(ss => ss.SchoolClasses)
+                .HasForeignKey(cas => cas.SchoolSubjectId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(builder);

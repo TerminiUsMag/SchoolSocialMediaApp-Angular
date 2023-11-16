@@ -37,8 +37,8 @@
         public const int MinRoleLength = 2;
 
         //School Subject Validation Constants
-        public const int MaxSubjectNameLength = 100;
-        public const int MinSubjectNameLength = 2;
+        public const int MaxSchoolSubjectNameLength = 100;
+        public const int MinSchoolSubjectNameLength = 2;
 
         //School Class Validation Constants
         public const int MaxSchoolClassNameLength = 20;
@@ -100,7 +100,12 @@
         public const string RequiredLastNameRegisterViewModel = "Last name is required for account creation.";
         public const string RequiredPhoneNumberRegisterViewModel = "Phone number is required for account creation.";
 
+        //School Class ViewModel Constants
+        public const string InvalidSchoolClassName = "Invalid School Class Name (Must be between {2} and {1} characters).";
+        public const string InvalidSchoolClassGrade = "Invalid School Class Grade (Must be a number between {2} and {1}).";
 
+        //School Subject ViewModel Constants
+        public const string InvalidSchoolSubjectName = "Invalid School Subject Name (Must be between {2} and {1} characters).";
 
         //LoginViewModel Validation Constants
         public const string InvalidLogin = "Invalid login.";

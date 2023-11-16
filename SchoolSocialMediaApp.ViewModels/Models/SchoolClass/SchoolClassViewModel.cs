@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.ClassesAndSubjects;
 using SchoolSocialMediaApp.ViewModels.Models.School;
+using SchoolSocialMediaApp.ViewModels.Models.SchoolSubject;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
@@ -15,14 +17,13 @@ namespace SchoolSocialMediaApp.ViewModels.Models.SchoolClass
         public Guid Id { get; set; }
 
         [Comment("The name of the school class")]
-        [Required]
-        [MaxLength(validation.MaxSchoolClassNameLength)]
-        [MinLength(validation.MinSchoolClassNameLength)]
+        [Required(ErrorMessage = validation.SchoolClassNameRequired)]
+        [StringLength(validation.MaxSchoolClassNameLength, MinimumLength = validation.MinSchoolClassNameLength, ErrorMessage = validation.InvalidSchoolClassName)]
         public string Name { get; set; } = null!;
 
         [Comment("The grade of the school class")]
-        [Required]
-        [Range(validation.MinSchoolClassGrade, validation.MaxSchoolClassGrade)]
+        [Required(ErrorMessage = validation.SchoolClassGradeRequired)]
+        [Range(validation.MinSchoolClassGrade, validation.MaxSchoolClassGrade, ErrorMessage = validation.InvalidSchoolClassGrade)]
         public int Grade { get; set; }
 
         [Comment("The school in which the class is part of")]
@@ -40,6 +41,6 @@ namespace SchoolSocialMediaApp.ViewModels.Models.SchoolClass
         public ICollection<ApplicationUser> Students { get; set; } = new List<ApplicationUser>();
 
         [Comment("School subjects of the class")]
-        public ICollection<SchoolSubject> Subjects { get; set; } = new List<SchoolSubject>();
+        public ICollection<SchoolSubjectViewModel> Subjects { get; set; } = new List<SchoolSubjectViewModel>();
     }
 }

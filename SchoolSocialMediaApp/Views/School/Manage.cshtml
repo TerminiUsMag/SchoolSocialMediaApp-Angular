@@ -59,7 +59,8 @@ else
         </div>
     </div>
 
-    <a asp-controller="SchoolClass" asp-action="ManageAll" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4 mt-4">Manage classes</a>
+    <a asp-controller="SchoolSubject" asp-action="ManageAll" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4 mt-4">Manage Subjects</a>
+    <a asp-controller="SchoolClass" asp-action="ManageAll" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4 mt-4">Manage Classes</a>
     <a asp-controller="Invitation" asp-action="ManageSent" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4 mt-4">Manage Sent Invitations</a>
 
     <h2>Teachers</h2>

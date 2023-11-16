@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSocialMediaApp.Data;
 
@@ -11,9 +12,10 @@ using SchoolSocialMediaApp.Data;
 namespace SchoolSocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(SchoolSocialMediaDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231109155006_AddedSchoolClassesToSchoolSubject")]
+    partial class AddedSchoolClassesToSchoolSubject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,6 +125,21 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolClassSchoolSubject", b =>
+                {
+                    b.Property<Guid>("SchoolClassesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SubjectsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SchoolClassesId", "SubjectsId");
+
+                    b.HasIndex("SubjectsId");
+
+                    b.ToTable("SchoolClassSchoolSubject");
                 });
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationRole", b =>
@@ -281,25 +298,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.HasIndex("SchoolId");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.ClassesAndSubjects", b =>
-                {
-                    b.Property<Guid>("SchoolClassId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("School Class id");
-
-                    b.Property<Guid>("SchoolSubjectId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("School Subject id");
-
-                    b.HasKey("SchoolClassId", "SchoolSubjectId");
-
-                    b.HasIndex("SchoolSubjectId");
-
-                    b.ToTable("ClassesAndSubjects");
-
-                    b.HasComment("School Classes and their School Subjects");
                 });
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Comment", b =>
@@ -606,6 +604,21 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SchoolClassSchoolSubject", b =>
+                {
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolClass", null)
+                        .WithMany()
+                        .HasForeignKey("SchoolClassesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolSubject", null)
+                        .WithMany()
+                        .HasForeignKey("SubjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", b =>
                 {
                     b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolClass", "Class")
@@ -626,25 +639,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.Navigation("Parent");
 
                     b.Navigation("School");
-                });
-
-            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.ClassesAndSubjects", b =>
-                {
-                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolClass", "SchoolClass")
-                        .WithMany("SchoolSubjects")
-                        .HasForeignKey("SchoolClassId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolSubject", "SchoolSubject")
-                        .WithMany("SchoolClasses")
-                        .HasForeignKey("SchoolSubjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("SchoolClass");
-
-                    b.Navigation("SchoolSubject");
                 });
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Comment", b =>
@@ -795,14 +789,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolClass", b =>
                 {
-                    b.Navigation("SchoolSubjects");
-
                     b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolSubject", b =>
-                {
-                    b.Navigation("SchoolClasses");
                 });
 #pragma warning restore 612, 618
         }

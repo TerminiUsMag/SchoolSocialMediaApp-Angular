@@ -38,7 +38,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         public ICollection<ApplicationUser> Students { get; set; } = new List<ApplicationUser>();
 
         [Comment("School subjects of the class")]
-        public ICollection<SchoolSubject> Subjects { get; set; } = new List<SchoolSubject>();
+        public ICollection<ClassesAndSubjects> SchoolSubjects { get; set; } = new List<ClassesAndSubjects>();
 
     }
 }

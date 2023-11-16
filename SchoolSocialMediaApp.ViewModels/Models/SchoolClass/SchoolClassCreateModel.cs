@@ -7,11 +7,11 @@ namespace SchoolSocialMediaApp.ViewModels.Models.SchoolClass
     public class SchoolClassCreateModel
     {
         [Comment("Name of the school class")]
-        [StringLength(validation.MaxSchoolClassNameLength, MinimumLength = validation.MinSchoolClassNameLength, ErrorMessage = "School class name must be between {1} and {2} characters.")]
+        [StringLength(validation.MaxSchoolClassNameLength, MinimumLength = validation.MinSchoolClassNameLength, ErrorMessage = validation.InvalidSchoolClassName)]
         public string Name { get; set; } = null!;
 
         [Comment("Grade of the school class")]
-        [Range(validation.MinSchoolClassGrade, validation.MaxSchoolClassGrade, ErrorMessage = "Grade must be an integer number between {1} and {2}")]
+        [Range(validation.MinSchoolClassGrade, validation.MaxSchoolClassGrade, ErrorMessage = validation.InvalidSchoolClassGrade)]
         public int Grade { get; set; }
     }
 }

@@ -1,12 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.ClassesAndSubjects;
+using SchoolSocialMediaApp.ViewModels.Models.School;
+using SchoolSocialMediaApp.ViewModels.Models.SchoolClass;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
-namespace SchoolSocialMediaApp.Infrastructure.Data.Models
+namespace SchoolSocialMediaApp.ViewModels.Models.SchoolSubject
 {
-    [Comment("A school subject with a teacher which teaches the subject to students")]
-    public class SchoolSubject
+    [Comment("A basic school subject view model")]
+    public class SchoolSubjectViewModel
     {
         [Comment("The unique identifier of the subject")]
         [Key]
@@ -14,11 +17,10 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("Name of the subject")]
         [Required]
-        [MaxLength(validation.MaxSchoolSubjectNameLength)]
+        [StringLength(validation.MaxSchoolSubjectNameLength,MinimumLength = validation.MinSchoolSubjectNameLength, ErrorMessage = validation.InvalidSchoolSubjectName)]
         public string Name { get; set; } = null!;
 
         [Comment("The teacher of the subject")]
-        [ForeignKey(nameof(TeacherId))]
         public ApplicationUser? Teacher { get; set; }
 
         [Comment("The id of the teacher")]
@@ -26,18 +28,16 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The school which the subject is part of")]
         [Required]
-        [ForeignKey(nameof(SchoolId))]
-        public School School { get; set; } = null!;
+        public SchoolViewModel School { get; set; } = null!;
 
         [Comment("The school's id")]
+        [Required]
         public Guid SchoolId { get; set; }
 
         [Comment("The date and time the subject was created")]
         [Required]
         public DateTime CreatedOn { get; set; }
 
-        [Comment("Classes that take the subject")]
-        public ICollection<ClassesAndSubjects> SchoolClasses { get; set; } = new List<ClassesAndSubjects>();
-
+        public ICollection<SchoolClassViewModel> Classes { get; set; } = new List<SchoolClassViewModel>();
     }
 }

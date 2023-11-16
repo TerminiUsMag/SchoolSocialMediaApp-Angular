@@ -89,6 +89,7 @@ builder.Services.AddScoped<ISchoolService, SchoolService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IInvitationService, InvitationService>();
 builder.Services.AddScoped<ISchoolClassService, SchoolClassService>();
+builder.Services.AddScoped<ISchoolSubjectService, SchoolSubjectService>();
 builder.Services.AddScoped<DataSeeder>();
 
 var app = builder.Build();
