@@ -1,0 +1,46 @@
+﻿@model SchoolSubjectCreateModel
+@{
+    ViewBag.Title = "Create new school subject";
+}
+
+<h1>@ViewBag.Title</h1>
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-controller="SchoolSubject" asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="TeacherId">Teacher</label>
+        <select asp-for="TeacherId" asp-items="GetTeachersSelectList()" class="form-control"></select>
+        <span asp-validation-for="TeacherId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input type="text" asp-for="Name" class="form-control" value="A" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <input type="hidden" asp-for="SchoolId" value="@Model.SchoolId" />
+    <button type="submit" class="btn btn-primary">Create subject</button>
+</form>
+
+
+@{
+    SelectList GetTeachersSelectList()
+    {
+        var teachers = new List<SelectListItem>();
+
+        // Assuming CandidateTeachers is a list of Teacher objects
+        foreach (var teacher in Model.CandidateTeachers)
+        {
+            teachers.Add(new SelectListItem
+                    {
+                        Value = teacher.Id.ToString(), // Assuming Id is a unique identifier for each teacher
+                        Text = $"{teacher.FirstName} {teacher.LastName}"
+                    });
+        }
+
+        return new SelectList(teachers, "Value", "Text");
+    }
+
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

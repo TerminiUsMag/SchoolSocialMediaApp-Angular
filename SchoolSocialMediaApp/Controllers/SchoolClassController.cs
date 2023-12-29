@@ -23,9 +23,9 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 classes = await schoolClassService.GetAllClassesAsync(schoolId, userId);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return RedirectToAction(nameof(HomeController.Index), new { message = "Something went wrong, try again", classOfMessage = "text-bg-danger" });
+                return RedirectToAction(nameof(HomeController.Index), new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
 
             ViewBag.Message = message;

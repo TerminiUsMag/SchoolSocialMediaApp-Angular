@@ -1,0 +1,10 @@
+﻿@model SchoolChangePrincipalViewModel
+
+<h1>School's name: @Model.SchoolName</h1>
+<h2>Current Principal: @Model.CurrentPrincipal.FirstName @Model.CurrentPrincipal.LastName</h2>
+<ul>
+    @foreach (var candidate in Model.Candidates)
+    {
+        <li>@candidate.FirstName @candidate.LastName</li>
+    }
+</ul>

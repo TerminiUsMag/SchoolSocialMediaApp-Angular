@@ -8,10 +8,17 @@
 
 @{
     ViewBag.Title = "Registered Schools";
-
-    var user = await UserManager.GetUserAsync(User);
-    var userIsPartOfSchool = RoleService.IsUserPartOfSchool(await UserManager.GetUserAsync(User));
-    var userIsAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+    bool userIsPartOfSchool = false;
+    bool userIsAdmin = false;
+    try
+    {
+        var user = await UserManager.GetUserAsync(User);
+        userIsPartOfSchool = RoleService.IsUserPartOfSchool(await UserManager.GetUserAsync(User));
+        userIsAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+    }
+    catch(Exception)
+    {
+    }
 
 }
 

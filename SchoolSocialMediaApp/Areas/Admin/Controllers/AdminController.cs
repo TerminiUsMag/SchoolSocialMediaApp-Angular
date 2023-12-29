@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.School;
@@ -38,6 +40,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             {
                 var userId = this.GetUserId();
                 AdminPanelViewModel model = await accountService.GetAdminPanelViewModel(userId);
+                model.Roles = await roleService.GetRolesAsync();
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
                 return View(model);
@@ -197,7 +200,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
                     throw new InvalidOperationException("You are not admin!");
                 }
 
-                SchoolManageViewModel? model = await schoolService.GetSchoolManageViewModelBySchoolIdAsync(schoolId);
+                SchoolManageViewModel model = await schoolService.GetSchoolManageViewModelBySchoolIdAsync(schoolId);
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
                 return View(model);
@@ -334,6 +337,63 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             var pagedPosts = model.ToPagedList(pageNumber, pageSize);
 
             return View(pagedPosts);
+        }
+
+        [HttpPost]
+        [Area("Admin")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> AddUserToRole(Guid userId, AdminPanelViewModel model, string message = "", string classOfMessage = "")
+        {
+            try
+            {
+                Guid roleId = Guid.Empty;
+                //if (!ModelState.IsValid)
+                //{
+                //    throw new ArgumentException("Something went wrong");
+                //}
+
+                if (model.SelectedRoleId is not null && model.SelectedRoleId != string.Empty)
+                    Guid.TryParse(model.SelectedRoleId, out roleId);
+
+                if (roleId == Guid.Empty)
+                    throw new ArgumentException("The selected role is not valid");
+
+                await roleService.AddUserToRoleIdAsync(userId, roleId, this.GetUserId().ToString());
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(AdminPanel), new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+
+            return RedirectToAction(nameof(AdminPanel), new { message = "User added to role successfully!", classOfMessage = "text-bg-success" });
+        }
+
+        [HttpGet]
+        [Area("Admin")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> ChangeSchoolPrincipal(Guid schoolId, string message = "", string classOfMessage = "")
+        {
+            var userId = this.GetUserId();
+            var userIsAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+
+
+            try
+            {
+                if (!userIsAdmin)
+                {
+                    throw new InvalidOperationException("You are not admin!");
+                }
+                SchoolChangePrincipalViewModel model = await schoolService.GetSchoolChangePrincipalViewModelBySchoolIdAsync(schoolId);
+                ViewBag.Message = message;
+                ViewBag.ClassOfMessage = classOfMessage;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("AccessDenied", "Account", new { msg = ex.Message });
+            }
         }
     }
 }

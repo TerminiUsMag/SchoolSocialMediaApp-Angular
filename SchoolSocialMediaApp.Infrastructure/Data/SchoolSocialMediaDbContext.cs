@@ -65,21 +65,33 @@ namespace SchoolSocialMediaApp.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<ApplicationUser>()
-                .HasOne(d => d.School)
+                .HasOne(u => u.PrincipledSchool)
                 .WithOne(s => s.Principal)
                 .HasForeignKey<School>(s => s.PrincipalId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.Entity<ApplicationUser>(entity =>
-            {
-                entity.HasIndex(u => u.SchoolId).IsUnique(false);
-            });
+            builder.Entity<ApplicationUser>()
+                .HasOne(u => u.School)
+                .WithMany(s => s.Participants)
+                .HasForeignKey(u=>u.SchoolId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            //builder.Entity<ApplicationUser>(entity =>
+            //{
+            //    entity.HasIndex(u => u.SchoolId).IsUnique(false);
+            //});
 
             builder.Entity<School>()
                 .HasOne(s => s.Principal)
-                .WithOne(p => p.School)
-                .HasForeignKey<ApplicationUser>(p => p.SchoolId)
+                .WithOne(p => p.PrincipledSchool)
+                .HasForeignKey<ApplicationUser>(u => u.PrincipledSchoolId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<School>()
+                .HasMany(s => s.Participants)
+                .WithOne(u => u.School)
+                .HasForeignKey(u => u.SchoolId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Invitation>()
                 .HasOne(i => i.School)

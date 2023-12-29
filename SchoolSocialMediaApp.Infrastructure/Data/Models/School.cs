@@ -32,14 +32,17 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Required]
         public string Location { get; set; } = null!;
 
-        [Comment("The id of the director of the school.")]
+        [Comment("The id of the principal of the school.")]
         [Required]
         public Guid PrincipalId { get; set; }
 
-        [Comment("The director of the school.")]
+        [Comment("The principal of the school.")]
         [Required]
         [ForeignKey(nameof(PrincipalId))]
         public ApplicationUser Principal { get; set; } = null!;
+
+        [Comment("Participants of the school (Parents, Students and Teachers)")]
+        public ICollection<ApplicationUser> Participants { get; set; } = new List<ApplicationUser>();
 
         //[Comment("The parents of the school.")]
         //public IEnumerable<ApplicationUser> Parents { get; set; } = new List<ApplicationUser>();

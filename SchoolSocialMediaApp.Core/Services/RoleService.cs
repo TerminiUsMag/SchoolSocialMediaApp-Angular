@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Core.Contracts;
+using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using System.Security.Claims;
 
@@ -11,18 +13,21 @@ namespace SchoolSocialMediaApp.Core.Services
         private readonly RoleManager<ApplicationRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IRepository repo;
 
         public RoleService(
             RoleManager<ApplicationRole> _roleManager,
             UserManager<ApplicationUser> _userManager,
-            SignInManager<ApplicationUser> _signInManager)
+            SignInManager<ApplicationUser> _signInManager,
+            IRepository _repo)
         {
             this.roleManager = _roleManager;
             this.userManager = _userManager;
             this.signInManager = _signInManager;
+            this.repo = _repo;
         }
 
-        public async Task<bool> AddUserToRoleAsync(string userId, string roleName)
+        public async Task<bool> AddUserToRoleAsync(string userId, string roleName, string changingUserId = "")
         {
             //Gets the user and checks if exists.
             var user = await userManager.FindByIdAsync(userId);
@@ -30,6 +35,10 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 throw new ArgumentException("User does not exist");
             }
+
+            ApplicationUser changingUser = user;
+            if (userId != changingUserId && changingUserId != "")
+                changingUser = await userManager.FindByIdAsync(changingUserId);
 
             try
             {
@@ -76,12 +85,26 @@ namespace SchoolSocialMediaApp.Core.Services
                 }
                 //Refreshes the Sign In to refresh user's roles and get the permissions of the new role without logingout.
                 await signInManager.RefreshSignInAsync(user);
+                await signInManager.RefreshSignInAsync(changingUser);
                 return true;
             }
             catch (Exception)
             {
                 throw;
             }
+        }
+
+        public async Task AddUserToRoleIdAsync(Guid userId, Guid roleId, string changingUserId = "")
+        {
+            var role = await repo.All<ApplicationRole>().Where(r => r.Id == roleId).FirstOrDefaultAsync();
+
+            if (role is null)
+            {
+                throw new ArgumentException("A role with this ID doesn't exist");
+            }
+
+            var roleName = role.Name;
+                await this.AddUserToRoleAsync(userId.ToString(), roleName, changingUserId);
         }
 
         public async Task<bool> CreateRoleAsync(string roleName)
@@ -100,6 +123,23 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 return false;
             }
+        }
+
+        public async Task<List<SelectListItem>> GetRolesAsync()
+        {
+            var result = new List<SelectListItem>();
+            var roles = await roleManager.Roles.ToListAsync();
+
+            foreach (var role in roles)
+            {
+                result.Add(new SelectListItem
+                {
+                    Text = role.Name,
+                    Value = role.Id.ToString(),
+                });
+            }
+
+            return result;
         }
 
         public async Task<List<string>> GetUserRolesAsync(Guid userId)

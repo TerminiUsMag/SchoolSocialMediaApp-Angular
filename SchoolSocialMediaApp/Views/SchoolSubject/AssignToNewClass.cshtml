@@ -1,0 +1,41 @@
+﻿@model ICollection<SchoolClassViewModel>
+
+@{
+    ViewBag.Title = $"Classes to Assign to '{ViewBag.SubjectName}'";
+}
+
+<h1>@ViewBag.Title</h1>
+
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Grade & Name</th>
+            <th>Number of Students in class</th>
+            <th></th>
+            <!-- Add more student properties here -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var schoolClass in Model)
+        {
+            <tr>
+                <td>@schoolClass.Grade @schoolClass.Name Class</td>
+                <td>@schoolClass.Students.Count Students</td>
+                <td>
+                    <form asp-controller="SchoolSubject" asp-action="AddClassToSubject" method="post">
+                        <input type="hidden" name="classId" value="@schoolClass.Id" />
+                        <input type="hidden" name="subjectId" value="@ViewBag.SubjectId" />
+                        <input type="hidden" name="schoolId" value="@schoolClass.SchoolId" />
+                        <button type="submit" class="btn btn-primary">Assign class to Subject - '@ViewBag.SubjectName'</button>
+                    </form>
+                </td>
+                <!-- Add more student properties here -->
+            </tr>
+        }
+    </tbody>
+</table>

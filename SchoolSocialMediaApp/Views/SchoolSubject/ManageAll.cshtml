@@ -29,20 +29,22 @@
                 {
                     <tr>
                         <td>@schoolSubject.Name</td>
-                        <td>@schoolSubject.Teacher!.FirstName + @schoolSubject.Teacher.LastName</td>
+                        <td>@schoolSubject.Teacher!.FirstName @schoolSubject.Teacher.LastName</td>
                         <td>@schoolSubject.Classes.Count</td>
                         <td>@schoolSubject.CreatedOn</td>
                         <td>
-                            <form asp-controller="SchoolClass" asp-action="Manage" method="get">
-                                <input type="hidden" name="classId" value="@schoolSubject.Id" />
+                            <form asp-controller="SchoolSubject" asp-action="Manage" method="get">
+                                <input type="hidden" name="subjectId" value="@schoolSubject.Id" />
+                                <input type="hidden" name="schoolId" value="@schoolSubject.SchoolId" />
                                 <button type="submit" class="btn btn-primary">Manage</button>
                             </form>
                         </td>
                         <td>
-                            <form asp-controller="SchoolClass" asp-action="Delete" method="post">
-                                <input type="hidden" name="classId" value="@schoolSubject.Id" />
-                                <button type="submit" class="btn btn-secondary">Delete</button>
-                            </form>
+                            <a data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" onclick="setDeletePostId('@schoolSubject.Id')" class="btn btn-danger">Delete</a>
+                            @* <form asp-controller="SchoolSubject" asp-action="Delete" method="post">
+                    <input type="hidden" name="subjectId" value="@schoolSubject.Id" />
+                    <button type="submit" class="btn btn-secondary">Delete</button>
+                    </form> *@
                         </td>
                     </tr>
                 }
@@ -54,12 +56,40 @@
         </div>
         <div class="col-md-4">
             @* <a class="btn btn-primary container-fluid" asp-controller="Invitation" asp-action="DeleteAll" asp-route-schoolId="@Model.FirstOrDefault()?.SchoolId">Delete All</a> *@
-            <a class="btn btn-primary container-fluid" asp-controller="SchoolSubject" asp-action="Create" asp-route-schoolId="@Model.FirstOrDefault()?.SchoolId">Create New Subject</a>
+            <a class="btn btn-primary container-fluid" asp-controller="SchoolSubject" asp-action="Create" asp-route-schoolId="@ViewBag.SchoolId">Create New Subject</a>
         </div>
     </div>
 }
 else
 {
     <h2>No school subjects found.</h2>
-    <a class="btn btn-primary container-fluid" asp-controller="SchoolSubject" asp-action="Create" asp-route-schoolId="@Model.FirstOrDefault()?.SchoolId">Create new subject</a>
+    <a class="btn btn-primary container-fluid" asp-controller="SchoolSubject" asp-action="Create" asp-route-schoolId="@ViewBag.SchoolId">Create new subject</a>
 }
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this Subject?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteSubject" method="post" asp-action="Delete" asp-controller="SchoolSubject">
+                    <input id="deleteSubjectId" name="subjectId" type="hidden" value="" />
+                    <input id="deleteSchoolId" name="schoolId" type="hidden" value="@Model.FirstOrDefault()?.SchoolId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setDeletePostId(subjectId) {
+        document.getElementById("deleteSubjectId").value = subjectId;
+    }
+</script>

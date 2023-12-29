@@ -184,6 +184,10 @@ namespace SchoolSocialMediaApp.Infrastructure
                 school.PrincipalId = principal.Id;
                 school.Principal = principal;
 
+                school.Participants.Add(principal);
+
+                principal.PrincipledSchool = school;
+                principal.PrincipledSchoolId = school.Id;
                 principal.School = school;
                 principal.SchoolId = school.Id;
                 principal.IsPrincipal = true;

@@ -129,5 +129,8 @@
 
         //Make User Admin
         public const string RequiredPasswordMakeAdmin = "Admin password confirmation is required to give admin permissions.";
+
+        //Add User to Role
+        public const string RequiredSelectedRoleAddUserToRole = "Please select a role.";
     }
 }

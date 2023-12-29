@@ -15,6 +15,12 @@ namespace SchoolSocialMediaApp.ViewModels.Models.SchoolSubject
         [Comment("Teacher of the subject")]
         public ApplicationUser? Teacher { get; set; }
 
+        [Comment("Teacher's id")]
+        public Guid TeacherId { get; set; }
+
+        [Comment("School's id")]
+        public Guid SchoolId { get; set; }
+
         [Comment("A list of candidate teachers to teach the subject you're creating")]
         public ICollection<ApplicationUser> CandidateTeachers { get; set; } = new List<ApplicationUser>();
     }

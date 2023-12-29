@@ -135,7 +135,9 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="userId"></param>
         /// <returns>ManageSchoolViewModel</returns>
         /// <exception cref="ArgumentException"></exception>
-        Task<SchoolManageViewModel?> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId);
+        Task<SchoolManageViewModel> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId);
         Task<AdminSchoolDeleteViewModel> GetAdminSchoolDeleteViewBySchoolIdAsync(Guid schoolId);
+        Task<bool> IsTheUserPrincipalOfTheSchool(Guid schoolId, Guid userId);
+        Task<SchoolChangePrincipalViewModel> GetSchoolChangePrincipalViewModelBySchoolIdAsync(Guid schoolId);
     }
 }

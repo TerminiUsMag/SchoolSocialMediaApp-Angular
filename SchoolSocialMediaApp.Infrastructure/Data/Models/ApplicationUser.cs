@@ -41,13 +41,19 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Required]
         public string ImageUrl { get; set; } = null!;
 
-        [Comment("The school the user is in.")]
+        [Comment("The id of the school which the user is Principal of")]
+        public Guid? PrincipledSchoolId { get; set; }
+
+        [Comment("The school which the user is Principal of")]
+        [ForeignKey(nameof(PrincipledSchoolId))]
+        public School? PrincipledSchool { get; set; }
+
+        [Comment("The id of the school the user is participant in.")]
+        public Guid? SchoolId { get; set; }     //Associated school id. Example: If the user is a teacher, then the school id is the id of the school the teacher is teaching in.
+
+        [Comment("The school the user is participant in.")]
         [ForeignKey(nameof(SchoolId))]
         public School? School { get; set; }    //Associated school. Example: If the user is a parent, then the school property is navigation to the school the parent's kid is in.
-
-
-        [Comment("The id of the school the user is in.")]
-        public Guid? SchoolId { get; set; }     //Associated school id. Example: If the user is a teacher, then the school id is the id of the school the teacher is teaching in.
 
         [Comment("The parent of the user.")]
         [ForeignKey(nameof(ParentId))]

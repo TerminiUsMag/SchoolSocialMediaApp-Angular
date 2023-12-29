@@ -370,7 +370,7 @@ namespace SchoolSocialMediaApp.Core.Services
                 var school = user.School;
                 if (school is null)
                 {
-                    await roleService.RemoveUserFromRoleAsync(userId.ToString(), "Principal");
+                    //await roleService.RemoveUserFromRoleAsync(userId.ToString(), "Principal");
                     throw new ArgumentException("School cannot be null.");
                 }
 
@@ -569,14 +569,39 @@ namespace SchoolSocialMediaApp.Core.Services
             return await repo.All<ApplicationUser>().Where(u => u.SchoolId == schoolId).ToListAsync();
         }
 
-        public async Task<SchoolManageViewModel?> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId)
+        public async Task<SchoolManageViewModel> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId)
         {
             var school = await repo.All<School>().Where(s => s.Id == schoolId).Include(s => s.Principal).FirstOrDefaultAsync();
             if (school is null)
             {
                 throw new ArgumentException("No such school exists");
             }
-            return await GetSchoolManageViewModelByUserIdAsync(school.PrincipalId);
+            return await GetSchoolManageViewModelAsync(school);
+        }
+
+        private async Task<SchoolManageViewModel> GetSchoolManageViewModelAsync(School school)
+        {
+            if (school is null)
+                throw new ArgumentException("School cannot be empty");
+
+            var parents = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsParent).ToListAsync();
+            var students = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsStudent).ToListAsync();
+            var teachers = await repo.AllReadonly<ApplicationUser>().Where(u => u.SchoolId == school.Id && u.IsTeacher).ToListAsync();
+
+            //Map the school and it's participants to a School Manage View Model and return it.
+            return new SchoolManageViewModel
+            {
+                Id = school.Id,
+                Description = school.Description,
+                ImageUrl = school.ImageUrl,
+                Location = school.Location,
+                Name = school.Name,
+                PrincipalId = school.PrincipalId,
+                Principal = school.Principal,
+                Parents = parents,
+                Students = students,
+                Teachers = teachers,
+            };
         }
 
         public async Task<AdminSchoolDeleteViewModel> GetAdminSchoolDeleteViewBySchoolIdAsync(Guid schoolId)
@@ -598,6 +623,49 @@ namespace SchoolSocialMediaApp.Core.Services
             }
 
             return school;
+        }
+
+        public async Task<bool> IsTheUserPrincipalOfTheSchool(Guid schoolId, Guid userId)
+        {
+            var school = await repo.All<School>().Where(sc => sc.Id == schoolId).FirstOrDefaultAsync();
+            if (school is null)
+            {
+                throw new ArgumentException($"There's no school registered with this Id - {schoolId}");
+            }
+            if (school.PrincipalId == userId)
+                return true;
+            else
+                return false;
+        }
+
+        public async Task<SchoolChangePrincipalViewModel> GetSchoolChangePrincipalViewModelBySchoolIdAsync(Guid schoolId)
+        {
+            var school = await repo.All<School>().Where(s => s.Id == schoolId).Include(s => s.Principal).FirstOrDefaultAsync();
+
+            if (school is null)
+                throw new ArgumentException("School with this ID doesn't exist");
+
+            var principal = await repo.All<ApplicationUser>().Where(u=>u.Id == school.PrincipalId).FirstOrDefaultAsync();
+
+            if (principal is null)
+            {
+                throw new ArgumentException("Principal not found");
+            }
+
+            school.Principal = principal;
+
+            return new SchoolChangePrincipalViewModel
+            {
+                SchoolId = schoolId,
+                CurrentPrincipal = school.Principal,
+                Candidates = await GetPrincipalCandidates(school.PrincipalId),
+                SchoolName = school.Name,
+            };
+        }
+
+        private async Task<ICollection<ApplicationUser>> GetPrincipalCandidates(Guid principalId)
+        {
+            return await repo.All<ApplicationUser>().Where(u => (u.SchoolId == Guid.Empty || u.SchoolId != null) && u.Id != principalId).ToListAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SchoolSocialMediaApp.Infrastructure.Data.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using SchoolSocialMediaApp.Infrastructure.Data.Models;
 
 namespace SchoolSocialMediaApp.Core.Contracts
 {
@@ -25,7 +26,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="roleName"></param>
         /// <returns>True or False</returns>
         /// <exception cref="ArgumentException"></exception>
-        Task<bool> AddUserToRoleAsync(string userId, string roleName);
+        Task<bool> AddUserToRoleAsync(string userId, string roleName, string changingUserId = "");
 
         /// <summary>
         /// Remove User from Role using User's ID and Role's Name.
@@ -58,5 +59,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="userId"></param>
         /// <returns>A List of all roles of specific user.</returns>
         Task<List<string>> GetUserRolesAsync(Guid userId);
+        Task<List<SelectListItem>> GetRolesAsync();
+        Task AddUserToRoleIdAsync(Guid userId, Guid roleId, string changingUserId = "");
     }
 }

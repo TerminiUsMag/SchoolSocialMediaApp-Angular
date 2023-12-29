@@ -60,6 +60,7 @@ else
 
     <a asp-area="" asp-controller="Invitation" asp-action="ManageSent" asp-route-schoolId="@Model.Id" class="btn btn-primary mb-4 mt-4">Manage Sent Invitations</a>
     <a asp-area="Admin" asp-controller="Admin" asp-action="AdminPostView" asp-route-schoolId ="@Model.Id" class="btn btn-secondary mb-4 mt-4">View School's Posts</a>
+    <a asp-area="Admin" asp-controller="Admin" asp-action="ChangeSchoolPrincipal" asp-route-schoolId ="@Model.Id" class="btn btn-primary mb-4 mt-4">Change School's Principal</a>
 
     <h2>Teachers</h2>
     @if (Model.Teachers.Any())
