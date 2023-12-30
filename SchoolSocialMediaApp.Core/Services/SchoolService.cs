@@ -166,6 +166,21 @@ namespace SchoolSocialMediaApp.Core.Services
             //Remove the Principal Role from the user which used to be the principal.
             //await roleService.RemoveUserFromRoleAsync(principalId.ToString(), "Principal");
 
+            //Check if the school has a custom photo and if it has delete it.
+            if (school.ImageUrl != "/images/school-images/demoSchoolProfile.jpg")
+            {
+
+                string imageUrl = school.ImageUrl.Substring(1);
+                string filePath = Path.Combine(env.WebRootPath, imageUrl);
+
+                    // Check if the file exists before attempting to delete
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
+            }
+
+
             //Delete the school from the DB.
             repo.Delete(school);
 
@@ -647,7 +662,7 @@ namespace SchoolSocialMediaApp.Core.Services
             if (school is null)
                 throw new ArgumentException("School with this ID doesn't exist");
 
-            var principal = await repo.All<ApplicationUser>().Where(u=>u.Id == school.PrincipalId).FirstOrDefaultAsync();
+            var principal = await repo.All<ApplicationUser>().Where(u => u.Id == school.PrincipalId).FirstOrDefaultAsync();
 
             if (principal is null)
             {
