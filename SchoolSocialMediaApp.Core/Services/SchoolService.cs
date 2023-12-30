@@ -167,7 +167,7 @@ namespace SchoolSocialMediaApp.Core.Services
             //await roleService.RemoveUserFromRoleAsync(principalId.ToString(), "Principal");
 
             //Check if the school has a custom photo and if it has delete it.
-            if (school.ImageUrl != "/images/school-images/demoSchoolProfile.jpg")
+            if (school.ImageUrl != "/images/school-images/demoSchoolProfile.jpg" && school.ImageUrl != "/images/defaultSchool.png")
             {
 
                 string imageUrl = school.ImageUrl.Substring(1);

@@ -76,7 +76,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
 
             //Checks if the account is linked to one of the demo profile pictures and if not deletes the custom profile picture of the user from the storage to save space.
-            if (user.ImageUrl != "/images/user-images/principalProfile.jpg" && user.ImageUrl != "/images/user-images/studentProfile.jpg")
+            if (user.ImageUrl != "/images/user-images/principalProfile.jpg" && user.ImageUrl != "/images/user-images/studentProfile.jpg" && user.ImageUrl != "/images/defaultProfile.png")
             {
 
                 string imageUrl = user.ImageUrl.Substring(1);
