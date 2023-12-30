@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.School;
@@ -357,7 +355,11 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
 
                 if (roleId == Guid.Empty)
                     throw new ArgumentException("The selected role is not valid");
-
+                var roles = await roleService.GetRolesAsync();
+                foreach (var role in roles)
+                {
+                    await roleService.RemoveUserFromRoleAsync(userId.ToString(), role.Text);
+                }
                 await roleService.AddUserToRoleIdAsync(userId, roleId, this.GetUserId().ToString());
 
             }

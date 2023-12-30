@@ -69,6 +69,8 @@ namespace SchoolSocialMediaApp.Core.Services
                 PrincipalId = userId,
             };
 
+            user!.SchoolId = school.Id;
+
             //Adds the school entity to the Db
             await repo.AddAsync<School>(school);
             //Save changes to Db
@@ -566,7 +568,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<List<ApplicationUser>> GetAllUsersInSchool(Guid schoolId)
         {
-            return await repo.All<ApplicationUser>().Where(u => u.SchoolId == schoolId).ToListAsync();
+            return await repo.All<ApplicationUser>().Where(u => u.SchoolId == schoolId || u.PrincipledSchoolId == schoolId).ToListAsync();
         }
 
         public async Task<SchoolManageViewModel> GetSchoolManageViewModelBySchoolIdAsync(Guid schoolId)

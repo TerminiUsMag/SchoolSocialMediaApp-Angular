@@ -10,10 +10,10 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task<SchoolClassViewModel> GetClassByIdAsync(Guid classId, Guid userId);
 
         Task<bool> CreateSchoolClassAsync(SchoolClassCreateModel schoolClassCreateModel, Guid userId);
-        Task<bool> DeleteClassAsync(Guid classId, Guid userId);
         Task<List<ApplicationUser>> GetAllFreeStudentsAsync(Guid schoolId);
         Task AddStudentToClassAsync(Guid studentId, Guid classId);
         Task RemoveStudentFromClassAsync(Guid studentId, Guid classId);
         Task RemoveAllStudentsFromClassAsync(Guid classId);
+        Task RemoveAllSubjectsFromClassAsync(Guid classId);
     }
 }

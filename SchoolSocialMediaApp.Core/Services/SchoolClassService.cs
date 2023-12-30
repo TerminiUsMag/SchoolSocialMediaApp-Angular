@@ -89,38 +89,6 @@ namespace SchoolSocialMediaApp.Core.Services
             return true;
         }
 
-        public async Task<bool> DeleteClassAsync(Guid classId, Guid userId)
-        {
-            bool userHasPermission = false;
-
-            var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
-            var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
-
-            if (isPrincipal || isAdmin)
-            {
-                userHasPermission = true;
-            }
-
-            if (userHasPermission)
-            {
-                var schoolClass = await repo.All<SchoolClass>().FirstOrDefaultAsync(sc => sc.Id == classId);
-                try
-                {
-                    if (schoolClass is not null && !schoolClass.Students.Any() && !schoolClass.SchoolSubjects.Any())
-                    {
-                        repo.Delete(schoolClass);
-                        await repo.SaveChangesAsync();
-                        return true;
-                    }
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-            return false;
-        }
-
         public async Task<ICollection<SchoolClassViewModel>> GetAllClassesAsync(Guid schoolId, Guid userId)
         {
             if (userId == Guid.Empty && schoolId == Guid.Empty)
@@ -328,6 +296,37 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 throw new ArgumentException("The user is not part of this class");
             }
+        }
+
+        public async Task RemoveAllSubjectsFromClassAsync(Guid classId)
+        {
+            var schoolClass = await repo.All<SchoolClass>().Include(sc => sc.Students).Include(sc=>sc.SchoolSubjects).FirstOrDefaultAsync(sc => sc.Id == classId);
+
+            if (schoolClass is null)
+            {
+                throw new ArgumentException("No School Class found!");
+            }
+
+            while (schoolClass.SchoolSubjects.Count > 0)
+            {
+                var classAndSubject = schoolClass.SchoolSubjects.First();
+
+                repo.Delete(classAndSubject);
+                schoolClass.SchoolSubjects.Remove(classAndSubject);
+            }
+            try
+            {
+                if (schoolClass is not null && !schoolClass.Students.Any() && !schoolClass.SchoolSubjects.Any())
+                {
+                    repo.Delete(schoolClass);
+                    await repo.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
         }
     }
 }

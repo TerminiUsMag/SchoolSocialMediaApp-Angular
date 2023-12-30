@@ -8,10 +8,12 @@ namespace SchoolSocialMediaApp.Controllers
     public class SchoolClassController : BaseController
     {
         private readonly ISchoolClassService schoolClassService;
+        private readonly IRoleService roleService;
 
-        public SchoolClassController(ISchoolClassService _schoolClassService)
+        public SchoolClassController(ISchoolClassService _schoolClassService, IRoleService _roleService)
         {
             this.schoolClassService = _schoolClassService;
+            this.roleService = _roleService;
         }
         [HttpGet]
         public async Task<IActionResult> ManageAll(Guid schoolId, Guid userId, string message = "", string classOfMessage = "")
@@ -79,12 +81,25 @@ namespace SchoolSocialMediaApp.Controllers
         {
             try
             {
+                var userId = this.GetUserId();
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isPrincipal && !isAdmin)
+                {
+                    throw new ArgumentException("You don't have permission to Delete School Classes!");
+                }
                 await schoolClassService.RemoveAllStudentsFromClassAsync(classId);
-                await schoolClassService.DeleteClassAsync(classId, this.GetUserId());
+                await schoolClassService.RemoveAllSubjectsFromClassAsync(classId);
+                //await schoolClassService.DeleteClassAsync(classId);
                 return RedirectToAction(nameof(ManageAll), new { userId = this.GetUserId(), message = "Class deleted successfully", classOfMessage = "text-bg-success" });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                if (ex.Message != null)
+                {
+                    return RedirectToAction(nameof(ManageAll), new { userId = this.GetUserId(), message = ex.Message, classOfMessage = "text-bg-danger" });
+                }
+
                 return RedirectToAction(nameof(ManageAll), new { userId = this.GetUserId(), message = "An error occurred while deleting class", classOfMessage = "text-bg-danger" });
             }
 
@@ -108,11 +123,22 @@ namespace SchoolSocialMediaApp.Controllers
         {
             try
             {
+                var userId = this.GetUserId();
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isPrincipal && !isAdmin)
+                {
+                    throw new ArgumentException("You don't have permission to Add student to Class");
+                }
                 await schoolClassService.AddStudentToClassAsync(studentId, classId);
                 return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = "Student added successfully!", classOfMessage = "text-bg-success" });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                if (ex.Message != null)
+                {
+                    return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = ex.Message, classOfMessage = "text-bg-danger" });
+                }
                 return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to add the student to the class", classOfMessage = "text-bg-danger" });
             }
         }
@@ -122,12 +148,24 @@ namespace SchoolSocialMediaApp.Controllers
         {
             try
             {
+                var userId = this.GetUserId();
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isPrincipal && !isAdmin)
+                {
+                    throw new ArgumentException("You don't have permission to Remove student from Class");
+                }
                 await schoolClassService.RemoveStudentFromClassAsync(studentId, classId);
                 return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "Student removed from class successfully!", classOfMessage = "text-bg-success" });
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                if (ex.Message != null)
+                {
+                    return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = ex.Message, classOfMessage = "text-bg-danger" });
+                }
+
                 return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to remove student from class", classOfMessage = "text-bg-danger" });
             }
 

@@ -155,7 +155,8 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("No such user");
             }
 
-            var school = user.School;
+            var schoolId = subject.SchoolId;
+            var school = await repo.All<School>().Where(s => s.Id == schoolId).FirstOrDefaultAsync();
 
             if (school is null)
             {
@@ -168,9 +169,9 @@ namespace SchoolSocialMediaApp.Core.Services
 
             while (subject.SchoolClasses.Count > 0)
             {
-                var schoolClassAndSubject = subject.SchoolClasses.FirstOrDefault();
-                var schoolClass = schoolClassAndSubject!.SchoolClass;
-                schoolClass!.SchoolSubjects.Remove(schoolClassAndSubject);
+                var schoolClassAndSubject = subject.SchoolClasses.First();
+                //var schoolClass = schoolClassAndSubject!.SchoolClass;
+                //schoolClass!.SchoolSubjects.Remove(schoolClassAndSubject);
 
                 repo.Delete(schoolClassAndSubject);
                 subject.SchoolClasses.Remove(schoolClassAndSubject);
