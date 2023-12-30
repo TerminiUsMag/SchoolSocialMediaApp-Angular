@@ -40,33 +40,56 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task DeleteAsync(Guid userId)
         {
+            //Get the user entity from the DB with his posts, comments, likes and invitations.
             var user = await repo.All<ApplicationUser>().Where(u => u.Id == userId).Include(u => u.Posts).Include(u => u.Comments).Include(u => u.LikedPosts).Include(u=>u.Invitations).FirstOrDefaultAsync();
 
+            //Checks if the user is not found and throws and exception.
             if (user == null) throw new ArgumentNullException("User is empty");
 
+            //Set variables for user's posts, comments, likes and invitations for readability.
             var posts = user.Posts;
             var comments = user.Comments;
             var postLikes = user.LikedPosts;
             var invitations = user.Invitations;
 
+            //Checks for comments, if there are comments they get deleted.
             if (comments.Any())
             {
                 repo.DeleteRange(comments);
             }
+            //Checks for likes, if there are likes they get removed.
             if (postLikes.Any())
             {
                 repo.DeleteRange(postLikes);
             }
+            //Checks for posts, if there are posts they get deleted.
             if (posts.Any())
             {
                 repo.DeleteRange(posts);
             }
+            //Checks for invitations if there are invitations they get deleted.
             if (invitations.Any())
             {
                 repo.DeleteRange(invitations);
             }
+            //Saves all changes to the DB.
             await repo.SaveChangesAsync();
 
+            //Checks if the account is linked to one of the demo profile pictures and if not deletes the custom profile picture of the user from the storage to save space.
+            if (user.ImageUrl != "/images/user-images/principalProfile.jpg" && user.ImageUrl != "/images/user-images/studentProfile.jpg")
+            {
+
+                string imageUrl = user.ImageUrl.Substring(1);
+                string filePath = Path.Combine(env.WebRootPath, imageUrl);
+
+                // Check if the file exists before attempting to delete
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+
+            //Deletes the user from the DB and saves the changes.
             await userManager.DeleteAsync(user);
             await signInManager.SignOutAsync();
         }
