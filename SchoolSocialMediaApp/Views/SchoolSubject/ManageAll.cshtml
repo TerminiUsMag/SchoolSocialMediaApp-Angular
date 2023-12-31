@@ -29,7 +29,16 @@
                 {
                     <tr>
                         <td>@schoolSubject.Name</td>
-                        <td>@schoolSubject.Teacher!.FirstName @schoolSubject.Teacher.LastName</td>
+                        @{
+                            if (schoolSubject.TeacherId != Guid.Empty)
+                            {
+                                <td>@schoolSubject.Teacher!.FirstName @schoolSubject.Teacher.LastName</td>
+                            }
+                            else
+                            {
+                               <td>PLEASE ASSIGN A NEW TEACHER FROM THE MANAGE BUTTON</td> 
+                            }
+                        }
                         <td>@schoolSubject.Classes.Count</td>
                         <td>@schoolSubject.CreatedOn</td>
                         <td>

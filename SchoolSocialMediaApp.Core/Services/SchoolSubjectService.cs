@@ -313,6 +313,17 @@ namespace SchoolSocialMediaApp.Core.Services
                 var principal = await repo.All<ApplicationUser>().FirstOrDefaultAsync(p => p.Id == subject.School.PrincipalId);
                 subject.School.PrincipalName = $"{principal!.FirstName} {principal.LastName}";
 
+                if (subject.Teacher is not null)
+                {
+                    if (subject.Teacher.SchoolId == Guid.Empty || subject.Teacher.SchoolId is null)
+                    {
+                        subject.Teacher = null;
+                        subject.TeacherId = Guid.Empty;
+                    }
+
+                }
+
+
                 foreach (var schoolClass in subject.Classes)
                 {
                     var referenceClass = await repo
