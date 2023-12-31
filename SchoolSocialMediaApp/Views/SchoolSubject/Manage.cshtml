@@ -1,12 +1,16 @@
 ﻿@model SchoolSubjectViewModel
 
 @{
-    ViewBag.Title = $"Manage {Model.Name} teached by {Model.Teacher!.FirstName} {Model.Teacher.LastName}";
-}
+    if (Model.Teacher is not null)
+        ViewBag.Title = $"Manage '{Model.Name}' which is taught by {Model.Teacher!.FirstName} {Model.Teacher.LastName}";
+    else
+        ViewBag.Title = $"Manage '{Model.Name}' which is taught by a teacher which is no longer available. (Please assign a new teacher)";
 
-<h1>@ViewBag.Title</h1>
+    }
 
-@if (ViewBag.Message != null)
+    <h1>@ViewBag.Title</h1>
+
+    @if (ViewBag.Message != null)
 {
     <div class="row">
         <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
@@ -52,7 +56,9 @@
                 }
             </tbody>
         </table>
-        <a asp-controller="SchoolSubject" asp-action="AssignToNewClass" asp-route-schoolId="@Model.SchoolId" asp-route-subjectId="@Model.Id" asp-route-subjectName="@Model.Name" class="btn btn-primary mb-4">Assign the subject to a new class</a>
+        <a asp-controller="SchoolSubject" asp-action="AssignToNewClass" asp-route-schoolId="@Model.SchoolId" asp-route-subjectId="@Model.Id" asp-route-subjectName="@Model.Name" class="btn btn-primary mb-4">Assign the subject to a new Class</a>
+        <a asp-controller="SchoolSubject" asp-action="AssignToNewTeacher" asp-route-schoolId="@Model.SchoolId" asp-route-subjectId="@Model.Id" asp-route-subjectName="@Model.Name" class="btn btn-primary mb-4 ml-4">Assign the subject to a new Teacher</a>
+
     </div>
 
 

@@ -408,6 +408,12 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("No subject with this subjectId");
             }
 
+            if (result.Teacher is not null && result.Teacher.SchoolId != result.SchoolId)
+            {
+                result.Teacher = null;
+                result.TeacherId = Guid.Empty;
+            }
+
             return result;
         }
 

@@ -109,6 +109,29 @@ namespace SchoolSocialMediaApp.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AssignToNewTeacher(Guid schoolId, Guid userId, Guid subjectId, string subjectName, string message = "", string classOfMessage = "")
+        {
+            if (userId == Guid.Empty)
+                userId = this.GetUserId();
+            var userIdString = userId.ToString();
+            var isPrincipal = await schoolService.IsTheUserPrincipalOfTheSchool(schoolId, userId);
+            var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
+            if (isPrincipal || isAdmin)
+            {
+                var teachers = await schoolSubjectService.GetCandidateTeachersInSchool(schoolId, userId);
+                ViewBag.Message = message;
+                ViewBag.ClassOfMessage = classOfMessage;
+                ViewBag.SubjectName = subjectName;
+                ViewBag.SubjectId = subjectId;
+                //ViewBag.SchoolId = schoolId;
+
+                return View(teachers);
+            }
+            else
+                return RedirectToAction(nameof(HomeController.Index), new { message = "You don't have permission to Assign classes to subjects", classOfMessage = "text-bg-danger" });
+        }
+
         [HttpPost]
         public async Task<IActionResult> UnAssignClassFromSubject(Guid classId, Guid subjectId, Guid schoolId, Guid userId)
         {
