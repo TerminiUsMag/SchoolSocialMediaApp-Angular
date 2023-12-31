@@ -315,7 +315,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
                 if (subject.Teacher is not null)
                 {
-                    if (subject.Teacher.SchoolId == Guid.Empty || subject.Teacher.SchoolId is null)
+                    if (subject.Teacher.SchoolId != subject.SchoolId)
                     {
                         subject.Teacher = null;
                         subject.TeacherId = Guid.Empty;
