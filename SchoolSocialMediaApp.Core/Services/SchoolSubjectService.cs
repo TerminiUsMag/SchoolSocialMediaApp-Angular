@@ -5,6 +5,7 @@ using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.School;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolClass;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolSubject;
+using SchoolSocialMediaApp.ViewModels.Models.User;
 
 namespace SchoolSocialMediaApp.Core.Services
 {
@@ -70,6 +71,51 @@ namespace SchoolSocialMediaApp.Core.Services
 
             schoolClass.SchoolSubjects.Add(newSchoolClassSubject);
             subject.SchoolClasses.Add(newSchoolClassSubject);
+            await repo.SaveChangesAsync();
+        }
+
+        public async Task AssignTeacherToSubject(Guid teacherId, Guid subjectId, Guid schoolId)
+        {
+            var school = await repo.All<School>().FirstOrDefaultAsync(s => s.Id == schoolId);
+
+            if (school is null)
+            {
+                throw new ArgumentException("No such school found");
+            }
+
+            var subject = await repo.All<SchoolSubject>().Include(ss => ss.Teacher).FirstOrDefaultAsync(ss => ss.Id == subjectId);
+
+            if (subject is null)
+            {
+                throw new ArgumentException("No such subject found");
+            }
+
+            var teacher = await repo.All<ApplicationUser>().FirstOrDefaultAsync(t => t.Id == teacherId);
+
+            if (teacher is null)
+            {
+                throw new ArgumentException("No such teacher found");
+            }
+
+            if (subject.TeacherId == teacher.Id)
+            {
+                throw new ArgumentException("Subject is already taught by this teacher");
+            }
+
+            if (teacher.SchoolId != school.Id || !teacher.IsTeacher)
+            {
+                throw new ArgumentException("This user is no longer a teacher in this school");
+            }
+
+            if (subject.Teacher is not null && subject.Teacher.Subjects is not null)
+            {
+                subject.Teacher.Subjects.Remove(subject);
+            }
+
+            subject.TeacherId = teacher.Id;
+            subject.Teacher = teacher;
+            teacher.Subjects.Add(subject);
+
             await repo.SaveChangesAsync();
         }
 
@@ -366,12 +412,43 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("A school with this Id doesn't exist");
             }
             if (school.PrincipalId != userId && !isAdmin)
-                throw new ArgumentException("You aren't the school's principal");
+                throw new ArgumentException("You aren't the school's principal nor an Admin");
 
             var teachers = await repo.All<ApplicationUser>().Where(au => au.IsTeacher == true && au.SchoolId == school.Id).ToListAsync();
 
 
             return teachers;
+        }
+
+        public async Task<List<TeacherViewModel>> GetCandidateTeachersViewModelInSchool(Guid schoolId, Guid userId, bool isAdmin)
+        {
+            var school = await repo.All<School>().FirstOrDefaultAsync(sc => sc.Id == schoolId);
+
+            if (school is null)
+            {
+                throw new ArgumentException("A school with this Id doesn't exist");
+            }
+            if (school.PrincipalId != userId && !isAdmin)
+                throw new ArgumentException("You aren't the school's principal nor an Admin");
+
+            var teachers = await repo.All<ApplicationUser>().Where(au => au.IsTeacher == true && au.SchoolId == school.Id).Include(au => au.Subjects).ToListAsync();
+
+            var result = teachers.Select(t => new TeacherViewModel
+            {
+                FullName = t.FirstName + " " + t.LastName,
+                Id = t.Id,
+                SchoolId = school.Id,
+                Subjects = t.Subjects.Select(ts => new SchoolSubjectViewModel
+                {
+                    Name = ts.Name,
+                    Id = ts.Id,
+                    CreatedOn = ts.CreatedOn,
+                    SchoolId = ts.SchoolId,
+                    TeacherId = ts.TeacherId
+                }).ToList()
+            }).ToList();
+
+            return result;
         }
 
         public async Task<SchoolSubjectViewModel> GetSubjectById(Guid subjectId)

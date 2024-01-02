@@ -21,6 +21,7 @@ namespace SchoolSocialMediaApp.ViewModels.Models.User
         public string FullName { get; set; } = null!;
 
         [Comment("Teacher's school id")]
+        [Required]
         public Guid SchoolId { get; set; }
 
         [Comment("Teacher's subjects at the moment")]

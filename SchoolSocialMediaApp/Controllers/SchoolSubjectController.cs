@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolSubject;
+using SchoolSocialMediaApp.ViewModels.Models.User;
 
 namespace SchoolSocialMediaApp.Controllers
 {
@@ -119,7 +120,7 @@ namespace SchoolSocialMediaApp.Controllers
             var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
             if (isPrincipal || isAdmin)
             {
-                var teachers = await schoolSubjectService.GetCandidateTeachersInSchool(schoolId, userId);
+                var teachers = await schoolSubjectService.GetCandidateTeachersViewModelInSchool(schoolId, userId, isAdmin);
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
                 ViewBag.SubjectName = subjectName;
@@ -130,6 +131,30 @@ namespace SchoolSocialMediaApp.Controllers
             }
             else
                 return RedirectToAction(nameof(HomeController.Index), new { message = "You don't have permission to Assign classes to subjects", classOfMessage = "text-bg-danger" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddTeacherToSubject(Guid teacherId, Guid subjectId, Guid schoolId, Guid userId)
+        {
+            try
+            {
+                if (userId == Guid.Empty)
+                    userId = this.GetUserId();
+                var userIdString = userId.ToString();
+                var isPrincipal = await schoolService.IsTheUserPrincipalOfTheSchool(schoolId, userId);
+                var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
+                if (isPrincipal || isAdmin)
+                {
+                    await schoolSubjectService.AssignTeacherToSubject(teacherId, subjectId, schoolId);
+                    return RedirectToAction(nameof(SchoolController.Manage), new { schoolId = schoolId, subjectId = subjectId, message = "Class assigned to teacher successfully!", classOfMessage = "text-bg-success" });
+                }
+                else
+                    throw new ArgumentException("You don't have permission to Assign classes to subjects in this school");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(HomeController.Index), new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
         }
 
         [HttpPost]
@@ -240,7 +265,7 @@ namespace SchoolSocialMediaApp.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction(nameof(HomeController.Index),"Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+                return RedirectToAction(nameof(HomeController.Index), "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
         }
     }
