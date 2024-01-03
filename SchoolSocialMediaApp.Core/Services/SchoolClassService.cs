@@ -79,7 +79,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             catch (Exception ex)
             {
-                if (ex.Message == "The class you're trying to create already exists !")
+                if (ex.Message == "The class you're trying to create already exists !" || ex.Message == "User is not a member of any school.")
                 {
                     throw;
                 }
@@ -300,7 +300,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task RemoveAllSubjectsFromClassAsync(Guid classId)
         {
-            var schoolClass = await repo.All<SchoolClass>().Include(sc => sc.Students).Include(sc=>sc.SchoolSubjects).FirstOrDefaultAsync(sc => sc.Id == classId);
+            var schoolClass = await repo.All<SchoolClass>().Include(sc => sc.Students).Include(sc => sc.SchoolSubjects).FirstOrDefaultAsync(sc => sc.Id == classId);
 
             if (schoolClass is null)
             {

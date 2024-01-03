@@ -39,11 +39,34 @@
                                 var user = await UserManager.GetUserAsync(User);
                                 var userIsPartOfSchool = RoleService.IsUserPartOfSchool(await UserManager.GetUserAsync(User));
                                 var userIsAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+
                                 if (userIsPartOfSchool)
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Post" asp-action="Index">Posts from your School</a>
                                     </li>
+
+                                    if (await UserManager.IsInRoleAsync(user, "Teacher"))
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="Teacher" asp-controller="Teacher" asp-action="TeacherPanel">Teacher Panel</a>
+                                        </li>
+                                    }
+
+                                    if (await UserManager.IsInRoleAsync(user, "Parent"))
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="Parent" asp-controller="Parent" asp-action="ParentPanel">Parent Panel</a>
+                                        </li>
+                                    }
+
+                                    if (await UserManager.IsInRoleAsync(user, "Student"))
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="Student" asp-controller="Student" asp-action="StudentPanel">Student Panel</a>
+                                        </li>
+                                    }
+
                                 }
                                 else if (userIsAdmin)
                                 {

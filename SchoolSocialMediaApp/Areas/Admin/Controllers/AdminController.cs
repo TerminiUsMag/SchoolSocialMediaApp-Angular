@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SchoolSocialMediaApp.Controllers;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.School;
@@ -9,7 +10,7 @@ using X.PagedList;
 
 namespace SchoolSocialMediaApp.Areas.Admin.Controllers
 {
-    public class AdminController : BaseAdminController
+    public class AdminController : BaseController
     {
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
