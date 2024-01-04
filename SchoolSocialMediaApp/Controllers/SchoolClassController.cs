@@ -32,6 +32,7 @@ namespace SchoolSocialMediaApp.Controllers
 
             ViewBag.Message = message;
             ViewBag.ClassOfMessage = classOfMessage;
+            ViewBag.SchoolId = schoolId;
 
             return View(classes);
         }
@@ -47,15 +48,17 @@ namespace SchoolSocialMediaApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(Guid schoolId)
         {
             var model = new SchoolClassCreateModel();
+
+            ViewBag.SchoolId = schoolId;
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(SchoolClassCreateModel model)
+        public async Task<IActionResult> Create(SchoolClassCreateModel model, Guid schoolId)
         {
             if (!ModelState.IsValid)
             {
@@ -65,7 +68,18 @@ namespace SchoolSocialMediaApp.Controllers
             var userId = this.GetUserId();
             try
             {
-                await schoolClassService.CreateSchoolClassAsync(model, userId);
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isPrincipal && !isAdmin)
+                {
+                    throw new ArgumentException("You don't have permission to Delete School Classes!");
+                }
+                if (schoolId == Guid.Empty && isAdmin)
+                {
+                    throw new ArgumentException("Invalid school");
+                }
+
+                await schoolClassService.CreateSchoolClassAsync(model, userId, schoolId);
             }
             catch (ArgumentException ae)
             {
@@ -73,7 +87,7 @@ namespace SchoolSocialMediaApp.Controllers
                 return View(model);
             }
 
-            return RedirectToAction(nameof(ManageAll), new { schoolId = Guid.Empty, userId = userId });
+            return RedirectToAction(nameof(ManageAll), new { schoolId = schoolId, userId = userId });
         }
 
         [HttpPost]
@@ -89,9 +103,9 @@ namespace SchoolSocialMediaApp.Controllers
                     throw new ArgumentException("You don't have permission to Delete School Classes!");
                 }
                 await schoolClassService.RemoveAllStudentsFromClassAsync(classId);
-                await schoolClassService.RemoveAllSubjectsFromClassAsync(classId);
+                var schoolId = await schoolClassService.RemoveAllSubjectsFromClassAndDeleteItAsync(classId);
                 //await schoolClassService.DeleteClassAsync(classId);
-                return RedirectToAction(nameof(ManageAll), new { userId = this.GetUserId(), message = "Class deleted successfully", classOfMessage = "text-bg-success" });
+                return RedirectToAction(nameof(ManageAll), new { schoolId = schoolId,userId = this.GetUserId(), message = "Class deleted successfully", classOfMessage = "text-bg-success" });
             }
             catch (Exception ex)
             {

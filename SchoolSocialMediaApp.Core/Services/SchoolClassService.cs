@@ -44,17 +44,21 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
-        public async Task<bool> CreateSchoolClassAsync(SchoolClassCreateModel schoolClassCreateModel, Guid userId)
+        public async Task<bool> CreateSchoolClassAsync(SchoolClassCreateModel schoolClassCreateModel, Guid userId, Guid schoolId)
         {
+            SchoolViewModel school;
             try
             {
-                Guid schoolId;
                 var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
                 var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
                 if (!isPrincipal && !isAdmin)
                     return false;
 
-                var school = await schoolService.GetSchoolByUserIdAsync(userId);
+                if (schoolId == Guid.Empty)
+                    school = await schoolService.GetSchoolByUserIdAsync(userId);
+                else
+                    school = await schoolService.GetSchoolByIdAsync(schoolId);
+
                 schoolId = school.Id;
                 var duplicate = await repo
                     .AllReadonly<SchoolClass>()
@@ -298,7 +302,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
-        public async Task RemoveAllSubjectsFromClassAsync(Guid classId)
+        public async Task<Guid> RemoveAllSubjectsFromClassAndDeleteItAsync(Guid classId)
         {
             var schoolClass = await repo.All<SchoolClass>().Include(sc => sc.Students).Include(sc => sc.SchoolSubjects).FirstOrDefaultAsync(sc => sc.Id == classId);
 
@@ -326,7 +330,7 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 throw;
             }
-
+            return schoolClass.SchoolId;
         }
     }
 }
