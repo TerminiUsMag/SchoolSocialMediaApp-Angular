@@ -173,11 +173,11 @@ namespace SchoolSocialMediaApp.Core.Services
                 string imageUrl = school.ImageUrl.Substring(1);
                 string filePath = Path.Combine(env.WebRootPath, imageUrl);
 
-                    // Check if the file exists before attempting to delete
-                    if (File.Exists(filePath))
-                    {
-                        File.Delete(filePath);
-                    }
+                // Check if the file exists before attempting to delete
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
             }
 
 
@@ -272,7 +272,11 @@ namespace SchoolSocialMediaApp.Core.Services
                 if (await roleService.UserIsInRoleAsync(userId.ToString(), role))
                 {
                     //var user = await userManager.FindByIdAsync(userId.ToString());
-                    var user = await repo.All<ApplicationUser>().Include(u => u.School).FirstOrDefaultAsync(u => u.Id == userId);
+                    var user = await repo
+                        .All<ApplicationUser>()
+                        .Include(u => u.School)
+                        .ThenInclude(s => s.Principal)
+                        .FirstOrDefaultAsync(u => u.Id == userId);
                     var school = user!.School;
                     if (school is null)
                     {
