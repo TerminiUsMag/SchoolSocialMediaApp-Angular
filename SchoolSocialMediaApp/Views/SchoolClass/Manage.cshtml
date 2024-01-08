@@ -52,6 +52,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Teacher</th>
+                    <th></th>
                     <!-- Add more subject properties here -->
                 </tr>
             </thead>
@@ -61,11 +62,19 @@
                     <tr>
                         <td>@subject.Name</td>
                         <td>@subject.Teacher?.FirstName @subject.Teacher?.LastName</td>
+                        <td>
+                            <form asp-controller="SchoolClass" asp-action="RemoveSubjectFromClass" method="post">
+                                <input type="hidden" name="subjectId" value="@subject.Id" />
+                                <input type="hidden" name="classId" value="@Model.Id" />
+                                <input type="hidden" name="schoolId" value="@Model.SchoolId" />
+                                <button type="submit" class="btn btn-primary">Remove from Class</button>
+                            </form>
+                        </td>
                         <!-- Add more subject properties here -->
                     </tr>
                 }
             </tbody>
         </table>
-        <a asp-controller="SchoolClass" asp-action="AddSubjects" asp-route-schoolId="@Model.SchoolId" asp-route-classId="@Model.Id" class="btn btn-primary mb-4">Add Subjects to Class</a>
+        <a asp-controller="SchoolClass" asp-action="AddSubjectsToClass" asp-route-schoolId="@Model.SchoolId" asp-route-classId="@Model.Id" class="btn btn-primary mb-4">Add Subjects to Class</a>
     </div>
 </div>

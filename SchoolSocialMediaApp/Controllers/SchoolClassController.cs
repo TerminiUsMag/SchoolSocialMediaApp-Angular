@@ -2,6 +2,7 @@
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolClass;
+using SchoolSocialMediaApp.ViewModels.Models.SchoolSubject;
 
 namespace SchoolSocialMediaApp.Controllers
 {
@@ -105,7 +106,7 @@ namespace SchoolSocialMediaApp.Controllers
                 await schoolClassService.RemoveAllStudentsFromClassAsync(classId);
                 var schoolId = await schoolClassService.RemoveAllSubjectsFromClassAndDeleteItAsync(classId);
                 //await schoolClassService.DeleteClassAsync(classId);
-                return RedirectToAction(nameof(ManageAll), new { schoolId = schoolId,userId = this.GetUserId(), message = "Class deleted successfully", classOfMessage = "text-bg-success" });
+                return RedirectToAction(nameof(ManageAll), new { schoolId = schoolId, userId = this.GetUserId(), message = "Class deleted successfully", classOfMessage = "text-bg-success" });
             }
             catch (Exception ex)
             {
@@ -151,9 +152,9 @@ namespace SchoolSocialMediaApp.Controllers
             {
                 if (ex.Message != null)
                 {
-                    return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = ex.Message, classOfMessage = "text-bg-danger" });
+                    return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = ex.Message, classOfMessage = "text-bg-danger" });
                 }
-                return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to add the student to the class", classOfMessage = "text-bg-danger" });
+                return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to add the student to the class", classOfMessage = "text-bg-danger" });
             }
         }
 
@@ -183,6 +184,91 @@ namespace SchoolSocialMediaApp.Controllers
                 return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to remove student from class", classOfMessage = "text-bg-danger" });
             }
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddSubjectsToClass(Guid schoolId, Guid classId, string message = "", string classOfMessage = "")
+        {
+            try
+            {
+                var userId = this.GetUserId();
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isPrincipal && !isAdmin)
+                {
+                    throw new ArgumentException("You don't have permission to Add subjects to Class");
+                }
+                List<SchoolSubjectViewModel> subjects = await schoolClassService.GetAllAssignableSubjectsToClassAsync(classId, schoolId);
+                ViewBag.SchoolId = schoolId;
+                ViewBag.ClassId = classId;
+
+                ViewBag.Message = message;
+                ViewBag.ClassOfMessage = classOfMessage;
+
+                return View(subjects);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message != null)
+                {
+                    return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = ex.Message, classOfMessage = "text-bg-danger" });
+                }
+                return RedirectToAction(nameof(AddStudentsToClass), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to add subjects to the class", classOfMessage = "text-bg-danger" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddSubjectToClass(Guid schoolId, Guid classId, Guid subjectId)
+        {
+            try
+            {
+                var userId = this.GetUserId();
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isPrincipal && !isAdmin)
+                {
+                    throw new ArgumentException("You don't have permission to Add subject to Class");
+                }
+                await schoolClassService.AddSubjectToClass(schoolId, classId, subjectId);
+                return RedirectToAction(nameof(AddSubjectsToClass), new { classId = classId, schoolId = schoolId, message = "Subject added to class successfully!", classOfMessage = "text-bg-success" });
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message != null)
+                {
+                    return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = ex.Message, classOfMessage = "text-bg-danger" });
+                }
+
+                return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to add subject to class", classOfMessage = "text-bg-danger" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveSubjectFromClass(Guid schoolId, Guid classId, Guid subjectId)
+        {
+            try
+            {
+                var userId = this.GetUserId();
+                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
+                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
+                if (!isPrincipal && !isAdmin)
+                {
+                    throw new ArgumentException("You don't have permission to Remove subjects from Class");
+                }
+                await schoolClassService.RemoveSubjectFromClassAsync(subjectId, classId, schoolId);
+                return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "Subject removed from class successfully!", classOfMessage = "text-bg-success" });
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message != null)
+                {
+                    return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = ex.Message, classOfMessage = "text-bg-danger" });
+                }
+
+                return RedirectToAction(nameof(Manage), new { classId = classId, schoolId = schoolId, message = "An error occurred while trying to remove subject from class", classOfMessage = "text-bg-danger" });
+            }
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿@using SchoolSocialMediaApp.Infrastructure.Data.Models;
-@model List<ApplicationUser>;
+@model List<SchoolSubjectViewModel>;
 
 @{
-    ViewBag.Title = "Add students to class";
+    ViewBag.Title = "Add subjects to class";
 }
 
 <h1>@ViewBag.Title</h1>
@@ -23,16 +23,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var student in Model)
+                @foreach (var subject in Model)
                 {
                     <tr>
-                        <td>@student.FirstName @student.LastName </td>
-                        <td>@student.Email</td>
+                        <td>@subject.Name </td>
+                        <td>@subject.TeacherName</td>
                         <td>
-                            <form asp-controller="SchoolClass" asp-action="AddStudentToClass" method="post">
-                                <input type="hidden" name="studentId" value="@student.Id" />
+                            <form asp-controller="SchoolClass" asp-action="AddSubjectToClass" method="post">
+                                <input type="hidden" name="subjectId" value="@subject.Id" />
                                 <input type="hidden" name="classId" value="@ViewBag.ClassId" />
-                                <input type="hidden" name="schoolId" value="@student.SchoolId" />
+                                <input type="hidden" name="schoolId" value="@ViewBag.SchoolId" />
                                 <button type="submit" class="btn btn-primary">Add to class</button>
                             </form>
                         </td>
@@ -45,5 +45,5 @@
 }
 else
 {
-    <h2>No student candidates found.(Students of this school who are not assigned to a class)</h2>
+    <h2>No free subjects found.</h2>
 }

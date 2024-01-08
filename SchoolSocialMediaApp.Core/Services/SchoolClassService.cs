@@ -29,15 +29,14 @@ namespace SchoolSocialMediaApp.Core.Services
             var schoolClass = await repo.All<SchoolClass>().FirstOrDefaultAsync(sc => sc.Id == classId);
 
             if (schoolClass == null)
-            {
                 throw new ArgumentException("No school with this ID");
-            }
 
             var student = await repo.All<ApplicationUser>().FirstOrDefaultAsync(s => s.Id == studentId);
             if (student == null)
-            {
                 throw new ArgumentException("No user with this ID");
-            }
+
+            if (schoolClass.Students.Any(scs => scs.Id == studentId))
+                throw new ArgumentException("The student is already assigned to this class");
 
             schoolClass.Students.Add(student);
             student.ClassId = classId;
@@ -219,7 +218,8 @@ namespace SchoolSocialMediaApp.Core.Services
                     Students = sc.Students,
                     Subjects = sc.SchoolSubjects.Select(cas => new SchoolSubjectViewModel
                     {
-                        Id = cas.SchoolSubjectId
+                        Id = cas.SchoolSubjectId,
+                        Name = cas.SchoolSubject.Name
                     }).ToList(),
                     //Subjects = sc.SchoolSubjects.Select(ss => new SchoolSubjectViewModel
                     //{
@@ -331,6 +331,96 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw;
             }
             return schoolClass.SchoolId;
+        }
+
+        public async Task<List<SchoolSubjectViewModel>> GetAllAssignableSubjectsToClassAsync(Guid classId, Guid schoolId)
+        {
+            if (classId == Guid.Empty)
+                throw new ArgumentException("The class id cannot be empty");
+
+            var schoolClass = await repo.All<SchoolClass>().Include(sc => sc.SchoolSubjects).FirstOrDefaultAsync(sc => sc.Id == classId && sc.SchoolId == schoolId);
+
+            if (schoolClass is null)
+                throw new ArgumentException("No class with this Id in the school");
+
+            var subjectsAlreadyAssignedToClass = schoolClass.SchoolSubjects;
+
+            var subjects = await repo.All<SchoolSubject>().Where(ss => ss.SchoolId == schoolId).Include(ss => ss.Teacher).ToListAsync();
+            List<SchoolSubject> freeSubjects = new List<SchoolSubject>();
+            foreach (var subject in subjects)
+            {
+                if (!subjectsAlreadyAssignedToClass.Any(ss => ss.SchoolSubjectId == subject.Id))
+                {
+                    freeSubjects.Add(subject);
+                }
+            }
+
+            return freeSubjects.Select(fs => new SchoolSubjectViewModel
+            {
+                TeacherName = $"{fs.Teacher!.FirstName} {fs.Teacher.LastName}",
+                CreatedOn = fs.CreatedOn,
+                Id = fs.Id,
+                Name = fs.Name,
+                SchoolId = fs.SchoolId,
+                TeacherId = fs.TeacherId,
+            }).ToList();
+        }
+
+        public async Task AddSubjectToClass(Guid schoolId, Guid classId, Guid subjectId)
+        {
+            if (schoolId == Guid.Empty || classId == Guid.Empty || subjectId == Guid.Empty)
+                throw new ArgumentException("At least one argument is wrong");
+
+            var schoolClass = await repo.All<SchoolClass>().Include(sc => sc.SchoolSubjects).FirstOrDefaultAsync(sc => sc.Id == classId && sc.SchoolId == schoolId);
+
+            if (schoolClass is null)
+                throw new ArgumentException("No such class found in this school");
+
+            var schoolSubject = await repo.All<SchoolSubject>().FirstOrDefaultAsync(ss => ss.Id == subjectId && ss.SchoolId == schoolId);
+
+            if (schoolSubject is null)
+                throw new ArgumentException("No such subject found in this school");
+
+            if (schoolClass.SchoolSubjects.Any(ss => ss.SchoolSubjectId == schoolSubject.Id))
+                throw new ArgumentException("That subject is already added to this class");
+
+            var newClassSubject = new ClassesAndSubjects
+            {
+                SchoolClassId = schoolClass.Id,
+                SchoolSubjectId = schoolSubject.Id,
+            };
+
+            schoolSubject.SchoolClasses.Add(newClassSubject);
+            schoolClass.SchoolSubjects.Add(newClassSubject);
+
+            await repo.SaveChangesAsync();
+        }
+
+        public async Task RemoveSubjectFromClassAsync(Guid subjectId, Guid classId, Guid schoolId)
+        {
+            if (subjectId == Guid.Empty || classId == Guid.Empty)
+                throw new ArgumentException("At least one argument is empty");
+
+            var subject = await repo.All<SchoolSubject>().Include(s => s.SchoolClasses).FirstOrDefaultAsync(s => s.Id == subjectId && s.SchoolId == schoolId);
+
+            if (subject is null)
+                throw new ArgumentException("No such subject found in this school");
+
+            var schoolClass = await repo.All<SchoolClass>().Include(c => c.SchoolSubjects).FirstOrDefaultAsync(c => c.Id == classId && c.SchoolId == schoolId);
+
+            if (schoolClass is null)
+                throw new ArgumentException("No such class found in this school");
+
+            var subjectClass = subject.SchoolClasses.FirstOrDefault(sc => sc.SchoolClassId == schoolClass.Id);
+            var classSubject = schoolClass.SchoolSubjects.FirstOrDefault(cs => cs.SchoolSubjectId == subject.Id);
+
+            if (classSubject is null || subjectClass is null)
+                throw new ArgumentException("Subject and Class are not linked in any way");
+
+            subject.SchoolClasses.Remove(subjectClass);
+            schoolClass.SchoolSubjects.Remove(classSubject);
+
+            await repo.SaveChangesAsync();
         }
     }
 }

@@ -38,6 +38,9 @@ namespace SchoolSocialMediaApp.ViewModels.Models.SchoolSubject
         [Required]
         public DateTime CreatedOn { get; set; }
 
+        [Comment("Subject's teacher names")]
+        public string? TeacherName { get; set; }
+
         public ICollection<SchoolClassViewModel> Classes { get; set; } = new List<SchoolClassViewModel>();
     }
 }
