@@ -180,6 +180,41 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             return RedirectToAction("AdminPanel", "Admin", new { message = "Successfully given administrator permissions !", classOfMessage = "text-bg-success" });
         }
 
+        [HttpPost]
+        [Area("Admin")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> AddUserToRole(Guid userId, AdminPanelViewModel model, string message = "", string classOfMessage = "")
+        {
+            try
+            {
+                Guid roleId = Guid.Empty;
+                //if (!ModelState.IsValid)
+                //{
+                //    throw new ArgumentException("Something went wrong");
+                //}
+
+                if (model.SelectedRoleId is not null && model.SelectedRoleId != string.Empty)
+                    Guid.TryParse(model.SelectedRoleId, out roleId);
+
+                if (roleId == Guid.Empty)
+                    throw new ArgumentException("The selected role is not valid");
+                var roles = await roleService.GetRolesAsync();
+                foreach (var role in roles)
+                {
+                    await roleService.RemoveUserFromRoleAsync(userId.ToString(), role.Text);
+                }
+                await roleService.AddUserToRoleIdAsync(userId, roleId, this.GetUserId().ToString());
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(AdminPanel), new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+
+            return RedirectToAction(nameof(AdminPanel), new { message = "User added to role successfully!", classOfMessage = "text-bg-success" });
+        }
+
 
         //SchoolController Actions 
 
@@ -316,63 +351,6 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             return RedirectToAction("AdminPanel", "Admin", new { message = $"{model.Name} Deleted successfully!", classOfMessage = "text-bg-success" });
         }
 
-        //PostController Actions
-
-        [HttpGet]
-        [Area("Admin")]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AdminPostView(Guid schoolId, int? page, string message = "", string classOfMessage = "")
-        {
-            var userId = this.GetUserId();
-            var model = await postService.GetAllPostsAsync(schoolId, userId);
-            var school = await schoolService.GetSchoolByIdAsync(schoolId);
-            var schoolName = school.Name;
-            ViewBag.SchoolName = schoolName;
-            ViewBag.Message = message;
-            ViewBag.ClassOfMessage = classOfMessage;
-            ViewBag.SchoolId = schoolId;
-            int pageSize = 3;
-            int pageNumber = page ?? 1;
-            var pagedPosts = model.ToPagedList(pageNumber, pageSize);
-
-            return View(pagedPosts);
-        }
-
-        [HttpPost]
-        [Area("Admin")]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AddUserToRole(Guid userId, AdminPanelViewModel model, string message = "", string classOfMessage = "")
-        {
-            try
-            {
-                Guid roleId = Guid.Empty;
-                //if (!ModelState.IsValid)
-                //{
-                //    throw new ArgumentException("Something went wrong");
-                //}
-
-                if (model.SelectedRoleId is not null && model.SelectedRoleId != string.Empty)
-                    Guid.TryParse(model.SelectedRoleId, out roleId);
-
-                if (roleId == Guid.Empty)
-                    throw new ArgumentException("The selected role is not valid");
-                var roles = await roleService.GetRolesAsync();
-                foreach (var role in roles)
-                {
-                    await roleService.RemoveUserFromRoleAsync(userId.ToString(), role.Text);
-                }
-                await roleService.AddUserToRoleIdAsync(userId, roleId, this.GetUserId().ToString());
-
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction(nameof(AdminPanel), new { message = ex.Message, classOfMessage = "text-bg-danger" });
-            }
-
-
-            return RedirectToAction(nameof(AdminPanel), new { message = "User added to role successfully!", classOfMessage = "text-bg-success" });
-        }
-
         [HttpGet]
         [Area("Admin")]
         [Authorize(Policy = "Admin")]
@@ -398,5 +376,28 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
                 return RedirectToAction("AccessDenied", "Account", new { msg = ex.Message });
             }
         }
+
+        //PostController Actions
+
+        [HttpGet]
+        [Area("Admin")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> AdminPostView(Guid schoolId, int? page, string message = "", string classOfMessage = "")
+        {
+            var userId = this.GetUserId();
+            var model = await postService.GetAllPostsAsync(schoolId, userId);
+            var school = await schoolService.GetSchoolByIdAsync(schoolId);
+            var schoolName = school.Name;
+            ViewBag.SchoolName = schoolName;
+            ViewBag.Message = message;
+            ViewBag.ClassOfMessage = classOfMessage;
+            ViewBag.SchoolId = schoolId;
+            int pageSize = 3;
+            int pageNumber = page ?? 1;
+            var pagedPosts = model.ToPagedList(pageNumber, pageSize);
+
+            return View(pagedPosts);
+        }
+
     }
 }
