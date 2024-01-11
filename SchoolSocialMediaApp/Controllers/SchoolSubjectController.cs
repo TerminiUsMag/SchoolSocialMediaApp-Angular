@@ -78,6 +78,7 @@ namespace SchoolSocialMediaApp.Controllers
                 ViewBag.ClassOfMessage = classOfMessage;
                 ViewBag.SubjectName = subjectName;
                 ViewBag.SubjectId = subjectId;
+                ViewBag.SchoolId = schoolId;
                 //ViewBag.SchoolId = schoolId;
 
                 return View(classes);
