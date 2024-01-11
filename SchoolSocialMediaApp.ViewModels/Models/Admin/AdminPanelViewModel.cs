@@ -5,7 +5,7 @@ using SchoolSocialMediaApp.ViewModels.Models.School;
 using System.ComponentModel.DataAnnotations;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
-namespace SchoolSocialMediaApp.ViewModels.Models.User
+namespace SchoolSocialMediaApp.ViewModels.Models.Admin
 {
     public class AdminPanelViewModel
     {

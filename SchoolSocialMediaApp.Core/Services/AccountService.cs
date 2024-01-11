@@ -5,8 +5,10 @@ using Microsoft.Extensions.Logging;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Admin;
 using SchoolSocialMediaApp.ViewModels.Models.Post;
 using SchoolSocialMediaApp.ViewModels.Models.School;
+using SchoolSocialMediaApp.ViewModels.Models.Teacher;
 using SchoolSocialMediaApp.ViewModels.Models.User;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -22,26 +24,29 @@ namespace SchoolSocialMediaApp.Core.Services
         private readonly IRoleService roleService;
         private readonly IRepository repo;
         private readonly ISchoolService schoolService;
+        private readonly ISchoolSubjectService subjectService;
         public AccountService(
             UserManager<ApplicationUser> _userManager,
             SignInManager<ApplicationUser> _signInManager,
             IRepository _repo,
             IRoleService _roleService,
             IWebHostEnvironment _env,
-            ISchoolService schoolService)
+            ISchoolService _schoolService,
+            ISchoolSubjectService _subjectService)
         {
             this.userManager = _userManager;
             this.signInManager = _signInManager;
             this.roleService = _roleService;
             this.repo = _repo;
             this.env = _env;
-            this.schoolService = schoolService;
+            this.schoolService = _schoolService;
+            this.subjectService = _subjectService;
         }
 
         public async Task DeleteAsync(Guid userId)
         {
             //Get the user entity from the DB with his posts, comments, likes and invitations.
-            var user = await repo.All<ApplicationUser>().Where(u => u.Id == userId).Include(u => u.Posts).Include(u => u.Comments).Include(u => u.LikedPosts).Include(u=>u.Invitations).FirstOrDefaultAsync();
+            var user = await repo.All<ApplicationUser>().Where(u => u.Id == userId).Include(u => u.Posts).Include(u => u.Comments).Include(u => u.LikedPosts).Include(u => u.Invitations).FirstOrDefaultAsync();
 
             //Checks if the user is not found and throws and exception.
             if (user == null) throw new ArgumentNullException("User is empty");
@@ -140,7 +145,7 @@ namespace SchoolSocialMediaApp.Core.Services
             var posts = await repo.All<Post>().ToListAsync();
             var users = await repo.All<ApplicationUser>().Where(u => u.Id != userId && u.IsAdmin == false).ToListAsync();
             var admins = await repo.All<ApplicationUser>().Where(u => u.Id != userId && u.IsAdmin == true).ToListAsync();
-            var schools = await repo.All<School>().Include(s=>s.Principal).Select(s => new SchoolManageViewModel
+            var schools = await repo.All<School>().Include(s => s.Principal).Select(s => new SchoolManageViewModel
             {
                 Description = s.Description,
                 Id = s.Id,
@@ -242,6 +247,31 @@ namespace SchoolSocialMediaApp.Core.Services
                 Username = user.UserName,
                 PhoneNumber = user.PhoneNumber,
             };
+        }
+
+        public async Task<TeacherPanelViewModel> GetTeacherPanelViewModel(Guid userId)
+        {
+            var user = await repo.All<ApplicationUser>().Include(u => u.Subjects).FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+                throw new ArgumentException("No such user");
+
+            var userIsTeacher = await roleService.UserIsInRoleAsync(userId.ToString(), "Teacher");
+            if (!userIsTeacher)
+                throw new ArgumentException("User is not a teacher !");
+
+            var schoolId = user.SchoolId;
+            var school = await repo.All<School>().FirstOrDefaultAsync(s => s.Id == schoolId);
+            if (school is null)
+                throw new ArgumentException("No such school");
+
+            var subjects = user.Subjects;
+            if (subjects.Any())
+            {
+                foreach(var subject in subjects)
+                {
+                    var schoolClassesInSubject = await subjectService.GetAssignedClasses(subject.Id);
+                }
+            }
         }
 
         public async Task<UserManageViewModel> GetUserManageViewModelAsync(string userId)

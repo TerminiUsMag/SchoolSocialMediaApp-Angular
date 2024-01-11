@@ -1,4 +1,5 @@
 ﻿using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Admin;
 using SchoolSocialMediaApp.ViewModels.Models.School;
 
 namespace SchoolSocialMediaApp.Core.Contracts

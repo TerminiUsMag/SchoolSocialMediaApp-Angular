@@ -13,6 +13,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task DeleteSubject(Guid userId, Guid subjectId);
         Task<ICollection<SchoolClassViewModel>> GetAllAssignableToSubjectClassesAsync(Guid schoolId, Guid subjectId);
         Task<ICollection<SchoolSubjectViewModel>> GetAllSubjectsInSchoolAsync(Guid schoolId, Guid userId);
+        Task<List<SchoolClassViewModel>> GetAssignedClasses(Guid subjectId);
         Task<ICollection<ApplicationUser>> GetCandidateTeachersInSchool(Guid schoolId, Guid userId, bool isAdmin = false);
         Task<List<TeacherViewModel>> GetCandidateTeachersViewModelInSchool(Guid schoolId, Guid userId, bool isAdmin);
         Task<SchoolSubjectViewModel> GetSubjectById(Guid subjectId);

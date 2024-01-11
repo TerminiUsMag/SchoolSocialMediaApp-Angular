@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Controllers;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Admin;
 using SchoolSocialMediaApp.ViewModels.Models.School;
-using SchoolSocialMediaApp.ViewModels.Models.User;
 using X.PagedList;
 
 namespace SchoolSocialMediaApp.Areas.Admin.Controllers

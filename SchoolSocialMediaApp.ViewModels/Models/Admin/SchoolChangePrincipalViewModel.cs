@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SchoolSocialMediaApp.ViewModels.Models.School
+namespace SchoolSocialMediaApp.ViewModels.Models.Admin
 {
     public class SchoolChangePrincipalViewModel
     {

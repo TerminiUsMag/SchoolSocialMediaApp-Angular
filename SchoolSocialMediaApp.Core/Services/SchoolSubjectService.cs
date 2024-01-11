@@ -403,6 +403,29 @@ namespace SchoolSocialMediaApp.Core.Services
             return subjectsInSchool;
         }
 
+        public async Task<List<SchoolClassViewModel>> GetAssignedClasses(Guid subjectId)
+        {
+            var classIds = await GetAssignedClassesIds(subjectId);
+            if (classIds.Any())
+            {
+                var schoolClasses = await repo
+                    .All<SchoolClass>()
+                    .Where(sc => classIds.Any(ci => ci.Equals(sc.Id)))
+                    .Include(sc => sc.Students)
+                    .Select(sc => new SchoolClassViewModel
+                    {
+                        Id = sc.Id,
+                        CreatedOn = sc.CreatedOn,
+                        Grade = sc.Grade,
+                        Name = sc.Name,
+                        SchoolId = sc.School.Id,
+                        Students = sc.Students,
+                    }).ToListAsync();
+                return schoolClasses;
+            }
+            throw new ArgumentException("No classes assigned to this subject");
+        }
+
         public async Task<ICollection<ApplicationUser>> GetCandidateTeachersInSchool(Guid schoolId, Guid userId, bool isAdmin = false)
         {
             var school = await repo.All<School>().Where(sc => sc.Id == schoolId).FirstOrDefaultAsync();
@@ -550,6 +573,21 @@ namespace SchoolSocialMediaApp.Core.Services
             subject.SchoolClasses.Remove(schoolClassAndSubject);
             repo.Delete(schoolClassAndSubject);
             await repo.SaveChangesAsync();
+        }
+
+        private async Task<List<Guid>> GetAssignedClassesIds(Guid subjectId)
+        {
+            var subject = await repo.All<SchoolSubject>().Include(s => s.SchoolClasses).FirstOrDefaultAsync(s => s.Id == subjectId);
+            if (subject is null)
+                throw new ArgumentException("No such subject");
+
+            List<Guid> classesIds = new List<Guid>();
+            if (subject.SchoolClasses.Any())
+            {
+                classesIds = subject.SchoolClasses.Select(sc => sc.SchoolClassId).ToList();
+            }
+
+            return classesIds;
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using validation = SchoolSocialMediaApp.Common.ValidationConstants;
 
-namespace SchoolSocialMediaApp.ViewModels.Models.School
+namespace SchoolSocialMediaApp.ViewModels.Models.Admin
 {
     public class AdminSchoolDeleteViewModel
     {

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Admin;
 using SchoolSocialMediaApp.ViewModels.Models.School;
 
 namespace SchoolSocialMediaApp.Core.Services

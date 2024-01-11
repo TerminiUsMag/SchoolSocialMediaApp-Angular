@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Controllers;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using SchoolSocialMediaApp.ViewModels.Models.User;
+using SchoolSocialMediaApp.ViewModels.Models.Admin;
 
 namespace SchoolSocialMediaApp.Areas.Teacher.Controllers
 {
