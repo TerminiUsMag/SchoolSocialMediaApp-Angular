@@ -8,6 +8,8 @@ using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.Admin;
 using SchoolSocialMediaApp.ViewModels.Models.Post;
 using SchoolSocialMediaApp.ViewModels.Models.School;
+using SchoolSocialMediaApp.ViewModels.Models.SchoolClass;
+using SchoolSocialMediaApp.ViewModels.Models.SchoolSubject;
 using SchoolSocialMediaApp.ViewModels.Models.Teacher;
 using SchoolSocialMediaApp.ViewModels.Models.User;
 using System.Net.Mail;
@@ -264,14 +266,34 @@ namespace SchoolSocialMediaApp.Core.Services
             if (school is null)
                 throw new ArgumentException("No such school");
 
-            var subjects = user.Subjects;
+            var teacherPanelViewModel = new TeacherPanelViewModel();
+
+            var subjects = user.Subjects.Select(s => new SchoolSubjectViewModel
+            {
+                Id = s.Id,
+                CreatedOn = s.CreatedOn,
+                Name = s.Name,
+                TeacherId = s.TeacherId,
+                TeacherName = user.FirstName + " " + user.LastName,
+                SchoolId = s.SchoolId,
+                Teacher = user,
+            });
+            teacherPanelViewModel.SchoolSubjects.AddRange(subjects);
+
             if (subjects.Any())
             {
-                foreach(var subject in subjects)
+                foreach (var subject in subjects)
                 {
                     var schoolClassesInSubject = await subjectService.GetAssignedClasses(subject.Id);
+                    subject.Classes = schoolClassesInSubject;
+                    foreach (var schoolClass in schoolClassesInSubject)
+                    {
+                        schoolClass.Subjects.Add(subject);
+                    }
+                    teacherPanelViewModel.SchoolClasses.AddRange(schoolClassesInSubject);
                 }
             }
+            return teacherPanelViewModel;
         }
 
         public async Task<UserManageViewModel> GetUserManageViewModelAsync(string userId)
