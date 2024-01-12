@@ -278,19 +278,19 @@ namespace SchoolSocialMediaApp.Core.Services
                 SchoolId = s.SchoolId,
                 Teacher = user,
             });
-            teacherPanelViewModel.SchoolSubjects.AddRange(subjects);
 
             if (subjects.Any())
             {
                 foreach (var subject in subjects)
                 {
                     var schoolClassesInSubject = await subjectService.GetAssignedClasses(subject.Id);
-                    subject.Classes = schoolClassesInSubject;
                     foreach (var schoolClass in schoolClassesInSubject)
                     {
+                        subject.Classes.Add(schoolClass);
                         schoolClass.Subjects.Add(subject);
                     }
                     teacherPanelViewModel.SchoolClasses.AddRange(schoolClassesInSubject);
+                    teacherPanelViewModel.SchoolSubjects.Add(subject);
                 }
             }
             return teacherPanelViewModel;
