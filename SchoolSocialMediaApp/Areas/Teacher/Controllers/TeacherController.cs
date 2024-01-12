@@ -29,15 +29,14 @@ namespace SchoolSocialMediaApp.Areas.Teacher.Controllers
 
 
         [HttpGet]
-        [Area("Admin")]
+        [Area("Teacher")]
         [Authorize(Policy = "Teacher")]
         public async Task<IActionResult> TeacherPanel(string message = "", string classOfMessage = "")
         {
             try
             {
                 var userId = this.GetUserId();
-                AdminPanelViewModel model = await accountService.GetTeacherPanelViewModel(userId);
-                model.Roles = await roleService.GetRolesAsync();
+                var model = await accountService.GetTeacherPanelViewModel(userId);
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
                 return View(model);
