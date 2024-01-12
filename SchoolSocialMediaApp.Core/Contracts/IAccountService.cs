@@ -1,5 +1,6 @@
 ﻿using SchoolSocialMediaApp.Infrastructure.Data.Models;
 using SchoolSocialMediaApp.ViewModels.Models.Admin;
+using SchoolSocialMediaApp.ViewModels.Models.Teacher;
 using SchoolSocialMediaApp.ViewModels.Models.User;
 
 namespace SchoolSocialMediaApp.Core.Contracts
@@ -135,6 +136,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         Task<MakeUserAdminViewModel> GetMakeUserAdminViewModelAsync(Guid userId);
         Task MakeAdmin(ApplicationUser userToMakeAdmin);
         Task DeleteAsync(Guid userId);
-        Task<AdminPanelViewModel> GetTeacherPanelViewModel(Guid userId);
+        Task<TeacherPanelViewModel> GetTeacherPanelViewModel(Guid userId);
     }
 }
