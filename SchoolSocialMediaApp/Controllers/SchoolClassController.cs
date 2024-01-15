@@ -16,6 +16,8 @@ namespace SchoolSocialMediaApp.Controllers
             this.schoolClassService = _schoolClassService;
             this.roleService = _roleService;
         }
+
+
         [HttpGet]
         public async Task<IActionResult> ManageAll(Guid schoolId, Guid userId, string message = "", string classOfMessage = "")
         {
@@ -37,6 +39,7 @@ namespace SchoolSocialMediaApp.Controllers
 
             return View(classes);
         }
+
         [HttpGet]
         public async Task<IActionResult> Manage(Guid classId, Guid schoolId, string message = "", string classOfMessage = "")
         {
