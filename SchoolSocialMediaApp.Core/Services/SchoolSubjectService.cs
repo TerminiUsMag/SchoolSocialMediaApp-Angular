@@ -124,11 +124,6 @@ namespace SchoolSocialMediaApp.Core.Services
             try
             {
                 Guid schoolId;
-                var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
-                var isPrincipal = await roleService.UserIsInRoleAsync(userId.ToString(), "Principal");
-                if (!isPrincipal && !isAdmin)
-                    return false;
-
                 var school = await schoolService.GetSchoolByUserIdAsync(userId);
                 schoolId = school.Id;
                 var duplicate = await repo
@@ -165,7 +160,6 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task DeleteSubject(Guid userId, Guid subjectId)
         {
-
             var subject = await repo
                 .All<SchoolSubject>()
                 .Where(ss => ss.Id == subjectId)
@@ -178,17 +172,7 @@ namespace SchoolSocialMediaApp.Core.Services
             var schoolPrincipalId = subject.School.PrincipalId;
             var schoolPrincipal = subject.School.Principal;
 
-            //.Include(ss=>ss.School)
-            //.ThenInclude(s=>s.Principal)
-            //.Include(ss => ss.SchoolClasses)
-            //.ThenInclude(sc => sc.SchoolClass)
-            //.Include(ss => ss.Teacher)
-
-
             var schoolSubjectClasses = await repo.All<ClassesAndSubjects>().Where(cas => cas.SchoolSubjectId == subjectId).ToListAsync();
-
-
-
 
             var user = await repo
                 .All<ApplicationUser>()
@@ -216,8 +200,6 @@ namespace SchoolSocialMediaApp.Core.Services
             while (subject.SchoolClasses.Count > 0)
             {
                 var schoolClassAndSubject = subject.SchoolClasses.First();
-                //var schoolClass = schoolClassAndSubject!.SchoolClass;
-                //schoolClass!.SchoolSubjects.Remove(schoolClassAndSubject);
 
                 repo.Delete(schoolClassAndSubject);
                 subject.SchoolClasses.Remove(schoolClassAndSubject);
@@ -239,8 +221,6 @@ namespace SchoolSocialMediaApp.Core.Services
                 user.SchoolId = school.Id;
                 school.PrincipalId = schoolPrincipalId;
                 school.Principal = schoolPrincipal;
-                //subject.School.PrincipalId = schoolPrincipalId;
-                //subject.School.Principal = schoolPrincipal;
                 await repo.SaveChangesAsync();
 
                 teacher.SchoolId = school.Id;
@@ -290,7 +270,6 @@ namespace SchoolSocialMediaApp.Core.Services
                 .All<SchoolSubject>()
                 .Where(ss => ss.SchoolId == schoolId)
                 .Include(ss => ss.School)
-                //.ThenInclude(sss => sss.Principal)
                 .Include(ss => ss.Teacher)
                 .Include(ss => ss.SchoolClasses)
                 .ToListAsync();
@@ -322,36 +301,6 @@ namespace SchoolSocialMediaApp.Core.Services
                     })
                 .ToList(),
                 }).ToList();
-
-
-            //var subjectsInSchool = await repo
-            //    .All<SchoolSubject>()
-            //    .Where(ss => ss.SchoolId == schoolId)
-            //    .Include(ss => ss.School)
-            //    .ThenInclude(sss => sss.Principal)
-            //    .Select(ss => new SchoolSubjectViewModel
-            //    {
-            //        SchoolId = ss.SchoolId,
-            //        School = new SchoolViewModel
-            //        {
-            //            Description = ss.School.Description,
-            //            Id = ss.School.Id,
-            //            ImageUrl = ss.School.ImageUrl,
-            //            Location = ss.School.Location,
-            //            Name = ss.School.Name,
-            //            PrincipalId = ss.School.PrincipalId,
-            //            PrincipalName = $"{ss.School.Principal.FirstName} {ss.School.Principal.LastName}",
-            //        },
-            //        CreatedOn = ss.CreatedOn,
-            //        Id = ss.Id,
-            //        TeacherId = ss.TeacherId,
-            //        Name = ss.Name,
-            //        Classes = ss.SchoolClasses.Select(cas => new SchoolClassViewModel
-            //        {
-            //            Id = cas.SchoolClassId,
-            //        }).ToList(),
-            //    })
-            //    .ToListAsync();
 
             foreach (var subject in subjectsInSchool)
             {

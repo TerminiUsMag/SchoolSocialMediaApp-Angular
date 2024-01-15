@@ -2,12 +2,9 @@
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
-using SchoolSocialMediaApp.Infrastructure.Migrations;
-using SchoolSocialMediaApp.ViewModels.Models.ClassesAndSubjects;
 using SchoolSocialMediaApp.ViewModels.Models.School;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolClass;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolSubject;
-using System.Security.Cryptography.Xml;
 
 namespace SchoolSocialMediaApp.Core.Services
 {
@@ -132,14 +129,6 @@ namespace SchoolSocialMediaApp.Core.Services
                      {
                          Id = cas.SchoolSubjectId
                      }).ToList(),
-                     //Subjects = sc.SchoolSubjects.Select(ss => new SchoolSubjectViewModel
-                     //{
-                     //    Id = ss.SchoolSubject.Id,
-                     //    CreatedOn = ss.SchoolSubject.CreatedOn,
-                     //    Name = ss.SchoolSubject.Name,
-                     //    SchoolId = ss.SchoolSubject.SchoolId,
-                     //    TeacherId = ss.SchoolSubject.TeacherId
-                     //}).ToList(),
                      CreatedOn = sc.CreatedOn,
                  }).ToListAsync();
 
@@ -221,14 +210,6 @@ namespace SchoolSocialMediaApp.Core.Services
                         Id = cas.SchoolSubjectId,
                         Name = cas.SchoolSubject.Name
                     }).ToList(),
-                    //Subjects = sc.SchoolSubjects.Select(ss => new SchoolSubjectViewModel
-                    //{
-                    //    CreatedOn = ss.SchoolSubject.CreatedOn,
-                    //    TeacherId = ss.SchoolSubject.TeacherId,
-                    //    SchoolId = ss.SchoolSubject.SchoolId,
-                    //    Id = ss.SchoolSubject.Id,
-                    //    Name = ss.SchoolSubject.Name,
-                    //}).ToList(),
                 })
                 .FirstOrDefaultAsync();
 
