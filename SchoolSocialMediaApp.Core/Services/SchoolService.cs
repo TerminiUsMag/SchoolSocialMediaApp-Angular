@@ -662,20 +662,24 @@ namespace SchoolSocialMediaApp.Core.Services
 
         public async Task<SchoolChangePrincipalViewModel> GetSchoolChangePrincipalViewModelBySchoolIdAsync(Guid schoolId)
         {
+            //Get the school by it's ID.
             var school = await repo.All<School>().Where(s => s.Id == schoolId).Include(s => s.Principal).FirstOrDefaultAsync();
 
+            //Check if the school is null.If it's null throws an ArgumentException.
             if (school is null)
                 throw new ArgumentException("School with this ID doesn't exist");
 
-            var principal = await repo.All<ApplicationUser>().Where(u => u.Id == school.PrincipalId).FirstOrDefaultAsync();
+            //Get the principal by the school's principalId property.
+            var principal = await repo.All<ApplicationUser>().FirstOrDefaultAsync(u => u.Id == school.PrincipalId);
 
+            //Check if the principal is null.If it's null throws an ArgumentException.
             if (principal is null)
-            {
                 throw new ArgumentException("Principal not found");
-            }
 
+            //Set's the school's principal property.
             school.Principal = principal;
 
+            //Returns the result.
             return new SchoolChangePrincipalViewModel
             {
                 SchoolId = schoolId,
