@@ -52,7 +52,7 @@ namespace SchoolSocialMediaApp.Controllers
             var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
             if (isPrincipal || isAdmin)
             {
-                var model = await schoolSubjectService.GetSubjectById(subjectId);
+                var model = await schoolSubjectService.GetSubjectByIdAsync(subjectId);
 
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
@@ -99,7 +99,7 @@ namespace SchoolSocialMediaApp.Controllers
                 var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
                 if (isPrincipal || isAdmin)
                 {
-                    await schoolSubjectService.AssignClassToSubject(schoolId, classId, subjectId);
+                    await schoolSubjectService.AssignClassToSubjectAsync(schoolId, classId, subjectId);
                     return RedirectToAction(nameof(SchoolController.Manage), new { schoolId = schoolId, subjectId = subjectId, message = "Class assigned to subject successfully!", classOfMessage = "text-bg-success" });
                 }
                 else
@@ -121,7 +121,7 @@ namespace SchoolSocialMediaApp.Controllers
             var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
             if (isPrincipal || isAdmin)
             {
-                var teachers = await schoolSubjectService.GetCandidateTeachersViewModelInSchool(schoolId, userId, isAdmin);
+                var teachers = await schoolSubjectService.GetCandidateTeachersViewModelInSchoolAsync(schoolId, userId, isAdmin);
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
                 ViewBag.SubjectName = subjectName;
@@ -146,7 +146,7 @@ namespace SchoolSocialMediaApp.Controllers
                 var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
                 if (isPrincipal || isAdmin)
                 {
-                    await schoolSubjectService.AssignTeacherToSubject(teacherId, subjectId, schoolId);
+                    await schoolSubjectService.AssignTeacherToSubjectAsync(teacherId, subjectId, schoolId);
                     return RedirectToAction(nameof(SchoolController.Manage), new { schoolId = schoolId, subjectId = subjectId, message = "Class assigned to teacher successfully!", classOfMessage = "text-bg-success" });
                 }
                 else
@@ -170,7 +170,7 @@ namespace SchoolSocialMediaApp.Controllers
                 var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
                 if (isPrincipal || isAdmin)
                 {
-                    await schoolSubjectService.UnAssignClassFromSubject(schoolId, classId, subjectId);
+                    await schoolSubjectService.UnAssignClassFromSubjectAsync(schoolId, classId, subjectId);
                     return RedirectToAction(nameof(SchoolController.Manage), new { schoolId = schoolId, subjectId = subjectId, message = "Class unassigned from subject successfully!", classOfMessage = "text-bg-success" });
                 }
                 else
@@ -194,9 +194,9 @@ namespace SchoolSocialMediaApp.Controllers
                 var isPrincipal = await schoolService.IsTheUserPrincipalOfTheSchool(model.SchoolId, userId);
                 var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
                 if (isPrincipal)
-                    model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchool(model.SchoolId, userId);
+                    model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchoolAsync(model.SchoolId, userId);
                 else if (isAdmin)
-                    model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchool(model.SchoolId, userId, true);
+                    model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchoolAsync(model.SchoolId, userId, true);
                 else
                     throw new ArgumentException("You don't have permission to create subjects in this school");
             }
@@ -218,9 +218,9 @@ namespace SchoolSocialMediaApp.Controllers
                 var isPrincipal = await schoolService.IsTheUserPrincipalOfTheSchool(model.SchoolId, userId);
                 var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
                 if (isPrincipal)
-                    model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchool(model.SchoolId, userId);
+                    model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchoolAsync(model.SchoolId, userId);
                 else if (isAdmin)
-                    model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchool(model.SchoolId, userId, true);
+                    model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchoolAsync(model.SchoolId, userId, true);
                 else
                     throw new ArgumentException("You don't have permission to create subjects in this school");
 
@@ -238,7 +238,7 @@ namespace SchoolSocialMediaApp.Controllers
             catch (ArgumentException ae)
             {
                 ModelState.AddModelError("", ae.Message);
-                model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchool(model.SchoolId, userId);
+                model.CandidateTeachers = await schoolSubjectService.GetCandidateTeachersInSchoolAsync(model.SchoolId, userId);
                 return View(model);
             }
             var schoolId = await schoolService.GetSchoolIdByUserIdAsync(userId);
@@ -258,7 +258,7 @@ namespace SchoolSocialMediaApp.Controllers
                 var isAdmin = await roleService.UserIsInRoleAsync(userIdString, "Admin");
                 if (isPrincipal || isAdmin)
                 {
-                    await schoolSubjectService.DeleteSubject(userId, subjectId);
+                    await schoolSubjectService.DeleteSubjectAsync(userId, subjectId);
                     return RedirectToAction(nameof(ManageAll), new { schoolId = schoolId, message = "Subject deleted successfully", classOfMessage = "text-bg-success" });
                 }
                 else

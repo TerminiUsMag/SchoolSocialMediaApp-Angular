@@ -37,7 +37,7 @@
                     <input type="hidden" name="userId" value="@teacher.Id" />
                     <button type="submit" class="btn btn-primary">Remove from school</button>
                     </form>*@
-                            <a class="btn btn-primary" asp-area="Admin" asp-controller="Admin" asp-action="AdminSchoolManage" asp-route-schoolId="@subject.Id">Manage</a>
+                            <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageSubject" asp-route-schoolId="@subject.Id">Manage</a>
                         </td>
                     </tr>
                 }

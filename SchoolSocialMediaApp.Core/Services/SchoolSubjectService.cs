@@ -23,7 +23,7 @@ namespace SchoolSocialMediaApp.Core.Services
 
         }
 
-        public async Task AssignClassToSubject(Guid schoolId, Guid classId, Guid subjectId)
+        public async Task AssignClassToSubjectAsync(Guid schoolId, Guid classId, Guid subjectId)
         {
             var school = await repo
                 .All<School>()
@@ -74,7 +74,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
-        public async Task AssignTeacherToSubject(Guid teacherId, Guid subjectId, Guid schoolId)
+        public async Task AssignTeacherToSubjectAsync(Guid teacherId, Guid subjectId, Guid schoolId)
         {
             var school = await repo.All<School>().FirstOrDefaultAsync(s => s.Id == schoolId);
 
@@ -158,7 +158,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return true;
         }
 
-        public async Task DeleteSubject(Guid userId, Guid subjectId)
+        public async Task DeleteSubjectAsync(Guid userId, Guid subjectId)
         {
             var subject = await repo
                 .All<SchoolSubject>()
@@ -352,9 +352,9 @@ namespace SchoolSocialMediaApp.Core.Services
             return subjectsInSchool;
         }
 
-        public async Task<List<SchoolClassViewModel>> GetAssignedClasses(Guid subjectId)
+        public async Task<List<SchoolClassViewModel>> GetAssignedClassesAsync(Guid subjectId)
         {
-            var classIds = await GetAssignedClassesIds(subjectId);
+            var classIds = await GetAssignedClassesIdsAsync(subjectId);
             if (classIds.Any())
             {
                 var schoolClasses = await repo
@@ -375,7 +375,7 @@ namespace SchoolSocialMediaApp.Core.Services
             throw new ArgumentException("No classes assigned to this subject");
         }
 
-        public async Task<ICollection<ApplicationUser>> GetCandidateTeachersInSchool(Guid schoolId, Guid userId, bool isAdmin = false)
+        public async Task<ICollection<ApplicationUser>> GetCandidateTeachersInSchoolAsync(Guid schoolId, Guid userId, bool isAdmin = false)
         {
             var school = await repo.All<School>().Where(sc => sc.Id == schoolId).FirstOrDefaultAsync();
 
@@ -392,7 +392,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return teachers;
         }
 
-        public async Task<List<TeacherViewModel>> GetCandidateTeachersViewModelInSchool(Guid schoolId, Guid userId, bool isAdmin)
+        public async Task<List<TeacherViewModel>> GetCandidateTeachersViewModelInSchoolAsync(Guid schoolId, Guid userId, bool isAdmin)
         {
             var school = await repo.All<School>().FirstOrDefaultAsync(sc => sc.Id == schoolId);
 
@@ -423,7 +423,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return result;
         }
 
-        public async Task<SchoolSubjectViewModel> GetSubjectById(Guid subjectId)
+        public async Task<SchoolSubjectViewModel> GetSubjectByIdAsync(Guid subjectId)
         {
             if (subjectId == Guid.Empty)
             {
@@ -466,7 +466,50 @@ namespace SchoolSocialMediaApp.Core.Services
             return result;
         }
 
-        public async Task UnAssignClassFromSubject(Guid schoolId, Guid classId, Guid subjectId)
+        public async Task<SchoolSubjectTeacherPanelViewModel> GetSubjectForTeacherPanelByIdAsync(Guid subjectId)
+        {
+            if (subjectId == Guid.Empty)
+            {
+                throw new ArgumentException("subjectId is empty");
+            }
+
+            var result = await repo
+             .All<SchoolSubject>()
+             .Where(ss => ss.Id == subjectId)
+             .Select(ss => new SchoolSubjectTeacherPanelViewModel
+             {
+                 Id = ss.Id,
+                 CreatedOn = ss.CreatedOn,
+                 Name = ss.Name,
+                 SchoolId = ss.SchoolId,
+                 TeacherId = ss.TeacherId,
+                 Teacher = ss.Teacher,
+                 Classes = ss.SchoolClasses.Select(sc => new SchoolClassViewModel
+                 {
+                     CreatedOn = sc.SchoolClass.CreatedOn,
+                     Grade = sc.SchoolClass.Grade,
+                     Id = sc.SchoolClass.Id,
+                     Name = sc.SchoolClass.Name,
+                     Students = sc.SchoolClass.Students,
+                     SchoolId = sc.SchoolClassId,
+                 }).ToList(),
+             }).FirstOrDefaultAsync();
+
+            if (result is null)
+            {
+                throw new ArgumentException("No subject with this subjectId");
+            }
+
+            if (result.Teacher is not null && result.Teacher.SchoolId != result.SchoolId)
+            {
+                result.Teacher = null;
+                result.TeacherId = Guid.Empty;
+            }
+
+            return result;
+        }
+
+        public async Task UnAssignClassFromSubjectAsync(Guid schoolId, Guid classId, Guid subjectId)
         {
             var school = await repo
                 .All<School>()
@@ -524,7 +567,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
-        private async Task<List<Guid>> GetAssignedClassesIds(Guid subjectId)
+        private async Task<List<Guid>> GetAssignedClassesIdsAsync(Guid subjectId)
         {
             var subject = await repo.All<SchoolSubject>().Include(s => s.SchoolClasses).FirstOrDefaultAsync(s => s.Id == subjectId);
             if (subject is null)

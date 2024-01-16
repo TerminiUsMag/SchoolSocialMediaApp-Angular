@@ -283,7 +283,7 @@ namespace SchoolSocialMediaApp.Core.Services
             {
                 foreach (var subject in subjects)
                 {
-                    var schoolClassesInSubject = await subjectService.GetAssignedClasses(subject.Id);
+                    var schoolClassesInSubject = await subjectService.GetAssignedClassesAsync(subject.Id);
                     foreach (var schoolClass in schoolClassesInSubject)
                     {
                         subject.Classes.Add(schoolClass);

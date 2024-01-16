@@ -14,7 +14,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="classId"></param>
         /// <param name="subjectId"></param>
         /// <returns></returns>
-        Task AssignClassToSubject(Guid schoolId, Guid classId, Guid subjectId);
+        Task AssignClassToSubjectAsync(Guid schoolId, Guid classId, Guid subjectId);
 
         /// <summary>
         /// Assigns a teacher (by it's ID) to subject (by it's ID).
@@ -23,7 +23,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="subjectId"></param>
         /// <param name="schoolId"></param>
         /// <returns></returns>
-        Task AssignTeacherToSubject(Guid teacherId, Guid subjectId, Guid schoolId);
+        Task AssignTeacherToSubjectAsync(Guid teacherId, Guid subjectId, Guid schoolId);
 
         /// <summary>
         /// Asynchronously creates a school subject using a SchoolSubjectCreateModel and the user's ID.
@@ -39,7 +39,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="userId"></param>
         /// <param name="subjectId"></param>
         /// <returns></returns>
-        Task DeleteSubject(Guid userId, Guid subjectId);
+        Task DeleteSubjectAsync(Guid userId, Guid subjectId);
 
         /// <summary>
         /// Returns a Collection of all classes which are assignable to the given subject (using subject's and school's IDs).
@@ -62,7 +62,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// </summary>
         /// <param name="subjectId"></param>
         /// <returns>A list of SchoolClassViewModel</returns>
-        Task<List<SchoolClassViewModel>> GetAssignedClasses(Guid subjectId);
+        Task<List<SchoolClassViewModel>> GetAssignedClassesAsync(Guid subjectId);
 
         /// <summary>
         /// Returns all candidate teachers in a school (by school's and user's ID).
@@ -71,7 +71,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="userId"></param>
         /// <param name="isAdmin"></param>
         /// <returns> A Collection of ApplicationUser</returns>
-        Task<ICollection<ApplicationUser>> GetCandidateTeachersInSchool(Guid schoolId, Guid userId, bool isAdmin = false);
+        Task<ICollection<ApplicationUser>> GetCandidateTeachersInSchoolAsync(Guid schoolId, Guid userId, bool isAdmin = false);
 
         /// <summary>
         /// Returns all candidate teachers in a school (by school's and user's ID).
@@ -80,14 +80,21 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="userId"></param>
         /// <param name="isAdmin"></param>
         /// <returns>A List of TeacherViewModel</returns>
-        Task<List<TeacherViewModel>> GetCandidateTeachersViewModelInSchool(Guid schoolId, Guid userId, bool isAdmin);
+        Task<List<TeacherViewModel>> GetCandidateTeachersViewModelInSchoolAsync(Guid schoolId, Guid userId, bool isAdmin);
 
         /// <summary>
         /// Returns a subject by it's ID.
         /// </summary>
         /// <param name="subjectId"></param>
         /// <returns>SchoolSubjectViewModel</returns>
-        Task<SchoolSubjectViewModel> GetSubjectById(Guid subjectId);
+        Task<SchoolSubjectViewModel> GetSubjectByIdAsync(Guid subjectId);
+
+        /// <summary>
+        /// Returns a subject view model for the teacher panel (using subject's id).
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
+        Task<SchoolSubjectTeacherPanelViewModel> GetSubjectForTeacherPanelByIdAsync(Guid subjectId);
 
         /// <summary>
         /// Unassign a class from a subject (by their own IDs and the school's ID).
@@ -96,6 +103,6 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="classId"></param>
         /// <param name="subjectId"></param>
         /// <returns></returns>
-        Task UnAssignClassFromSubject(Guid schoolId, Guid classId, Guid subjectId);
+        Task UnAssignClassFromSubjectAsync(Guid schoolId, Guid classId, Guid subjectId);
     }
 }
