@@ -19,8 +19,7 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Number of classes</th>
-                    <th>Created On</th>
+                    <th style="width: 75%">Classes</th>
                     <th></th>
                 </tr>
             </thead>
@@ -29,15 +28,31 @@
                 {
                     <tr>
                         <td>@subject.Name</td>
-                        <td>@subject.Classes.Count Classes</td>
-                        <td>@subject.CreatedOn</td>
                         <td>
-                            @*                            <form asp-controller="School" asp-action="Manage" method="post">
-                    <input type="hidden" name="schoolId" value="@teacher.SchoolId" />
-                    <input type="hidden" name="userId" value="@teacher.Id" />
-                    <button type="submit" class="btn btn-primary">Remove from school</button>
-                    </form>*@
-                            <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageSubject" asp-route-schoolId="@subject.Id">Manage</a>
+                            <table class="table table-striped table-hover table-responsive-md table-borderless ">
+                                <thead>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Number of students</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var schoolClass in subject.Classes)
+                                    {
+                                        <tr>
+                                            <td>@schoolClass.Grade @schoolClass.Name</td>
+                                            <td>@schoolClass.Students.Count</td>
+                                            <td>
+                                                <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageClassInSubject" asp-route-subjectId="@subject.Id">Manage Class in @subject.Name</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageSubject" asp-route-subjectId="@subject.Id">Manage Subject</a>
                         </td>
                     </tr>
                 }
@@ -49,7 +64,7 @@ else
 {
     <p>No Schools found !</p>
 }
-<h2>Classes</h2>
+@* <h2>Classes</h2>
 @if (Model.SchoolClasses.Any())
 {
     <div class="row container-fluid">
@@ -73,16 +88,6 @@ else
                             <a class="btn btn-warning btn-sm" asp-area="Admin" asp-controller="Admin" asp-action="MakeAdmin" asp-route-id="@schoolClass.Id">Make Admin</a>
                         </td>
                         <td>
-                            @* <form method="post" asp-area="Admin" asp-controller="Admin" asp-action="AddUserToRole" asp-route-userId="@user.Id" onsubmit="return confirm('Are you sure you want to add this user to the selected role?')">
-                                <div class="form-group">
-                                    <label asp-for="SelectedRoleId">Select a role:</label>
-                                    <select asp-for="SelectedRoleId" asp-items="@Model.Roles" class="form-control">
-                                        <option value="">-- Select a role --</option>
-                                    </select>
-                                </div>
-
-                                <button type="submit" class="btn btn-warning btn-sm">Add To Role</button>
-                            </form> *@
                         </td>
                         <td>
                             <a class="btn btn-primary" asp-area="Admin" asp-controller="Admin" asp-action="DeleteUser" asp-route-id="@schoolClass.Id">Delete</a>
@@ -95,36 +100,5 @@ else
 }
 else
 {
-    <p>No Users found !</p>
-}
-@* <h2>Admins</h2>
-@if (Model.Admins.Any())
-{
-    <div class="row container-fluid">
-        <table class="table table-striped table-hover table-responsive-md ">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Username</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Model.Admins)
-                {
-                    <tr>
-                        <td>@user.FirstName @user.LastName</td>
-                        <td>@user.UserName</td>
-                        <td>
-                            <a class="btn btn-primary" asp-area="Admin" asp-controller="Admin" asp-action="DeleteUser" asp-route-id="@user.Id">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
-else
-{
-    <p>No other Admins found!</p>
+    <p>No classes found !</p>
 } *@

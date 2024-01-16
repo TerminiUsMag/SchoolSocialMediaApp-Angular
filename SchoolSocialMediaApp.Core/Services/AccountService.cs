@@ -323,7 +323,6 @@ namespace SchoolSocialMediaApp.Core.Services
 
         }
 
-
         public async Task<bool> LoginAsync(string email, string password, bool rememberMe)
         {
             var user = await userManager.FindByEmailAsync(email);
@@ -339,7 +338,6 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             return false;
         }
-
 
         public async Task LogoutAsync()
         {
@@ -399,7 +397,6 @@ namespace SchoolSocialMediaApp.Core.Services
             return true;
         }
 
-
         public async Task<bool> RegisterAsync(ApplicationUser user, string password)
         {
             var result = await userManager.CreateAsync(user, password);
@@ -413,7 +410,6 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             return false;
         }
-
 
         public async Task UpdateAsync(Guid userId, UserManageViewModel model)
         {
@@ -469,7 +465,6 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
-
         public async Task<bool> UserExists(Guid userId)
         {
             if (await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId) is null)
@@ -478,7 +473,6 @@ namespace SchoolSocialMediaApp.Core.Services
             }
             return true;
         }
-
 
         public async Task<bool> UsernameIsFree(string username)
         {
