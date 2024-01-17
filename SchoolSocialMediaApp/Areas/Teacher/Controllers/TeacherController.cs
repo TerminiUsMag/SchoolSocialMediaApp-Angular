@@ -81,5 +81,29 @@ namespace SchoolSocialMediaApp.Areas.Teacher.Controllers
                 return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
         }
+
+        [HttpGet]
+        [Area("Teacher")]
+        [Authorize(Policy = "Teacher")]
+        public async Task<IActionResult> ManageClassInSubject(Guid classId, Guid subjectId)
+        {
+            try
+            {
+                var userId = this.GetUserId();
+                var isTeacher = await roleService.UserIsInRoleAsync(userId.ToString(), "Teacher");
+
+                if (!isTeacher)
+                    throw new ArgumentException("You don't have permission to do this");
+
+
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+
+            return View();
+        }
     }
 }

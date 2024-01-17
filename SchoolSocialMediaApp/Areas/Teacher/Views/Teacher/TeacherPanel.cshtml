@@ -44,7 +44,7 @@
                                             <td>@schoolClass.Grade @schoolClass.Name</td>
                                             <td>@schoolClass.Students.Count</td>
                                             <td>
-                                                <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageClassInSubject" asp-route-subjectId="@subject.Id">Manage Class in @subject.Name</a>
+                                                <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageClassInSubject" asp-route-subjectId="@subject.Id" asp-route-classId="@schoolClass.Id">Manage Class in @subject.Name</a>
                                             </td>
                                         </tr>
                                     }
