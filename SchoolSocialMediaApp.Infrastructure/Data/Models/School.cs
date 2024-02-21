@@ -44,12 +44,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("Participants of the school (Parents, Students and Teachers)")]
         public ICollection<ApplicationUser> Participants { get; set; } = new List<ApplicationUser>();
 
-        //[Comment("The parents of the school.")]
-        //public IEnumerable<ApplicationUser> Parents { get; set; } = new List<ApplicationUser>();
-
-        //[Comment("The students of the school.")]
-        //public IEnumerable<ApplicationUser> Students { get; set; } = new List<ApplicationUser>();
-
         [Comment("The posts of the school.")]
         public ICollection<Post> Posts { get; set; } = new List<Post>();
 

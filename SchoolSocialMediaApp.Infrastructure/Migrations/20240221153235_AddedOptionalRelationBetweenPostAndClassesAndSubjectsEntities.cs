@@ -5,31 +5,31 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SchoolSocialMediaApp.Infrastructure.Migrations
 {
-    public partial class AddedPostsToClassesAndSubjectsEntity : Migration
+    public partial class AddedOptionalRelationBetweenPostAndClassesAndSubjectsEntities : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Guid>(
-                name: "ClassesAndSubjectsSchoolClassId",
+                name: "SchoolClassId",
                 table: "Posts",
                 type: "uniqueidentifier",
                 nullable: true);
 
             migrationBuilder.AddColumn<Guid>(
-                name: "ClassesAndSubjectsSchoolSubjectId",
+                name: "SchoolSubjectId",
                 table: "Posts",
                 type: "uniqueidentifier",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_ClassesAndSubjectsSchoolClassId_ClassesAndSubjectsSchoolSubjectId",
+                name: "IX_Posts_SchoolClassId_SchoolSubjectId",
                 table: "Posts",
-                columns: new[] { "ClassesAndSubjectsSchoolClassId", "ClassesAndSubjectsSchoolSubjectId" });
+                columns: new[] { "SchoolClassId", "SchoolSubjectId" });
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Posts_ClassesAndSubjects_ClassesAndSubjectsSchoolClassId_ClassesAndSubjectsSchoolSubjectId",
+                name: "FK_Posts_ClassesAndSubjects_SchoolClassId_SchoolSubjectId",
                 table: "Posts",
-                columns: new[] { "ClassesAndSubjectsSchoolClassId", "ClassesAndSubjectsSchoolSubjectId" },
+                columns: new[] { "SchoolClassId", "SchoolSubjectId" },
                 principalTable: "ClassesAndSubjects",
                 principalColumns: new[] { "SchoolClassId", "SchoolSubjectId" });
         }
@@ -37,19 +37,19 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Posts_ClassesAndSubjects_ClassesAndSubjectsSchoolClassId_ClassesAndSubjectsSchoolSubjectId",
+                name: "FK_Posts_ClassesAndSubjects_SchoolClassId_SchoolSubjectId",
                 table: "Posts");
 
             migrationBuilder.DropIndex(
-                name: "IX_Posts_ClassesAndSubjectsSchoolClassId_ClassesAndSubjectsSchoolSubjectId",
+                name: "IX_Posts_SchoolClassId_SchoolSubjectId",
                 table: "Posts");
 
             migrationBuilder.DropColumn(
-                name: "ClassesAndSubjectsSchoolClassId",
+                name: "SchoolClassId",
                 table: "Posts");
 
             migrationBuilder.DropColumn(
-                name: "ClassesAndSubjectsSchoolSubjectId",
+                name: "SchoolSubjectId",
                 table: "Posts");
         }
     }

@@ -73,7 +73,7 @@ namespace SchoolSocialMediaApp.Data
             builder.Entity<ApplicationUser>()
                 .HasOne(u => u.School)
                 .WithMany(s => s.Participants)
-                .HasForeignKey(u=>u.SchoolId)
+                .HasForeignKey(u => u.SchoolId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             //builder.Entity<ApplicationUser>(entity =>
@@ -125,6 +125,13 @@ namespace SchoolSocialMediaApp.Data
                 .WithMany(ss => ss.SchoolClasses)
                 .HasForeignKey(cas => cas.SchoolSubjectId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Post>()
+                .HasOne(p => p.ClassSubject)
+                .WithMany(b => b.Posts)
+                .HasForeignKey(p => new { p.SchoolClassId, p.SchoolSubjectId });
+
+
 
             base.OnModelCreating(builder);
         }
