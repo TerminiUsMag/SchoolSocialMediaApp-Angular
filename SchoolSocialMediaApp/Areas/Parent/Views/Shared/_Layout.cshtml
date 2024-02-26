@@ -1,0 +1,164 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SchoolSocialMediaApp.Infrastructure.Data.Models;
+@using SchoolSocialMediaApp.Core.Contracts;
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IRoleService RoleService
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SchoolSocialMediaApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SchoolSocialMediaApp.styles.css" asp-append-version="true" />
+    <script src="https://kit.fontawesome.com/d01fff3d00.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Schoolary <i class="fa-sharp fa-solid fa-school fa-bounce"></i> </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            try
+                            {
+                                var user = await UserManager.GetUserAsync(User);
+                                var userIsPartOfSchool = RoleService.IsUserPartOfSchool(await UserManager.GetUserAsync(User));
+                                var userIsAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+                                if (userIsPartOfSchool)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Post" asp-action="Index">Posts from your School</a>
+                                    </li>
+                                }
+                                else if (userIsAdmin)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark btn" asp-area="Admin" asp-controller="Admin" asp-action="AdminPanel">Admin Panel</a>
+                                    </li>
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                await SignInManager.SignOutAsync();
+                            }
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="School" asp-action="Index">Schools</a>
+                        </li>
+                        <li class="nav-item text-warning text-center flex-grow-1 d-flex justify-content-center">
+                            <h1>Administration Area</h1>
+                        </li>
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="text-center text-lg-start bg-light text-muted mt-auto">
+        <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+            <div class="me-5 d-none d-lg-block">
+                <span>Get connected with us on social networks:</span>
+            </div>
+            <div>
+                <a href="https://www.facebook.com/Nachev.Nikolai" target="_blank" class="me-4 text-reset">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/nikolainachev/" target="_blank" class="me-4 text-reset">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/nikolainachev/" target="_blank" class="me-4 text-reset">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://github.com/TerminiUsMag" target="_blank" class="me-4 text-reset">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </section>
+        <section class="">
+            <div class="container text-center text-md-start mt-5">
+                <div class="row mt-3">
+                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Schoolary <i class="fa-sharp fa-solid fa-school fa-bounce"></i>
+                        </h6>
+                        <p>
+                            @*Text Under Schoolary Logo*@
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        </p>
+                    </div>
+                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Useful Links
+                        </h6>
+                        <p>
+                            <a href="#!" class="text-reset">First Link</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Second Link</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Third Link</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Fourth Link</a>
+                        </p>
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Useful links
+                        </h6>
+                        <p>
+                            <a asp-area="" asp-controller="Home" asp-action="Index" class="text-reset">Home</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="Account" asp-action="Manage" class="text-reset">Manage Account</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="School" asp-action="Index" class="text-reset">Schools</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="Account" asp-action="Register" class="text-reset">Register</a>
+                        </p>
+                    </div>
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+                        <p><i class="fas fa-home me-3"></i> Sofia, Bulgaria</p>
+                        <p>
+                            <i class="fas fa-envelope me-3"></i>
+                            nikolaidan1@abv.bg
+                        </p>
+                        <p><i class="fas fa-phone me-3"></i> +359 888***882</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2023 Copyright:
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="text-reset fw-bold">Schoolary.com </a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

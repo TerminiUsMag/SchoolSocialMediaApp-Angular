@@ -1,0 +1,104 @@
+﻿@model TeacherPanelViewModel
+@{
+    ViewBag.Title = "Teacher Panel";
+}
+
+@if (ViewBag.Message != null)
+{
+    <h2 class="badge @ViewBag.ClassOfMessage">@ViewBag.Message</h2>
+}
+
+<div class="row">
+    <h1>Welcome to the @ViewBag.Title</h1>
+</div>
+<h2>Subjects</h2>
+@if (Model.SchoolSubjects.Any())
+{
+    <div class="row container-fluid">
+        <table class="table table-striped table-hover table-responsive-md ">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th style="width: 75%">Classes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var subject in Model.SchoolSubjects)
+                {
+                    <tr>
+                        <td>@subject.Name</td>
+                        <td>
+                            <table class="table table-striped table-hover table-responsive-md table-borderless ">
+                                <thead>
+                                    <tr>
+                                        <th>Class</th>
+                                        <th>Number of students</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var schoolClass in subject.Classes)
+                                    {
+                                        <tr>
+                                            <td>@schoolClass.Grade @schoolClass.Name</td>
+                                            <td>@schoolClass.Students.Count</td>
+                                            <td>
+                                                <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageClassInSubject" asp-route-subjectId="@subject.Id" asp-route-classId="@schoolClass.Id">Manage Class in @subject.Name</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageSubject" asp-route-subjectId="@subject.Id">Manage Subject</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No Schools found !</p>
+}
+@* <h2>Classes</h2>
+@if (Model.SchoolClasses.Any())
+{
+    <div class="row container-fluid">
+        <table class="table table-striped table-hover table-responsive-md ">
+            <thead>
+                <tr>
+                    <th>Grade</th>
+                    <th>Name</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var schoolClass in Model.SchoolClasses)
+                {
+                    <tr>
+                        <td>@schoolClass.Grade</td>
+                        <td>@schoolClass.Name</td>
+                        <td>
+                            <a class="btn btn-warning btn-sm" asp-area="Admin" asp-controller="Admin" asp-action="MakeAdmin" asp-route-id="@schoolClass.Id">Make Admin</a>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" asp-area="Admin" asp-controller="Admin" asp-action="DeleteUser" asp-route-id="@schoolClass.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No classes found !</p>
+} *@

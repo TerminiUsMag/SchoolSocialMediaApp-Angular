@@ -31,9 +31,4 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Parent\Views\" />
-    <Folder Include="Areas\Student\Views\" />
-  </ItemGroup>
-
 </Project>
