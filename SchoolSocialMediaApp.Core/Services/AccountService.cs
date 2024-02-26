@@ -5,11 +5,13 @@ using Microsoft.Extensions.Logging;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Common;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.Infrastructure.Migrations;
 using SchoolSocialMediaApp.ViewModels.Models.Admin;
 using SchoolSocialMediaApp.ViewModels.Models.Post;
 using SchoolSocialMediaApp.ViewModels.Models.School;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolClass;
 using SchoolSocialMediaApp.ViewModels.Models.SchoolSubject;
+using SchoolSocialMediaApp.ViewModels.Models.Student;
 using SchoolSocialMediaApp.ViewModels.Models.Teacher;
 using SchoolSocialMediaApp.ViewModels.Models.User;
 using System.Net.Mail;
@@ -249,6 +251,83 @@ namespace SchoolSocialMediaApp.Core.Services
                 Username = user.UserName,
                 PhoneNumber = user.PhoneNumber,
             };
+        }
+
+        public async Task<StudentPanelViewModel> GetStudentPanelViewModel(Guid userId)
+        {
+            var user = await repo.All<ApplicationUser>().Include(u => u.Class).ThenInclude(c => c.SchoolSubjects).FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+                throw new ArgumentException("No such user");
+
+            var userIsTeacher = await roleService.UserIsInRoleAsync(userId.ToString(), "Student");
+            if (!userIsTeacher)
+                throw new ArgumentException("User is not a student !");
+
+            var schoolId = user.SchoolId;
+            var school = await repo.All<School>().Include(s => s.Principal).FirstOrDefaultAsync(s => s.Id == schoolId);
+            if (school is null)
+                throw new ArgumentException("No such school");
+
+            var studentPanelViewModel = new StudentPanelViewModel();
+
+            if (user.Class is not null)
+            {
+                var schoolSubjects = await repo.All<ClassesAndSubjects>().Where(cas => cas.SchoolClassId == user.Class.Id).Include(cas => cas.SchoolSubject).ThenInclude(ss => ss.Teacher).ToListAsync();
+
+                studentPanelViewModel.SchoolClass = new SchoolClassViewModel
+                {
+                    CreatedOn = user.Class.CreatedOn,
+                    Grade = user.Class.Grade,
+                    Id = user.Class.Id,
+                    Name = user.Class.Name,
+                    School = new SchoolViewModel
+                    {
+                        Description = school.Description,
+                        Name = school.Name,
+                        Id = school.Id,
+                        ImageUrl = school.ImageUrl,
+                        Location = school.Location,
+                        PrincipalId = school.PrincipalId,
+                        PrincipalName = school.Principal.FirstName + " " + school.Principal.LastName
+                    },
+                    SchoolId = user.Class.SchoolId,
+                    Students = user.Class.Students,
+                    Subjects = schoolSubjects.Select(ss => new SchoolSubjectViewModel
+                    {
+                        CreatedOn = ss.SchoolSubject.CreatedOn,
+                        Id = ss.SchoolSubject.Id,
+                        Name = ss.SchoolSubject.Name,
+                        SchoolId = ss.SchoolSubject.SchoolId,
+                        TeacherId = ss.SchoolSubject.TeacherId,
+                        TeacherName = ss.SchoolSubject.Teacher.FirstName + " " + ss.SchoolSubject.Teacher.LastName
+
+                    }).ToList(),
+                };
+
+                var classMates = await repo.All<ApplicationUser>().Where(u => u.ClassId == user.ClassId).Include(u => u.Class).ToListAsync();
+
+                foreach (var classMateToProcess in classMates)
+                {
+                    var classMate = new StudentViewModel
+                    {
+                        ClassId = classMateToProcess.ClassId.Value,
+                        FirstName = classMateToProcess.FirstName,
+                        LastName = classMateToProcess.LastName,
+                        Id = classMateToProcess.Id,
+                        Class = new SchoolClassViewModel
+                        {
+                            CreatedOn = classMateToProcess.Class.CreatedOn,
+                            Grade = classMateToProcess.Class.Grade,
+                            Name = classMateToProcess.Class.Name,
+                            Id = classMateToProcess.Class.Id,
+                            SchoolId = classMateToProcess.Class.SchoolId,
+                        }
+                    };
+                    studentPanelViewModel.Classmates.Add(classMate);
+                }
+            }
+
+            return studentPanelViewModel;
         }
 
         public async Task<TeacherPanelViewModel> GetTeacherPanelViewModel(Guid userId)

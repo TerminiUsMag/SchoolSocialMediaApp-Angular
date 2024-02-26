@@ -15,6 +15,6 @@ namespace SchoolSocialMediaApp.ViewModels.Models.Teacher
         [Comment("A collection of all classes the teacher is teaching.")]
         public List<SchoolClassViewModel> SchoolClasses { get; set; } = new List<SchoolClassViewModel>();
 
-        public List<SchoolClassAnd>
+
     }
 }

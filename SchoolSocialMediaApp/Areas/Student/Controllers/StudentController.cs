@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolSocialMediaApp.Controllers;
 using SchoolSocialMediaApp.Core.Contracts;
 using SchoolSocialMediaApp.Infrastructure.Data.Models;
+using SchoolSocialMediaApp.ViewModels.Models.Student;
 
 namespace SchoolSocialMediaApp.Areas.Student.Controllers
 {
@@ -36,19 +37,19 @@ namespace SchoolSocialMediaApp.Areas.Student.Controllers
 
 
         [HttpGet]
-        [Area("Teacher")]
-        [Authorize(Policy = "Teacher")]
-        public async Task<IActionResult> TeacherPanel(string message = "", string classOfMessage = "")
+        [Area("Student")]
+        [Authorize(Policy = "Student")]
+        public async Task<IActionResult> StudentPanel(string message = "", string classOfMessage = "")
         {
             try
             {
                 var userId = this.GetUserId();
 
-                var isTeacher = await roleService.UserIsInRoleAsync(userId.ToString(), "Teacher");
+                var isTeacher = await roleService.UserIsInRoleAsync(userId.ToString(), "Student");
                 if (!isTeacher)
-                    throw new ArgumentException("You are not a teacher and don't have access to the Teacher Panel.");
+                    throw new ArgumentException("You are not a student and don't have access to the Student Panel.");
 
-                var model = await accountService.GetTeacherPanelViewModel(userId);
+                StudentPanelViewModel model = await accountService.GetStudentPanelViewModel(userId);
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
                 return View(model);
@@ -57,10 +58,6 @@ namespace SchoolSocialMediaApp.Areas.Student.Controllers
             {
                 return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
-        }
-        public IActionResult Index()
-        {
-            return View();
         }
     }
 }
