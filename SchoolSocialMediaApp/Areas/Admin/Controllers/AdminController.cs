@@ -38,7 +38,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
             try
             {
                 var userId = this.GetUserId();
-                AdminPanelViewModel model = await accountService.GetAdminPanelViewModel(userId);
+                AdminPanelViewModel model = await accountService.GetAdminPanelViewModelAsync(userId);
                 model.Roles = await roleService.GetRolesAsync();
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
@@ -169,7 +169,7 @@ namespace SchoolSocialMediaApp.Areas.Admin.Controllers
                     return RedirectToAction("Index", "Home", new { message = "You are not authorized to give admin permissions :) !", classOfMessage = "text-bg-danger" });
                 }
                 var userToMakeAdmin = await userManager.FindByIdAsync(model.Id.ToString());
-                await accountService.MakeAdmin(userToMakeAdmin);
+                await accountService.MakeAdminAsync(userToMakeAdmin);
                 await signInManager.RefreshSignInAsync(user);
             }
             catch (Exception ex)

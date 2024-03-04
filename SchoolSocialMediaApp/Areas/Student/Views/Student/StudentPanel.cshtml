@@ -20,40 +20,20 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th style="width: 75%">Classes</th>
+                    <th style="width: 75%">Teacher</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var student in Model.Classmates)
+                @foreach (var subject in Model.SchoolClass.Subjects)
                 {
                     <tr>
-                        <td>@student.FirstName + @student.LastName</td>
+                        <td>@subject.Name</td>
+                        <td>@subject.TeacherName</td>
                         <td>
-                            <table class="table table-striped table-hover table-responsive-md table-borderless ">
-                                <thead>
-                                    <tr>
-                                        <th>Class</th>
-                                        <th>Number of students</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @* @foreach (var schoolClass in subject.Classes)
-                                    {
-                                        <tr>
-                                            <td>@schoolClass.Grade @schoolClass.Name</td>
-                                            <td>@schoolClass.Students.Count</td>
-                                            <td>
-                                                <a class="btn btn-primary" asp-area="Teacher" asp-controller="Teacher" asp-action="ManageClassInSubject" asp-route-subjectId="@subject.Id" asp-route-classId="@schoolClass.Id">Manage Class in @subject.Name</a>
-                                            </td>
-                                        </tr>
-                                    } *@
-                                </tbody>
-                            </table>
+                            <a class="btn btn-primary" asp-area="Student" asp-controller="Student" asp-action="SubjectPage" asp-route-subjectId="@subject.Id" asp-route-classId="@Model.SchoolClass.Id">Enter Subject's page</a>
                         </td>
                         <td>
-
                         </td>
                     </tr>
                 }

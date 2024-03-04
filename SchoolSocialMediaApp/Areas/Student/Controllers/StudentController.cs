@@ -45,11 +45,11 @@ namespace SchoolSocialMediaApp.Areas.Student.Controllers
             {
                 var userId = this.GetUserId();
 
-                var isTeacher = await roleService.UserIsInRoleAsync(userId.ToString(), "Student");
-                if (!isTeacher)
+                var isStudent = await roleService.UserIsInRoleAsync(userId.ToString(), "Student");
+                if (!isStudent)
                     throw new ArgumentException("You are not a student and don't have access to the Student Panel.");
 
-                StudentPanelViewModel model = await accountService.GetStudentPanelViewModel(userId);
+                StudentPanelViewModel model = await accountService.GetStudentPanelViewModelAsync(userId);
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
                 return View(model);
@@ -57,6 +57,28 @@ namespace SchoolSocialMediaApp.Areas.Student.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("Index", "Home", new { message = ex.Message, classOfMessage = "text-bg-danger" });
+            }
+        }
+
+        [HttpGet]
+        [Area("Student")]
+        [Authorize(Policy = "Student")]
+        public async Task<IActionResult> SubjectPage(Guid subjectId, Guid classId, string message = "", string classOfMessage = "")
+        {
+            try
+            {
+                var userId = this.GetUserId();
+
+                var isStudent = await roleService.UserIsInRoleAsync(userId.ToString(), "Student");
+                if (!isStudent)
+                    throw new ArgumentException("You are not a student and don't have access to the Subject Page.");
+
+                StudentSubjectClassViewModel model = await accountService.GetStudentSubjectClassViewModelAsync(subjectId, classId, userId);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("StudentPanel", "Student", new { message = ex.Message, classOfMessage = "text-bg-danger" });
             }
         }
     }

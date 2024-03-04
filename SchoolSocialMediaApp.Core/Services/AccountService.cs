@@ -103,7 +103,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await signInManager.SignOutAsync();
         }
 
-        public async Task<bool> EmailIsFree(string email)
+        public async Task<bool> EmailIsFreeAsync(string email)
         {
             var result = await userManager.FindByEmailAsync(email.ToUpper());
 
@@ -114,7 +114,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return false;
         }
 
-        public async Task<bool> EmailIsFree(string email, Guid userId)
+        public async Task<bool> EmailIsFreeAsync(string email, Guid userId)
         {
             var result = await repo.All<ApplicationUser>().Where(u => u.Id != userId).FirstOrDefaultAsync(u => u.NormalizedEmail == email.ToUpper());
 
@@ -138,7 +138,7 @@ namespace SchoolSocialMediaApp.Core.Services
             }
         }
 
-        public async Task<AdminPanelViewModel> GetAdminPanelViewModel(Guid userId)
+        public async Task<AdminPanelViewModel> GetAdminPanelViewModelAsync(Guid userId)
         {
             var isAdmin = await roleService.UserIsInRoleAsync(userId.ToString(), "Admin");
             if (!isAdmin)
@@ -253,9 +253,9 @@ namespace SchoolSocialMediaApp.Core.Services
             };
         }
 
-        public async Task<StudentPanelViewModel> GetStudentPanelViewModel(Guid userId)
+        public async Task<StudentPanelViewModel> GetStudentPanelViewModelAsync(Guid userId)
         {
-            var user = await repo.All<ApplicationUser>().Include(u => u.Class).ThenInclude(c => c.SchoolSubjects).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await repo.All<ApplicationUser>().Include(u => u.Class).ThenInclude(c => c!.SchoolSubjects).FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
                 throw new ArgumentException("No such user");
 
@@ -299,7 +299,7 @@ namespace SchoolSocialMediaApp.Core.Services
                         Name = ss.SchoolSubject.Name,
                         SchoolId = ss.SchoolSubject.SchoolId,
                         TeacherId = ss.SchoolSubject.TeacherId,
-                        TeacherName = ss.SchoolSubject.Teacher.FirstName + " " + ss.SchoolSubject.Teacher.LastName
+                        TeacherName = ss.SchoolSubject.Teacher!.FirstName + " " + ss.SchoolSubject.Teacher.LastName
 
                     }).ToList(),
                 };
@@ -310,13 +310,13 @@ namespace SchoolSocialMediaApp.Core.Services
                 {
                     var classMate = new StudentViewModel
                     {
-                        ClassId = classMateToProcess.ClassId.Value,
+                        ClassId = classMateToProcess.ClassId.GetValueOrDefault(),
                         FirstName = classMateToProcess.FirstName,
                         LastName = classMateToProcess.LastName,
                         Id = classMateToProcess.Id,
                         Class = new SchoolClassViewModel
                         {
-                            CreatedOn = classMateToProcess.Class.CreatedOn,
+                            CreatedOn = classMateToProcess.Class!.CreatedOn,
                             Grade = classMateToProcess.Class.Grade,
                             Name = classMateToProcess.Class.Name,
                             Id = classMateToProcess.Class.Id,
@@ -330,7 +330,87 @@ namespace SchoolSocialMediaApp.Core.Services
             return studentPanelViewModel;
         }
 
-        public async Task<TeacherPanelViewModel> GetTeacherPanelViewModel(Guid userId)
+        public async Task<StudentSubjectClassViewModel> GetStudentSubjectClassViewModelAsync(Guid subjectId, Guid classId, Guid studentId)
+        {
+            if (await repo.All<ApplicationUser>().FirstOrDefaultAsync(au => au.Id == studentId) is null)
+                throw new ArgumentException("No such user found");
+            if (await repo.All<SchoolClass>().FirstOrDefaultAsync(sc => sc.Id == classId) is null)
+                throw new ArgumentException("No such class found");
+            if (await repo.All<SchoolSubject>().FirstOrDefaultAsync(ss => ss.Id == subjectId) is null)
+                throw new ArgumentException("No such subject found");
+
+            var schoolClassesAndSubjects = await repo.All<ClassesAndSubjects>().Include(cas=>cas.SchoolSubject).ThenInclude(ss=>ss.Teacher).Include(cas=>cas.SchoolClass).ThenInclude(sc=>sc.Students).FirstOrDefaultAsync(cas=>cas.SchoolClassId == classId && cas.SchoolSubjectId == subjectId);
+
+            if (schoolClassesAndSubjects is null)
+                throw new ArgumentException("No such Class - Subject relation found!");
+
+            var schoolClass = schoolClassesAndSubjects!.SchoolClass;
+            var schoolSubject = schoolClassesAndSubjects.SchoolSubject;
+
+            var model = new StudentSubjectClassViewModel();
+
+            model.SubjectId = subjectId;
+            model.ClassId = classId;
+            model.StudentId = studentId;
+
+            model.Subject = new SchoolSubjectViewModel
+            {
+                Id = schoolSubject.Id,
+                Classes = await GetClassesBySubjectId(schoolSubject.Id),
+                CreatedOn = schoolSubject.CreatedOn,
+                Name = schoolSubject.Name,
+                TeacherName = schoolSubject.Teacher!.FirstName + " " + schoolSubject.Teacher.LastName,
+                Teacher = schoolSubject.Teacher,
+                SchoolId = schoolSubject.SchoolId,
+                TeacherId = schoolSubject.TeacherId,
+            };
+            model.Class = new SchoolClassViewModel
+            {
+                CreatedOn = schoolClass.CreatedOn,
+                Name = schoolClass.Name,
+                Grade = schoolClass.Grade,
+                Id = schoolClass.Id,
+                SchoolId = schoolClass.SchoolId,
+                Students = schoolClass.Students,
+            };
+
+            var classStudent = schoolClass.Students.FirstOrDefault(s => s.Id == studentId);
+
+            model.Student = new StudentViewModel
+            {
+                Class = model.Class,
+                Id = studentId,
+                ClassId = classId,
+                FirstName = classStudent!.FirstName,
+                LastName = classStudent.LastName,
+            };
+
+            return model;
+        }
+
+        private async Task<ICollection<SchoolClassViewModel>> GetClassesBySubjectId(Guid subjectId)
+        {
+            List<SchoolClassViewModel> schoolClasses = new List<SchoolClassViewModel>();
+
+            var classesAndSubjects = await repo.All<ClassesAndSubjects>().Where(cas => cas.SchoolSubjectId == subjectId).ToListAsync();
+
+            foreach (var classAndSubject in classesAndSubjects)
+            {
+                var schoolClassViewModel = new SchoolClassViewModel
+                {
+                    CreatedOn = classAndSubject.SchoolClass.CreatedOn,
+                    Grade = classAndSubject.SchoolClass.Grade,
+                    Id = classAndSubject.SchoolClass.Id,
+                    Name = classAndSubject.SchoolClass.Name,
+                    SchoolId = classAndSubject.SchoolClass.SchoolId,
+                    Students = classAndSubject.SchoolClass.Students,
+                };
+                schoolClasses.Add(schoolClassViewModel);
+            }
+            return schoolClasses;
+        }
+
+        public async Task<TeacherPanelViewModel> GetTeacherPanelViewModelAsync(Guid userId)
         {
             var user = await repo.All<ApplicationUser>().Include(u => u.Subjects).FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
@@ -423,7 +503,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await signInManager.SignOutAsync();
         }
 
-        public async Task MakeAdmin(ApplicationUser user)
+        public async Task MakeAdminAsync(ApplicationUser user)
         {
             if (user.SchoolId is not null)
             {
@@ -444,7 +524,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await roleService.AddUserToRoleAsync(user.Id.ToString(), "Admin");
         }
 
-        public async Task<bool> PhoneNumberIsFree(string phoneNumber)
+        public async Task<bool> PhoneNumberIsFreeAsync(string phoneNumber)
         {
             var result = await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
 
@@ -455,7 +535,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return false;
         }
 
-        public async Task<bool> PhoneNumberIsFree(string phoneNumber, Guid userId)
+        public async Task<bool> PhoneNumberIsFreeAsync(string phoneNumber, Guid userId)
         {
             var result = await repo.AllReadonly<ApplicationUser>().Where(u => u.Id != userId).FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
 
@@ -544,7 +624,7 @@ namespace SchoolSocialMediaApp.Core.Services
             await repo.SaveChangesAsync();
         }
 
-        public async Task<bool> UserExists(Guid userId)
+        public async Task<bool> UserExistsAsync(Guid userId)
         {
             if (await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.Id == userId) is null)
             {
@@ -553,7 +633,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return true;
         }
 
-        public async Task<bool> UsernameIsFree(string username)
+        public async Task<bool> UsernameIsFreeAsync(string username)
         {
             var result = await repo.AllReadonly<ApplicationUser>().FirstOrDefaultAsync(x => x.NormalizedUserName == username.ToUpper());
 
@@ -564,7 +644,7 @@ namespace SchoolSocialMediaApp.Core.Services
             return false;
         }
 
-        public async Task<bool> UsernameIsFree(string username, Guid userId)
+        public async Task<bool> UsernameIsFreeAsync(string username, Guid userId)
         {
             var result = await repo.AllReadonly<ApplicationUser>().Where(u => u.Id != userId).FirstOrDefaultAsync(x => x.NormalizedUserName == username.ToUpper());
 

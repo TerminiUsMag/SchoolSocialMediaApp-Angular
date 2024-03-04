@@ -68,7 +68,7 @@ namespace SchoolSocialMediaApp.Controllers
             //Username Validation and Verification
             var username = $"{model.FirstName}.{model.LastName}".ToLower();
 
-            if (!await accountService.UsernameIsFree(username))
+            if (!await accountService.UsernameIsFreeAsync(username))
             {
                 var message = $"Username '{username}' is already taken";
                 ModelState.AddModelError("", message);
@@ -82,7 +82,7 @@ namespace SchoolSocialMediaApp.Controllers
                 ModelState.AddModelError("", message);
                 return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
-            if (!await accountService.PhoneNumberIsFree(model.PhoneNumber))
+            if (!await accountService.PhoneNumberIsFreeAsync(model.PhoneNumber))
             {
                 var message = "Phone Number is already taken: " + model.PhoneNumber;
                 ModelState.AddModelError("", message);
@@ -96,7 +96,7 @@ namespace SchoolSocialMediaApp.Controllers
                 ModelState.AddModelError("", message);
                 return RedirectToAction("Register", "Account", new { message = message, classOfMessage = "text-bg-danger" });
             }
-            if (!await accountService.EmailIsFree(model.Email))
+            if (!await accountService.EmailIsFreeAsync(model.Email))
             {
                 var message = "Email is already taken: " + model.Email;
                 ModelState.AddModelError("", message);
@@ -241,7 +241,7 @@ namespace SchoolSocialMediaApp.Controllers
                 ModelState.AddModelError("", "Invalid Phone Number");
                 return RedirectToAction("Manage", "Account", new { message = $"Invalid phone number: {model.PhoneNumber}", classOfMessage = "text-bg-danger" });
             }
-            if (!await accountService.PhoneNumberIsFree(model.PhoneNumber, userId))
+            if (!await accountService.PhoneNumberIsFreeAsync(model.PhoneNumber, userId))
             {
                 ModelState.AddModelError("", "Phone Number is already taken");
                 return RedirectToAction("Manage", "Account", new { message = $"Phone number is already taken: {model.PhoneNumber}", classOfMessage = "text-bg-danger" });
@@ -253,7 +253,7 @@ namespace SchoolSocialMediaApp.Controllers
                 ModelState.AddModelError("", "Invalid Email");
                 return RedirectToAction("Manage", "Account", new { message = $"Invalid Email: {model.Email}", classOfMessage = "text-bg-danger" });
             }
-            if (!await accountService.EmailIsFree(model.Email, userId))
+            if (!await accountService.EmailIsFreeAsync(model.Email, userId))
             {
                 ModelState.AddModelError("", "Email is already taken");
                 return RedirectToAction("Manage", "Account", new { message = $"Email is already taken: {model.Email}", classOfMessage = "text-bg-danger" });
@@ -261,7 +261,7 @@ namespace SchoolSocialMediaApp.Controllers
 
             //Username Validation and Verification
             var username = $"{model.FirstName}.{model.LastName}".ToLower();
-            if (!await accountService.UsernameIsFree(username, userId))
+            if (!await accountService.UsernameIsFreeAsync(username, userId))
             {
                 ModelState.AddModelError("", $"Username '{username}' is already taken");
                 return RedirectToAction("Manage", "Account", new { message = $"Username '{username}' is already taken", classOfMessage = "text-bg-danger" });

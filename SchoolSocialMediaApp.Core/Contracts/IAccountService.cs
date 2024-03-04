@@ -51,28 +51,28 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// </summary>
         /// <param name="email"></param>
         /// <returns>True or False</returns>
-        Task<bool> EmailIsFree(string email);
+        Task<bool> EmailIsFreeAsync(string email);
 
         /// <summary>
         /// Checks if the phoneNumber is free (not used by another user).
         /// </summary>
         /// <param name="phoneNumber"></param>
         /// <returns></returns>
-        Task<bool> PhoneNumberIsFree(string phoneNumber);
+        Task<bool> PhoneNumberIsFreeAsync(string phoneNumber);
 
         /// <summary>
         /// Checks if the username is free(Not used by another user).
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        Task<bool> UsernameIsFree(string username);
+        Task<bool> UsernameIsFreeAsync(string username);
 
         /// <summary>
         /// Checks if user with this Id exists.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<bool> UserExists(Guid userId);
+        Task<bool> UserExistsAsync(Guid userId);
 
         /// <summary>
         /// Gets the User by id and maps it to a UserManageViewModel which is used for the account management functionality.
@@ -96,7 +96,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<AdminPanelViewModel> GetAdminPanelViewModel(Guid userId);
+        Task<AdminPanelViewModel> GetAdminPanelViewModelAsync(Guid userId);
 
         /// <summary>
         /// Returns a delete user view model.
@@ -111,7 +111,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="phoneNumber"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<bool> PhoneNumberIsFree(string phoneNumber, Guid userId);
+        Task<bool> PhoneNumberIsFreeAsync(string phoneNumber, Guid userId);
 
         /// <summary>
         /// Checks if the email is not used by anyone other than the userId.
@@ -119,7 +119,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="email"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<bool> EmailIsFree(string email, Guid userId);
+        Task<bool> EmailIsFreeAsync(string email, Guid userId);
 
         /// <summary>
         /// Checks if the username is not used by anyone other than the userId.
@@ -127,7 +127,7 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="username"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<bool> UsernameIsFree(string username, Guid userId);
+        Task<bool> UsernameIsFreeAsync(string username, Guid userId);
 
         /// <summary>
         /// Returns a view model which is used to make a user admin.
@@ -135,9 +135,10 @@ namespace SchoolSocialMediaApp.Core.Contracts
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<MakeUserAdminViewModel> GetMakeUserAdminViewModelAsync(Guid userId);
-        Task MakeAdmin(ApplicationUser userToMakeAdmin);
+        Task MakeAdminAsync(ApplicationUser userToMakeAdmin);
         Task DeleteAsync(Guid userId);
-        Task<TeacherPanelViewModel> GetTeacherPanelViewModel(Guid userId);
-        Task<StudentPanelViewModel> GetStudentPanelViewModel(Guid userId);
+        Task<TeacherPanelViewModel> GetTeacherPanelViewModelAsync(Guid userId);
+        Task<StudentPanelViewModel> GetStudentPanelViewModelAsync(Guid userId);
+        Task<StudentSubjectClassViewModel> GetStudentSubjectClassViewModelAsync(Guid subjectId, Guid classId, Guid studentId);
     }
 }

@@ -49,7 +49,7 @@ namespace SchoolSocialMediaApp.Areas.Teacher.Controllers
                 if (!isTeacher)
                     throw new ArgumentException("You are not a teacher and don't have access to the Teacher Panel.");
 
-                var model = await accountService.GetTeacherPanelViewModel(userId);
+                var model = await accountService.GetTeacherPanelViewModelAsync(userId);
                 ViewBag.Message = message;
                 ViewBag.ClassOfMessage = classOfMessage;
                 return View(model);

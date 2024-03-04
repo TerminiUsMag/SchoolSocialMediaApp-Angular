@@ -41,11 +41,11 @@ namespace SchoolSocialMediaApp.Tests.UnitTests
         {
             // Arrange
             var mockAccountService = new Mock<IAccountService>();
-            mockAccountService.Setup(service => service.UsernameIsFree(It.IsAny<string>())).ReturnsAsync(true);
+            mockAccountService.Setup(service => service.UsernameIsFreeAsync(It.IsAny<string>())).ReturnsAsync(true);
             mockAccountService.Setup(service => service.PhoneNumberIsValid(It.IsAny<string>())).Returns(true);
-            mockAccountService.Setup(service => service.PhoneNumberIsFree(It.IsAny<string>())).ReturnsAsync(true);
+            mockAccountService.Setup(service => service.PhoneNumberIsFreeAsync(It.IsAny<string>())).ReturnsAsync(true);
             mockAccountService.Setup(service => service.EmailIsValid(It.IsAny<string>())).Returns(true);
-            mockAccountService.Setup(service => service.EmailIsFree(It.IsAny<string>())).ReturnsAsync(true);
+            mockAccountService.Setup(service => service.EmailIsFreeAsync(It.IsAny<string>())).ReturnsAsync(true);
             mockAccountService.Setup(service => service.RegisterAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
 
             var mockUserManager = new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
