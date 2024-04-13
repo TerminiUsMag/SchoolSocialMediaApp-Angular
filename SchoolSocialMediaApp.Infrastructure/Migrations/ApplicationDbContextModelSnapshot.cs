@@ -399,12 +399,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("The unique identifier for the post.");
 
-                    b.Property<Guid?>("ClassesAndSubjectsSchoolClassId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ClassesAndSubjectsSchoolSubjectId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(2000)
@@ -432,8 +426,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.HasIndex("CreatorId");
 
                     b.HasIndex("SchoolId");
-
-                    b.HasIndex("ClassesAndSubjectsSchoolClassId", "ClassesAndSubjectsSchoolSubjectId");
 
                     b.ToTable("Posts");
 
@@ -730,10 +722,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ClassesAndSubjects", null)
-                        .WithMany("Posts")
-                        .HasForeignKey("ClassesAndSubjectsSchoolClassId", "ClassesAndSubjectsSchoolSubjectId");
-
                     b.Navigation("Creator");
 
                     b.Navigation("School");
@@ -801,11 +789,6 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.Navigation("Students");
 
                     b.Navigation("Subjects");
-                });
-
-            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.ClassesAndSubjects", b =>
-                {
-                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Post", b =>
