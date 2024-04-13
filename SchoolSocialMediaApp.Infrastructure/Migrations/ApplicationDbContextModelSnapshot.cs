@@ -399,6 +399,12 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("The unique identifier for the post.");
 
+                    b.Property<Guid?>("ClassesAndSubjectsSchoolClassId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ClassesAndSubjectsSchoolSubjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(2000)
@@ -417,15 +423,9 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .HasColumnType("bit")
                         .HasComment("Is the post edited.");
 
-                    b.Property<Guid?>("SchoolClassId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("SchoolId")
                         .HasColumnType("uniqueidentifier")
                         .HasComment("The id of the school the post is for.");
-
-                    b.Property<Guid?>("SchoolSubjectId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -433,7 +433,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.HasIndex("SchoolClassId", "SchoolSubjectId");
+                    b.HasIndex("ClassesAndSubjectsSchoolClassId", "ClassesAndSubjectsSchoolSubjectId");
 
                     b.ToTable("Posts");
 
@@ -730,11 +730,9 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ClassesAndSubjects", "ClassSubject")
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ClassesAndSubjects", null)
                         .WithMany("Posts")
-                        .HasForeignKey("SchoolClassId", "SchoolSubjectId");
-
-                    b.Navigation("ClassSubject");
+                        .HasForeignKey("ClassesAndSubjectsSchoolClassId", "ClassesAndSubjectsSchoolSubjectId");
 
                     b.Navigation("Creator");
 

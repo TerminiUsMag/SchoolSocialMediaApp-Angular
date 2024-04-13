@@ -23,7 +23,7 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [ForeignKey(nameof(SchoolSubjectId))]
         public SchoolSubject SchoolSubject { get; set; } = null!;
 
-        [Comment("The posts related to this class-subject.")]
-        public ICollection<Post> Posts { get; set; } = new List<Post>();
+        [Comment("The posts of the subject-class relation")]
+        public List<Post> Posts { get; set; } = new List<Post>();
     }
 }

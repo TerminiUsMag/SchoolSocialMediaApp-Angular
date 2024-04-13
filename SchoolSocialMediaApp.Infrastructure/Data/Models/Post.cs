@@ -39,17 +39,18 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [ForeignKey(nameof(SchoolId))]
         public School School { get; set; } = null!;
 
+        [Comment("The ClassSubject's ID where the post is published.")]
+        public Guid ClassSubjectId { get; set; }
+
+        [Comment("The ClassSubject where the post is published.")]
+        [ForeignKey(nameof(ClassSubjectId))]
+        public ClassesAndSubjects? ClassSubject { get; set; }
+
         [Comment("The comments on the post.")]
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
         [Comment("The likes on the post.")]
         public ICollection<PostsLikes> Likes { get; set; } = new List<PostsLikes>();
-
-        public Guid? SchoolClassId { get; set; }
-        public Guid? SchoolSubjectId { get; set; }
-
-        [Comment("The class-subject the post is for.")]
-        public ClassesAndSubjects? ClassSubject { get; set; }
 
         [Comment("Is the post edited.")]
         public bool IsEdited { get; set; }
