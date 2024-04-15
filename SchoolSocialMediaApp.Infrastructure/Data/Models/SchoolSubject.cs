@@ -39,5 +39,8 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
         [Comment("Classes that take the subject")]
         public ICollection<ClassesAndSubjects> SchoolClasses { get; set; } = new List<ClassesAndSubjects>();
 
+        [Comment("All Grades in this subject")]
+        public ICollection<Grade> Grades { get; set; } = new List<Grade>();
+
     }
 }

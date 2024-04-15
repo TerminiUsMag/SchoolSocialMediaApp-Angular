@@ -346,6 +346,46 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.HasComment("A comment made by a user on a post.");
                 });
 
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Grade", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("The unique identifier for the grade.");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2")
+                        .HasComment("The date and time the grade was created.");
+
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Id of the creator of the grade.");
+
+                    b.Property<int>("GradeValue")
+                        .HasColumnType("int")
+                        .HasComment("The grade itself.");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Id of the student the grade is assigned to.");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Id of the subject");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("Grades");
+
+                    b.HasComment("Grade of a student");
+                });
+
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Invitation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -681,6 +721,33 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Grade", b =>
+                {
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "Creator")
+                        .WithMany("GradesCreated")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "Student")
+                        .WithMany("Grades")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolSubject", "Subject")
+                        .WithMany("Grades")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Subject");
+                });
+
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.Invitation", b =>
                 {
                     b.HasOne("SchoolSocialMediaApp.Infrastructure.Data.Models.ApplicationUser", "Receiver")
@@ -778,6 +845,10 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Grades");
+
+                    b.Navigation("GradesCreated");
+
                     b.Navigation("Invitations");
 
                     b.Navigation("LikedPosts");
@@ -819,6 +890,8 @@ namespace SchoolSocialMediaApp.Infrastructure.Migrations
 
             modelBuilder.Entity("SchoolSocialMediaApp.Infrastructure.Data.Models.SchoolSubject", b =>
                 {
+                    b.Navigation("Grades");
+
                     b.Navigation("SchoolClasses");
                 });
 #pragma warning restore 612, 618

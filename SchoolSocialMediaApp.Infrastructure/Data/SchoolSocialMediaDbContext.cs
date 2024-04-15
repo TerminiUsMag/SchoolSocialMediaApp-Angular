@@ -31,6 +31,7 @@ namespace SchoolSocialMediaApp.Data
         public DbSet<SchoolClass> Classes { get; set; } = null!;
         public DbSet<SchoolSubject> Subjects { get; set; } = null!;
         public DbSet<ClassesAndSubjects> ClassesAndSubjects { get; set; } = null!;
+        public DbSet<Grade> Grades { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -73,7 +74,7 @@ namespace SchoolSocialMediaApp.Data
             builder.Entity<ApplicationUser>()
                 .HasOne(u => u.School)
                 .WithMany(s => s.Participants)
-                .HasForeignKey(u=>u.SchoolId)
+                .HasForeignKey(u => u.SchoolId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             //builder.Entity<ApplicationUser>(entity =>
@@ -124,6 +125,24 @@ namespace SchoolSocialMediaApp.Data
                 .HasOne(cas => cas.SchoolSubject)
                 .WithMany(ss => ss.SchoolClasses)
                 .HasForeignKey(cas => cas.SchoolSubjectId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Grade>()
+                .HasOne(g => g.Subject)
+                .WithMany(s => s.Grades)
+                .HasForeignKey(g => g.SubjectId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Grade>()
+                .HasOne(g => g.Student)
+                .WithMany(s => s.Grades)
+                .HasForeignKey(g => g.StudentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Grade>()
+                .HasOne(g => g.Creator)
+                .WithMany(u => u.GradesCreated)
+                .HasForeignKey(g => g.CreatorId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(builder);

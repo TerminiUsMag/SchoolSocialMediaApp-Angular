@@ -95,5 +95,11 @@ namespace SchoolSocialMediaApp.Infrastructure.Data.Models
 
         [Comment("The invitations the user has sent.")]
         public ICollection<Invitation> SentInvitations { get; set; } = new List<Invitation>();
+
+        [Comment("Grades of the Student")]
+        public ICollection<Grade> Grades { get; set; } = new List<Grade>();
+
+        [Comment("Grades Created")]
+        public ICollection<Grade> GradesCreated { get; set; } = new List<Grade>();
     }
 }

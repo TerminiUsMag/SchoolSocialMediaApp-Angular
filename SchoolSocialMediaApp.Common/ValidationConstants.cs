@@ -27,6 +27,10 @@
         public const int MaxSchoolDescriptionLength = 1000;
         public const int MaxSchoolLocationLength = 150;
 
+        //Grade Validation Constants
+        public const int MinGradeValue = 2;
+        public const int MaxGradeValue = 6;
+
         //Principal Validation Constants
 
         //Teacher Validation Constants
