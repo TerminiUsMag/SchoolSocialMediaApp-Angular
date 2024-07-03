@@ -372,7 +372,7 @@ namespace SchoolSocialMediaApp.Core.Services
                     }).ToListAsync();
                 return schoolClasses;
             }
-            throw new ArgumentException("No classes assigned to this subject");
+            return new List<SchoolClassViewModel>();
         }
 
         public async Task<ICollection<ApplicationUser>> GetCandidateTeachersInSchoolAsync(Guid schoolId, Guid userId, bool isAdmin = false)

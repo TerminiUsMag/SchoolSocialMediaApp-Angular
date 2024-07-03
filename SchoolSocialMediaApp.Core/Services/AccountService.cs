@@ -421,11 +421,21 @@ namespace SchoolSocialMediaApp.Core.Services
                 throw new ArgumentException("User is not a teacher !");
 
             var schoolId = user.SchoolId;
-            var school = await repo.All<School>().FirstOrDefaultAsync(s => s.Id == schoolId);
+            var school = await repo.All<School>().Include(s => s.Principal).FirstOrDefaultAsync(s => s.Id == schoolId);
             if (school is null)
                 throw new ArgumentException("No such school");
 
             var teacherPanelViewModel = new TeacherPanelViewModel();
+            teacherPanelViewModel.School = new SchoolViewModel
+            {
+                Id = school.Id,
+                Description = school.Description,
+                ImageUrl = school.ImageUrl,
+                Location = school.Location,
+                Name = school.Name,
+                PrincipalId = school.PrincipalId,
+                PrincipalName = $"{school.Principal.FirstName} {school.Principal.LastName}"
+            };
 
             var subjects = user.Subjects.Select(s => new SchoolSubjectViewModel
             {
